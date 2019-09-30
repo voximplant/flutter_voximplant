@@ -1,0 +1,25 @@
+name: flutter_voximplant
+description: Voximplant plugin for embedding voice communication into Flutter applications.
+version: 1.0.0
+authors:
+  - Voximplant Team <mobiledev@zingaya.com>
+  - Yulia Grigorieva <grigorieva@voximplant.com>
+homepage: https://voximplant.com
+repository: https://github.com/voximplant/flutter_voximplant
+
+environment:
+  sdk: ">=2.2.0 <3.0.0"
+  flutter: ">=1.5.0 <2.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    androidPackage: com.voximplant.flutter_voximplant
+    pluginClass: VoximplantPlugin
