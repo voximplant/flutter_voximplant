@@ -90,4 +90,13 @@
     }
 }
 
++ (NSDictionary *)convertAuthParamsToDictionary:(VIAuthParams *)authParams {
+    NSMutableDictionary *dictionary = [NSMutableDictionary new];
+    [dictionary setValue:@((NSInteger)authParams.accessExpire) forKey:@"accessExpire"];
+    [dictionary setValue:authParams.accessToken forKey:@"accessToken"];
+    [dictionary setValue:@((NSInteger)authParams.refreshExpire) forKey:@"refreshExpire"];
+    [dictionary setValue:authParams.refreshToken forKey:@"refreshToken"];
+    return dictionary;
+}
+
 @end

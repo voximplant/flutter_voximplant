@@ -11,4 +11,5 @@
 + (NSString *)getErrorDescriptionForLoginError:(VILoginErrorCode)code;
 + (NSString *)convertCallErrorToString:(VICallErrorCode)code;
 + (NSString *)getErrorDescriptionForCallError:(VICallErrorCode)code;
++ (NSDictionary *)convertAuthParamsToDictionary:(VIAuthParams *)authParams;
 @end

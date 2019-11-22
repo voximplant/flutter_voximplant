@@ -29,6 +29,18 @@
     return self;
 }
 
+- (void)setCallKitUUID:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:[arguments objectForKey:@"uuid"]];
+    if (!uuid) {
+        result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
+                                   message:@"Call.setCallKitUUID: Invalid UUID"
+                                   details:nil]);
+    }
+
+    self.call.callKitUUID = uuid;
+    result(nil);
+}
+
 - (void)answerCall:(NSDictionary *)arguments result:(FlutterResult)result {
     NSString *customData = [arguments objectForKey:@"customData"] != [NSNull null] ? [arguments objectForKey:@"customData"] : nil;
     NSDictionary *headers = [arguments objectForKey:@"extraHeaders"] != [NSNull null] ? [arguments objectForKey:@"extraHeaders"] : nil;

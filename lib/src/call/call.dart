@@ -8,11 +8,14 @@ class CallSettings {
 }
 
 typedef void CallConnected(Map<String, String> headers);
-typedef void CallDisconnected(Map<String, String> headers, bool answeredElsewhere);
+typedef void CallDisconnected(
+    Map<String, String> headers, bool answeredElsewhere);
 typedef void CallRinging(Map<String, String> headers);
-typedef void CallFailed(int code, String description, Map<String, String> headers);
+typedef void CallFailed(
+    int code, String description, Map<String, String> headers);
 typedef void CallAudioStarted();
-typedef void SIPInfoReceived(String type, String content, Map<String, String> headers);
+typedef void SIPInfoReceived(
+    String type, String content, Map<String, String> headers);
 typedef void MessageReceived(String message);
 typedef void ICETimeout();
 typedef void ICECompleted();
@@ -31,10 +34,10 @@ class Call {
   EndpointAdded onEndpointAdded;
 
   String _callId;
+  String _callKitUUID;
   MethodChannel _channel;
   StreamSubscription<dynamic> _eventSubscription;
   List<Endpoint> _endpoints;
-
 
   Call._(this._callId, this._channel) {
     _endpoints = List();
@@ -52,10 +55,19 @@ class Call {
   }
 
   String get callId => _callId;
+  String get callKitUUID => _callKitUUID;
+  set callKitUUID(String uuid) {
+    _callKitUUID = uuid.toUpperCase();
+    if (Platform.isIOS) {
+      _channel.invokeMethod<void>('setCallKitUUID',
+          <String, dynamic>{'callId': _callId, 'uuid': _callKitUUID});
+    }
+  }
+
   List<Endpoint> get endpoints => _endpoints;
 
   Future<void> answer([CallSettings callSettings]) async {
-    await _channel.invokeMethod<void>('answerCall', <String, dynamic> {
+    await _channel.invokeMethod<void>('answerCall', <String, dynamic>{
       'callId': _callId,
       'customData': callSettings?.customData,
       'extraHeaders': callSettings?.extraHeaders
@@ -63,7 +75,7 @@ class Call {
   }
 
   Future<void> decline([Map<String, String> headers]) async {
-    await _channel.invokeMethod<void>('rejectCall', <String, dynamic> {
+    await _channel.invokeMethod<void>('rejectCall', <String, dynamic>{
       'callId': _callId,
       'headers': headers,
       'rejectMode': 'decline'
@@ -71,7 +83,7 @@ class Call {
   }
 
   Future<void> reject([Map<String, String> headers]) async {
-    await _channel.invokeMethod<void>('rejectCall', <String, dynamic> {
+    await _channel.invokeMethod<void>('rejectCall', <String, dynamic>{
       'callId': _callId,
       'headers': headers,
       'rejectMode': 'reject'
@@ -79,27 +91,22 @@ class Call {
   }
 
   Future<void> hangup([Map<String, String> headers]) async {
-    await _channel.invokeMethod<void>('hangupCall', <String, dynamic>{
-      'callId': _callId,
-      'headers': headers
-    });
+    await _channel.invokeMethod<void>(
+        'hangupCall', <String, dynamic>{'callId': _callId, 'headers': headers});
   }
 
   Future<void> hold(bool enable) async {
-    await _channel.invokeMethod<void>('holdCall', <String, dynamic> {
-      'callId': _callId,
-      'enable': enable
-    });
+    await _channel.invokeMethod<void>(
+        'holdCall', <String, dynamic>{'callId': _callId, 'enable': enable});
   }
 
   Future<void> sendAudio(bool enable) async {
-    await _channel.invokeMethod<void>('sendAudioForCall', <String, dynamic>{
-      'callId': _callId,
-      'enable': enable
-    });
+    await _channel.invokeMethod<void>('sendAudioForCall',
+        <String, dynamic>{'callId': _callId, 'enable': enable});
   }
 
-  Future<void> sendInfo(String mimeType, String body, Map<String, String> headers) async {
+  Future<void> sendInfo(
+      String mimeType, String body, Map<String, String> headers) async {
     await _channel.invokeMethod<void>('sendInfoForCall', <String, dynamic>{
       'callId': _callId,
       'mimetype': mimeType,
@@ -109,17 +116,13 @@ class Call {
   }
 
   Future<void> sendMessage(String message) async {
-    await _channel.invokeMethod<void>('sendMessageForCall', <String, dynamic>{
-      'callId': _callId,
-      'message': message
-    });
+    await _channel.invokeMethod<void>('sendMessageForCall',
+        <String, dynamic>{'callId': _callId, 'message': message});
   }
 
   Future<void> sendTone(String key) async {
-    await _channel.invokeMethod<void>('sendToneForCall', <String, String> {
-      'callId': _callId,
-      'tone': key
-    });
+    await _channel.invokeMethod<void>(
+        'sendToneForCall', <String, String>{'callId': _callId, 'tone': key});
   }
 
   void _eventListener(dynamic event) {
@@ -127,9 +130,8 @@ class Call {
     switch (map['event']) {
       case 'callConnected':
         Map<String, String> headers = new Map();
-        map['headers'].forEach((key,value) => {
-          headers[key as String] = value as String
-        });
+        map['headers'].forEach(
+            (key, value) => {headers[key as String] = value as String});
         if (onCallConnected != null) {
           onCallConnected(headers);
         }
@@ -137,9 +139,8 @@ class Call {
       case 'callDisconnected':
         _eventSubscription.cancel();
         Map<String, String> headers = new Map();
-        map['headers'].forEach((key,value) => {
-          headers[key as String] = value as String
-        });
+        map['headers'].forEach(
+            (key, value) => {headers[key as String] = value as String});
         bool answeredElsewhere = map['answeredElsewhere'];
         if (onCallDisconnected != null) {
           onCallDisconnected(headers, answeredElsewhere);
@@ -147,9 +148,8 @@ class Call {
         break;
       case 'callRinging':
         Map<String, String> headers = new Map();
-        map['headers'].forEach((key,value) => {
-          headers[key as String] = value as String
-        });
+        map['headers'].forEach(
+            (key, value) => {headers[key as String] = value as String});
         if (onCallRinging != null) {
           onCallRinging(headers);
         }
@@ -159,9 +159,8 @@ class Call {
         int code = map['code'];
         String description = map['description'];
         Map<String, String> headers = new Map();
-        map['headers'].forEach((key,value) => {
-          headers[key as String] = value as String
-        });
+        map['headers'].forEach(
+            (key, value) => {headers[key as String] = value as String});
         if (onCallFailed != null) {
           onCallFailed(code, description, headers);
         }
@@ -175,9 +174,8 @@ class Call {
         String type = map['type'];
         String content = map['content'];
         Map<String, String> headers = new Map();
-        map['headers'].forEach((key,value) => {
-          headers[key as String] = value as String
-        });
+        map['headers'].forEach(
+            (key, value) => {headers[key as String] = value as String});
         if (onSIPInfoReceived != null) {
           onSIPInfoReceived(type, content, headers);
         }
@@ -211,8 +209,7 @@ class Call {
           String userName = map['userName'];
           String displayName = map['displayName'];
           String sipUri = map['sipUri'];
-          endpoint = Endpoint._(
-              endpointId, userName, displayName, sipUri);
+          endpoint = Endpoint._(endpointId, userName, displayName, sipUri);
           _endpoints.add(endpoint);
         }
         if (onEndpointAdded != null) {

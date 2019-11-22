@@ -2,13 +2,7 @@
 
 part of voximplant;
 
-enum AudioDevice {
-  Bluetooth,
-  Earpiece,
-  Speaker,
-  WiredHeadset,
-  None
-}
+enum AudioDevice { Bluetooth, Earpiece, Speaker, WiredHeadset, None }
 
 typedef void AudioDeviceChanged(AudioDevice device);
 typedef void AudioDeviceListChanged(List<AudioDevice> deviceList);
@@ -26,13 +20,14 @@ class AudioDeviceManager {
   }
 
   Future<void> selectAudioDevice(AudioDevice audioDevice) async {
-    await _channel.invokeMethod<void>('selectAudioDevice', <String, dynamic> {
+    await _channel.invokeMethod<void>('selectAudioDevice', <String, dynamic>{
       'audioDevice': audioDevice.index,
     });
   }
 
   Future<AudioDevice> getActiveDevice() async {
-    Map<String, dynamic> data = await _channel.invokeMapMethod('getActiveDevice');
+    Map<String, dynamic> data =
+        await _channel.invokeMapMethod('getActiveDevice');
     AudioDevice audioDevice = AudioDevice.values[data['audioDevice']];
     return audioDevice;
   }
@@ -40,11 +35,47 @@ class AudioDeviceManager {
   Future<List<AudioDevice>> getAudioDevices() async {
     List<int> data = await _channel.invokeListMethod('getAudioDevices');
     List<AudioDevice> newAudioDevices = List();
-    for(int device in data) {
+    for (int device in data) {
       newAudioDevices.add(AudioDevice.values[device]);
     }
     return newAudioDevices;
   }
+
+  //#region CallKit
+
+  Future<void> callKitConfigureAudioSession() async {
+    if (Platform.isIOS) {
+      await _channel.invokeMethod('callKitConfigureAudioSession');
+    } else {
+      Log.w('callKitConfigureAudioSession: invalid call for platform');
+    }
+  }
+
+  Future<void> callKitReleaseAudioSession() async {
+    if (Platform.isIOS) {
+      await _channel.invokeMethod('callKitReleaseAudioSession');
+    } else {
+      Log.w('callKitReleaseAudioSession: invalid call for platform');
+    }
+  }
+
+  Future<void> callKitStartAudio() async {
+    if (Platform.isIOS) {
+      await _channel.invokeMethod('callKitStartAudioSession');
+    } else {
+      Log.w('callKitStartAudio: invalid call for platform');
+    }
+  }
+
+  Future<void> callKitStopAudio() async {
+    if (Platform.isIOS) {
+      await _channel.invokeMethod('callKitStopAudio');
+    } else {
+      Log.w('callKitStopAudio: invalid call for platform');
+    }
+  }
+
+  //#endregion
 
   void _eventListener(dynamic event) {
     final Map<dynamic, dynamic> map = event;
@@ -58,7 +89,7 @@ class AudioDeviceManager {
       case 'audioDeviceListChanged':
         List<int> devices = map['audioDeviceList'].cast<int>();
         List<AudioDevice> newAudioDevices = List();
-        for(int device in devices) {
+        for (int device in devices) {
           newAudioDevices.add(AudioDevice.values[device]);
         }
         if (onAudioDeviceListChanged != null) {
@@ -67,5 +98,4 @@ class AudioDeviceManager {
         break;
     }
   }
-
 }

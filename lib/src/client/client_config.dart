@@ -9,14 +9,7 @@ enum RequestAudioFocusMode {
 }
 
 /// ios only
-enum LogLevel {
-  error,
-  warning,
-  info,
-  debug,
-  verbose
-}
-
+enum LogLevel { error, warning, info, debug, verbose }
 
 class ClientConfig {
   /// android and ios

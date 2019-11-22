@@ -60,6 +60,26 @@
     result(resultDevices);
 }
 
+- (void)callKitConfigureAudioSession:(NSDictionary *)arguments result:(FlutterResult)result {
+    [[VIAudioManager sharedAudioManager] callKitConfigureAudioSession:nil];
+    result(nil);
+}
+
+- (void)callKitReleaseAudioSession:(NSDictionary *)arguments result:(FlutterResult)result {
+    [[VIAudioManager sharedAudioManager] callKitReleaseAudioSession];
+    result(nil);
+}
+
+- (void)callKitStartAudio:(NSDictionary *)arguments result:(FlutterResult)result {
+    [[VIAudioManager sharedAudioManager] callKitStartAudio];
+    result(nil);
+}
+
+- (void)callKitStopAudio:(NSDictionary *)arguments result:(FlutterResult)result {
+    [[VIAudioManager sharedAudioManager] callKitStopAudio];
+    result(nil);
+}
+
 - (VIAudioDevice *)convertNumberToAudioDevice:(NSNumber *)device {
     if (!device) {
         return nil;

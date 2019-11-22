@@ -10,3 +10,6 @@ build/
 .flutter-plugins
 android/app/
 flutter_voximplant.iml
+
+pubspec.lock
+Podfile.lock

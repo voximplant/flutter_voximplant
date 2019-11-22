@@ -3,6 +3,7 @@
 part of voximplant;
 
 typedef void IncomingCall(Call call, Map<String, String> headers);
+typedef void PushDidExpire(String uuid);
 
 enum ClientState {
   Disconnected,
@@ -14,16 +15,19 @@ enum ClientState {
 
 class Client {
   IncomingCall onIncomingCall;
+  PushDidExpire onPushDidExpire;
 
   final MethodChannel _channel;
   EventChannel _incomingCallEventChannel;
   StreamSubscription<dynamic> _incomingCallEventSubscription;
   StreamController<ClientState> _clientStateStreamController;
 
-  Stream<ClientState> get clientStateStream => _clientStateStreamController.stream;
+  Stream<ClientState> get clientStateStream =>
+      _clientStateStreamController.stream;
 
   Client._(this._channel, ClientConfig clientConfig) {
-    _incomingCallEventChannel = EventChannel('plugins.voximplant.com/incoming_calls');
+    _incomingCallEventChannel =
+        EventChannel('plugins.voximplant.com/incoming_calls');
     EventChannel('plugins.voximplant.com/connection_closed')
         .receiveBroadcastStream('connection_closed')
         .listen(_connectionClosedEventListener);
@@ -49,7 +53,8 @@ class Client {
     return ClientState.values[result];
   }
 
-  Future<void> connect({bool connectivityCheck = false, List<String> servers}) async {
+  Future<void> connect(
+      {bool connectivityCheck = false, List<String> servers}) async {
     _changeClientState(ClientState.Connecting);
     try {
       await _channel.invokeMethod<void>('connect', <String, dynamic>{
@@ -74,11 +79,8 @@ class Client {
   Future<AuthResult> login(String username, String password) async {
     _changeClientState(ClientState.LoggingIn);
     try {
-      Map<String, dynamic> data = await _channel.invokeMapMethod(
-          'login', <String, String>{
-        'username': username,
-        'password': password
-      });
+      Map<String, dynamic> data = await _channel.invokeMapMethod('login',
+          <String, String>{'username': username, 'password': password});
       return _processLoginSuccess(data);
     } catch (e) {
       ClientState state = await getClientState();
@@ -90,7 +92,8 @@ class Client {
   Future<AuthResult> loginWithOneTimeKey(String username, String hash) async {
     _changeClientState(ClientState.LoggingIn);
     try {
-      Map<String, dynamic> data = await _channel.invokeMapMethod('loginWithKey', <String, dynamic> {
+      Map<String, dynamic> data =
+          await _channel.invokeMapMethod('loginWithKey', <String, dynamic>{
         'username': username,
         'hash': hash,
       });
@@ -105,10 +108,9 @@ class Client {
   Future<AuthResult> loginWithAccessToken(String username, String token) async {
     _changeClientState(ClientState.LoggingIn);
     try {
-      Map<String, dynamic> data = await _channel.invokeMapMethod('loginWithToken', <String, String> {
-        'username': username,
-        'token': token
-      });
+      Map<String, dynamic> data = await _channel.invokeMapMethod(
+          'loginWithToken',
+          <String, String>{'username': username, 'token': token});
       return _processLoginSuccess(data);
     } catch (e) {
       ClientState state = await getClientState();
@@ -122,7 +124,8 @@ class Client {
   }
 
   Future<LoginTokens> tokenRefresh(String username, String refreshToken) async {
-    Map<String, dynamic> data = await _channel.invokeMapMethod('tokenRefresh', <String, String> {
+    Map<String, dynamic> data =
+        await _channel.invokeMapMethod('tokenRefresh', <String, String>{
       'username': username,
       'refreshToken': refreshToken,
     });
@@ -135,7 +138,8 @@ class Client {
   }
 
   Future<Call> call(String number, [CallSettings callSettings]) async {
-    Map<String, dynamic> data = await _channel.invokeMapMethod('call', <String, dynamic> {
+    Map<String, dynamic> data =
+        await _channel.invokeMapMethod('call', <String, dynamic>{
       'number': number,
       'customData': callSettings?.customData,
       'extraHeaders': callSettings?.extraHeaders
@@ -180,15 +184,23 @@ class Client {
       String endpointId = map['endpointId'];
       String userName = map['endpointUserName'];
       String displayName = map['endpointDisplayName'];
-      String sipUri = map['endpoitnSipUri'];
+      String sipUri = map['endpointSipUri'];
+      String uuid = map['uuid'];
       Endpoint endpoint = Endpoint._(endpointId, userName, displayName, sipUri);
       Call call = Call._withEndpoint(map['callId'], _channel, endpoint);
+      if (uuid != null) {
+        call.callKitUUID = uuid;
+      }
       Map<String, String> headers = new Map();
-      map['headers'].forEach((key,value) => {
-        headers[key as String] = value as String
-      });
+      map['headers']
+          .forEach((key, value) => {headers[key as String] = value as String});
       if (onIncomingCall != null) {
         onIncomingCall(call, headers);
+      }
+    } else if (map['event'] == 'pushDidExpire') {
+      String uuid = map['uuid'];
+      if (onPushDidExpire != null) {
+        onPushDidExpire(uuid);
       }
     }
   }

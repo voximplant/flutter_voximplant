@@ -9,7 +9,8 @@ class Voximplant {
   static final Voximplant _instance = Voximplant.private();
   Client _client;
   AudioDeviceManager _audioDeviceManager;
-  static const MethodChannel _channel = MethodChannel('plugins.voximplant.com/client');
+  static const MethodChannel _channel =
+      MethodChannel('plugins.voximplant.com/client');
 
   Client getClient([ClientConfig clientConfig]) {
     if (_client == null) {

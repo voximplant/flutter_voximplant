@@ -14,6 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)selectAudioDevice:(NSDictionary *)arguments result:(FlutterResult)result;
 - (void)getActiveDevice:(NSDictionary *)arguments result:(FlutterResult)result;
 - (void)getAudioDevices:(NSDictionary *)arguments result:(FlutterResult)result;
+
+- (void)callKitConfigureAudioSession:(NSDictionary *)arguments result:(FlutterResult)result;
+- (void)callKitReleaseAudioSession:(NSDictionary *)arguments result:(FlutterResult)result;
+- (void)callKitStartAudio:(NSDictionary *)arguments result:(FlutterResult)result;
+- (void)callKitStopAudio:(NSDictionary *)arguments result:(FlutterResult)result;
 @end
 
 NS_ASSUME_NONNULL_END

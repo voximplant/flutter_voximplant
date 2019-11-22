@@ -22,6 +22,10 @@
 + (void)setVersionExtension:(NSString *)version;
 @end
 
+@interface VIClient (Utils)
++ (NSUUID *)uuidForPushNotification:(NSDictionary *)notification;
+@end
+
 @implementation VoximplantPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -30,6 +34,10 @@
                                      binaryMessenger:[registrar messenger]];
     VoximplantPlugin* instance = [[VoximplantPlugin alloc] initWithRegistrar:registrar];
     [registrar addMethodCallDelegate:instance channel:channel];
+}
+
++ (NSUUID *)uuidForPushNotification:(NSDictionary *)notification {
+    return [VIClient uuidForPushNotification:notification];
 }
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -45,7 +53,7 @@
                                                                       binaryMessenger:registrar.messenger];
         [self.connectionClosedEventChannel setStreamHandler:self];
         self.audioDeviceModule = [[VIAudioDeviceModule alloc] initWithPlugin:self];
-        [VIClient setVersionExtension:@"flutter-1.0.0"];
+        [VIClient setVersionExtension:@"flutter-1.1.0"];
     }
     return self;
 }
@@ -79,6 +87,8 @@
         [self unregisterFromPushNotifications:call.arguments result:result];
     } else if ([@"handlePushNotification" isEqualToString:call.method]) {
         [self handlePushNotification:call.arguments result:result];
+    } else if ([@"setCallKitUUID" isEqualToString:call.method]) {
+        [self setCallKitUUID:call.arguments result:result];
     } else if ([@"answerCall" isEqualToString:call.method]) {
         [self answerCall:call.arguments result:result];
     } else if ([@"rejectCall" isEqualToString:call.method]) {
@@ -101,6 +111,14 @@
         [self.audioDeviceModule getActiveDevice:call.arguments result:result];
     } else if ([@"getAudioDevices" isEqualToString:call.method]) {
         [self.audioDeviceModule getAudioDevices:call.arguments result:result];
+    } else if ([@"callKitConfigureAudioSession" isEqualToString:call.method]) {
+        [self.audioDeviceModule callKitConfigureAudioSession:call.arguments result:result];
+    } else if ([@"callKitReleaseAudioSession" isEqualToString:call.method]) {
+        [self.audioDeviceModule callKitReleaseAudioSession:call.arguments result:result];
+    } else if ([@"callKitStartAudioSession" isEqualToString:call.method]) {
+        [self.audioDeviceModule callKitStartAudio:call.arguments result:result];
+    } else if ([@"callKitStopAudio" isEqualToString:call.method]) {
+        [self.audioDeviceModule callKitStopAudio:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -158,13 +176,15 @@
 
 - (void)loginWithPassword:(NSDictionary *)arguments result:(FlutterResult)result {
     NSString *username = [arguments objectForKey:@"username"];
+    if (username == (id)[NSNull null]) username = nil;
     NSString *password = [arguments objectForKey:@"password"];
+    if (password == (id)[NSNull null]) password = nil;
     [self.client loginWithUser:username
                       password:password
-                       success:^(NSString * _Nonnull displayName, NSDictionary * _Nonnull authParams) {
+                       success:^(NSString * _Nonnull displayName, VIAuthParams * _Nonnull authParams) {
                            NSMutableDictionary *resultParams = [NSMutableDictionary new];
                            [resultParams setObject:displayName forKey:@"displayName"];
-                           [resultParams setValuesForKeysWithDictionary:authParams];
+                           [resultParams setValuesForKeysWithDictionary:[VoximplantUtils convertAuthParamsToDictionary:authParams]];
                            result(resultParams);
                        }
                        failure:^(NSError * _Nonnull error) {
@@ -176,13 +196,15 @@
 
 - (void)loginWithToken:(NSDictionary *)arguments result:(FlutterResult)result {
     NSString *username = [arguments objectForKey:@"username"];
+    if (username == (id)[NSNull null]) username = nil;
     NSString *token = [arguments objectForKey:@"token"];
+    if (token == (id)[NSNull null]) token = nil;
     [self.client loginWithUser:username
                          token:token
-                       success:^(NSString * _Nonnull displayName, NSDictionary * _Nonnull authParams) {
+                       success:^(NSString * _Nonnull displayName, VIAuthParams * _Nonnull authParams) {
                            NSMutableDictionary *resultParams = [NSMutableDictionary new];
                            [resultParams setObject:displayName forKey:@"displayName"];
-                           [resultParams setValuesForKeysWithDictionary:authParams];
+                           [resultParams setValuesForKeysWithDictionary:[VoximplantUtils convertAuthParamsToDictionary:authParams]];
                            result(resultParams);
                        }
                        failure:^(NSError * _Nonnull error) {
@@ -194,7 +216,9 @@
 
 - (void)loginWithKey:(NSDictionary *)arguments result:(FlutterResult)result {
     NSString *username = [arguments objectForKey:@"username"];
+    if (username == (id)[NSNull null]) username = nil;
     NSString *hash = [arguments objectForKey:@"hash"];
+    if (hash == (id)[NSNull null]) hash = nil;
     if (!username || !hash) {
         result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
                                    message:@"Client.loginWithOneTimeKey: username and/or hash is null"
@@ -203,10 +227,10 @@
     }
     [self.client loginWithUser:username
                     oneTimeKey:hash
-                       success:^(NSString * _Nonnull displayName, NSDictionary * _Nonnull authParams) {
+                       success:^(NSString * _Nonnull displayName, VIAuthParams * _Nonnull authParams) {
                            NSMutableDictionary *resultParams = [NSMutableDictionary new];
                            [resultParams setObject:displayName forKey:@"displayName"];
-                           [resultParams setValuesForKeysWithDictionary:authParams];
+                           [resultParams setValuesForKeysWithDictionary:[VoximplantUtils convertAuthParamsToDictionary:authParams]];
                            result(resultParams);
                        } failure:^(NSError * _Nonnull error) {
                            result([FlutterError errorWithCode:[VoximplantUtils convertLoginErrorToString:error.code]
@@ -236,7 +260,9 @@
 
 - (void)refreshToken:(NSDictionary *)arguments result:(FlutterResult)result {
     NSString *username = [arguments objectForKey:@"username"];
+    if (username == (id)[NSNull null]) username = nil;
     NSString *refreshToken = [arguments objectForKey:@"refreshToken"];
+    if (refreshToken == (id)[NSNull null]) refreshToken = nil;
     if (!username || !refreshToken) {
         result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
                                    message:@"Client.tokenRefresh: username and/or refreshToken is null"
@@ -245,13 +271,13 @@
     }
     [self.client refreshTokenWithUser:username
                                 token:refreshToken
-                               result:^(NSDictionary * _Nullable authParams, NSError * _Nullable error) {
+                               result:^(VIAuthParams * _Nullable authParams, NSError * _Nullable error) {
                                    if (error) {
                                        result([FlutterError errorWithCode:[VoximplantUtils convertLoginErrorToString:error.code]
                                                                   message:[VoximplantUtils getErrorDescriptionForLoginError:error.code]
                                                                   details:nil]);
                                    } else {
-                                       result(authParams);
+                                       result([VoximplantUtils convertAuthParamsToDictionary:authParams]);
                                    }
                                }];
 }
@@ -315,6 +341,13 @@
         result([FlutterError errorWithCode:@"ERROR_CLIENT_NOT_LOGGED_IN"
                                    message:@"Client.call: Client is not logged in"
                                    details:nil]);
+    }
+}
+
+- (void)setCallKitUUID:(NSDictionary *)arguments result:(FlutterResult)result {
+    VICallModule *callModule = [self checkCallEvent:arguments result:result methodName:@"Call.setCallKitUUID"];
+    if (callModule) {
+        [callModule setCallKitUUID:arguments result:result];
     }
 }
 
@@ -439,11 +472,21 @@
         self.incomingCallEventSink(@{
             @"event"               : @"incomingCall",
             @"callId"              : call.callId,
-            @"headers"             : headers ? headers : [NSNull null],
-            @"endpointId"          : call.endpoints.firstObject.endpointId ? call.endpoints.firstObject.endpointId : [NSNull null],
-            @"endpointUserName"    : call.endpoints.firstObject.user ? call.endpoints.firstObject.user : [NSNull null],
-            @"endpointDisplayName" : call.endpoints.firstObject.userDisplayName ? call.endpoints.firstObject.userDisplayName : [NSNull null],
-            @"endpoitnSipUri"      : call.endpoints.firstObject.sipURI ? call.endpoints.firstObject.sipURI : [NSNull null]
+            @"uuid"                : call.callKitUUID ? call.callKitUUID.UUIDString : [NSNull null],
+            @"headers"             : headers ?: [NSNull null],
+            @"endpointId"          : call.endpoints.firstObject.endpointId ?: [NSNull null],
+            @"endpointUserName"    : call.endpoints.firstObject.user ?: [NSNull null],
+            @"endpointDisplayName" : call.endpoints.firstObject.userDisplayName ?: [NSNull null],
+            @"endpointSipUri"      : call.endpoints.firstObject.sipURI ?: [NSNull null]
+        });
+    }
+}
+
+- (void)client:(VIClient *)client pushDidExpire:(NSUUID *)callKitUUID {
+    if (self.incomingCallEventSink) {
+        self.incomingCallEventSink(@{
+            @"event": @"pushDidExpire",
+            @"uuid" : callKitUUID.UUIDString,
         });
     }
 }

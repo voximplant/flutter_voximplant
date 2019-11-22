@@ -68,7 +68,7 @@ public class VoximplantPlugin implements MethodCallHandler, IClientSessionListen
         mIncomingCallEventChannel.setStreamHandler(this);
         mConnectionClosedEventChannel = new EventChannel(registrar.messenger(), "plugins.voximplant.com/connection_closed");
         mConnectionClosedEventChannel.setStreamHandler(this);
-        Voximplant.subVersion = "flutter-1.0.0";
+        Voximplant.subVersion = "flutter-1.1.0";
     }
 
     public Registrar registrar() {
@@ -558,7 +558,7 @@ public class VoximplantPlugin implements MethodCallHandler, IClientSessionListen
                 params.put("endpointId", endpoint.getEndpointId());
                 params.put("endpointUserName", endpoint.getUserName());
                 params.put("endpointDisplayName", endpoint.getUserDisplayName());
-                params.put("endpoitnSipUri", endpoint.getSipUri());
+                params.put("endpointSipUri", endpoint.getSipUri());
             }
             mHandler.post(() -> mIncomingCallEventSink.success(params));
         }

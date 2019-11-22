@@ -17,11 +17,10 @@ class Endpoint {
   String get sipUri => _sipUri;
   String get endpointId => _endpointId;
 
-
-
   Endpoint._(this._endpointId, this._userName, this._displayName, this._sipUri);
 
-  _invokeEndpointUpdatedEvent(String username, String displayName, String sipUri) {
+  _invokeEndpointUpdatedEvent(
+      String username, String displayName, String sipUri) {
     this._displayName = displayName;
     this._userName = username;
     this._sipUri = sipUri;
@@ -29,5 +28,4 @@ class Endpoint {
       onEndpointUpdated(this);
     }
   }
-
 }

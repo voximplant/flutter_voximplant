@@ -9,4 +9,6 @@
 @property(nonatomic, strong) NSObject<FlutterPluginRegistrar> *registrar;
 
 - (void)callHasEnded:(NSString *)callId;
++ (NSUUID *)uuidForPushNotification:(NSDictionary *)notification;
+
 @end

@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface VICallModule : NSObject <FlutterStreamHandler, VICallDelegate, VIEndpointDelegate, VIEndpointDelegate>
 
 - (instancetype)initWithPlugin:(VoximplantPlugin *)plugin call:(VICall *)call;
+- (void)setCallKitUUID:(NSDictionary *)arguments result:(FlutterResult)result;
 - (void)answerCall:(NSDictionary *)arguments result:(FlutterResult)result;
 - (void)rejectCall:(NSDictionary *)arguments result:(FlutterResult)result;
 - (void)hangupCall:(NSDictionary *)arguments result:(FlutterResult)result;
