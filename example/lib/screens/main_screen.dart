@@ -21,9 +21,12 @@ class MainScreen extends StatelessWidget {
   final AuthService _authService = AuthService();
   final CallService _callService = CallService();
   final TextEditingController _callToController = TextEditingController();
+  String _displayName;
 
   MainScreen({Key key}) : super(key: key) {
     _authService.onConnectionClosed = _onConnectionClosed;
+    _displayName = _authService.displayName;
+
   }
 
   void _onConnectionClosed() {
@@ -87,7 +90,7 @@ class MainScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
               child: Text(
-                'Logged in as ${_authService.displayName}',
+                'Logged in as $_displayName',
                 style: TextStyle(
                   fontSize: 20
                 ),

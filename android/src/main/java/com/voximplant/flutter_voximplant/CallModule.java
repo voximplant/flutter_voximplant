@@ -26,23 +26,58 @@ import java.util.Map;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.PluginRegistry;
 
 public class CallModule implements ICallListener, IEndpointListener, EventChannel.StreamHandler {
     private final String TAG_NAME = "VOXFLUTTER";
-    private final VoximplantPlugin mPlugin;
+    private final PluginRegistry.Registrar mRegistrar;
+    private final CallManager mCallManager;
     private final ICall mCall;
     private EventChannel mEventChannel;
     private EventChannel.EventSink mEventSink;
     private Handler mHandler = new Handler(Looper.getMainLooper());
 
-    CallModule(VoximplantPlugin plugin, ICall call) {
-        mPlugin = plugin;
+    CallModule(PluginRegistry.Registrar registrar, CallManager callManager, ICall call) {
+        mRegistrar = registrar;
+        mCallManager = callManager;
         mCall = call;
-        mEventChannel = new EventChannel(mPlugin.registrar().messenger(), "plugins.voximplant.com/call_" + mCall.getCallId());
+        mEventChannel = new EventChannel(mRegistrar.messenger(), "plugins.voximplant.com/call_" + mCall.getCallId());
         mEventChannel.setStreamHandler(this);
     }
 
-    void answerCall(MethodCall call, MethodChannel.Result result) {
+    void handleMethodCall(MethodCall call, MethodChannel.Result result) {
+        switch (call.method) {
+            case "answerCall":
+                answerCall(call, result);
+                break;
+            case "rejectCall":
+                rejectCall(call, result);
+                break;
+            case "hangupCall":
+                hangupCall(call, result);
+                break;
+            case "sendAudioForCall":
+                sendAudio(call, result);
+                break;
+            case "sendInfoForCall":
+                sendInfo(call, result);
+                break;
+            case "sendMessageForCall":
+                sendMessage(call, result);
+                break;
+            case "sendToneForCall":
+                sendTone(call, result);
+                break;
+            case "holdCall":
+                holdCall(call, result);
+                break;
+            default:
+                result.notImplemented();
+                break;
+        }
+    }
+
+    private void answerCall(MethodCall call, MethodChannel.Result result) {
         CallSettings callSettings = new CallSettings();
         callSettings.videoFlags = new VideoFlags(false, false);
         callSettings.customData = call.argument("customData");
@@ -58,7 +93,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         }
     }
 
-    void rejectCall(MethodCall call, MethodChannel.Result result) {
+    private void rejectCall(MethodCall call, MethodChannel.Result result) {
         RejectMode rejectMode = RejectMode.DECLINE;
         String rejectModeArg = call.argument("rejectMode");
         if (rejectModeArg != null && rejectModeArg.equals("reject")) {
@@ -75,13 +110,13 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         }
     }
 
-    void hangupCall(MethodCall call, MethodChannel.Result result) {
+    private void hangupCall(MethodCall call, MethodChannel.Result result) {
         Map<String, String> headers = call.argument("headers");
         mCall.hangup(headers);
         mHandler.post(() -> result.success(null));
     }
 
-    void sendAudio(MethodCall call, MethodChannel.Result result) {
+    private void sendAudio(MethodCall call, MethodChannel.Result result) {
         Boolean value = call.argument("enable");
         if (value == null) {
             mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS,   "Call.sendAudio: Failed to get enable parameter", null));
@@ -91,7 +126,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         mHandler.post(() -> result.success(null));
     }
 
-    void sendMessage(MethodCall call, MethodChannel.Result result) {
+    private void sendMessage(MethodCall call, MethodChannel.Result result) {
         String message = call.argument("message");
         if (message == null) {
             mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS,   "Call.sendMessage: Failed to get message parameter", null));
@@ -101,7 +136,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         mHandler.post(() -> result.success(null));
     }
 
-    void sendInfo(MethodCall call, MethodChannel.Result result) {
+    private void sendInfo(MethodCall call, MethodChannel.Result result) {
         String mimeType = call.argument("mimetype");
         String body = call.argument("body");
         Map<String, String> headers = call.argument("headers");
@@ -117,7 +152,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         mHandler.post(() -> result.success(null));
     }
 
-    void sendTone(MethodCall call, MethodChannel.Result result) {
+    private void sendTone(MethodCall call, MethodChannel.Result result) {
         String tone = call.argument("tone");
         if (tone == null) {
             mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS,   "Call.sendTone: Failed to get tone parameter", null));
@@ -127,7 +162,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         mHandler.post(() -> result.success(null));
     }
 
-    void holdCall(MethodCall call, MethodChannel.Result result) {
+    private void holdCall(MethodCall call, MethodChannel.Result result) {
         Boolean value = call.argument("enable");
         if (value == null) {
             mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS,   "Call.hold: Failed to get enable parameter", null));
@@ -188,7 +223,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
             endpoint.setEndpointListener(null);
         }
         mCall.removeCallListener(this);
-        mPlugin.callHasEnded(call.getCallId());
+        mCallManager.callHasEnded(call.getCallId());
         Map<String, Object> event = new HashMap<>();
         event.put("event", "callDisconnected");
         event.put("headers", headers);
@@ -210,7 +245,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
             endpoint.setEndpointListener(null);
         }
         mCall.removeCallListener(this);
-        mPlugin.callHasEnded(call.getCallId());
+        mCallManager.callHasEnded(call.getCallId());
         Map<String, Object> event = new HashMap<>();
         event.put("event", "callFailed");
         event.put("code", code);

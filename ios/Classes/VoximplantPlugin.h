@@ -5,10 +5,8 @@
 #import <Flutter/Flutter.h>
 #import <VoxImplant/VoxImplant.h>
 
-@interface VoximplantPlugin : NSObject<FlutterPlugin, VIClientSessionDelegate, FlutterStreamHandler, VIClientCallManagerDelegate>
+@interface VoximplantPlugin : NSObject<FlutterPlugin>
 @property(nonatomic, strong) NSObject<FlutterPluginRegistrar> *registrar;
-
-- (void)callHasEnded:(NSString *)callId;
 + (NSUUID *)uuidForPushNotification:(NSDictionary *)notification;
 
 @end

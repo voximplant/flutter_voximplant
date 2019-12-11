@@ -4,29 +4,58 @@
 
 #import "VICallModule.h"
 #import "VoximplantUtils.h"
+#import "VICallManager.h"
 
 @interface VICallModule()
 @property(nonatomic, strong) VICall *call;
 @property(nonatomic, strong) FlutterEventChannel *eventChannel;
 @property(nonatomic, strong) FlutterEventSink eventSink;
-@property(nonatomic, weak) VoximplantPlugin *plugin;
+@property(nonatomic, weak) NSObject<FlutterPluginRegistrar> *registrar;
+@property(nonatomic, weak) VICallManager *callManager;
 @end
 
 
 @implementation VICallModule
 
-- (instancetype)initWithPlugin:(VoximplantPlugin *)plugin call:(VICall *)call {
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar
+                      callManager:(VICallManager *)callManager
+                             call:(VICall *)call {
     self = [super init];
     
     if (self) {
-        self.plugin = plugin;
+        self.registrar = registrar;
+        self.callManager = callManager;
         self.call = call;
         NSString *channelName = [@"plugins.voximplant.com/call_" stringByAppendingString:self.call.callId];
-        self.eventChannel = [FlutterEventChannel eventChannelWithName:channelName binaryMessenger:plugin.registrar.messenger];
+        self.eventChannel = [FlutterEventChannel eventChannelWithName:channelName binaryMessenger:registrar.messenger];
         [self.eventChannel setStreamHandler:self];
     }
     
     return self;
+}
+
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+    if ([@"setCallKitUUID" isEqualToString:call.method]) {
+        [self setCallKitUUID:call.arguments result:result];
+    } else if ([@"answerCall" isEqualToString:call.method]) {
+        [self answerCall:call.arguments result:result];
+    } else if ([@"rejectCall" isEqualToString:call.method]) {
+        [self rejectCall:call.arguments result:result];
+    } else if ([@"hangupCall" isEqualToString:call.method]) {
+        [self hangupCall:call.arguments result:result];
+    } else if ([@"sendAudioForCall" isEqualToString:call.method]) {
+        [self sendAudioForCall:call.arguments result:result];
+    } else if ([@"sendInfoForCall" isEqualToString:call.method]) {
+        [self sendInfoForCall:call.arguments result:result];
+    } else if ([@"sendMessageForCall" isEqualToString:call.method]) {
+        [self sendMessageForCall:call.arguments result:result];
+    } else if ([@"sendToneForCall" isEqualToString:call.method]) {
+        [self sendToneForCall:call.arguments result:result];
+    } else if ([@"holdCall" isEqualToString:call.method]) {
+        [self holdCall:call.arguments result:result];
+    } else {
+        result(FlutterMethodNotImplemented);
+    }
 }
 
 - (void)setCallKitUUID:(NSDictionary *)arguments result:(FlutterResult)result {
@@ -78,7 +107,7 @@
                                    details:nil]);
         return;
     }
-    self.call.sendAudio = [enable boolValue];
+    self.call.sendAudio = enable.boolValue;
     result(nil);
 }
 
@@ -187,6 +216,7 @@
         endpoint.delegate = nil;
     }
     [self.call removeDelegate:self];
+    [self.callManager callHasEnded:call.callId];
     [self sendEvent:@{
         @"event"       : @"callFailed",
         @"code"        : @(error.code),
@@ -217,7 +247,7 @@
         endpoint.delegate = nil;
     }
     [self.call removeDelegate:self];
-    [self.plugin callHasEnded:call.callId];
+    [self.callManager callHasEnded:call.callId];
     [self sendEvent:@{
         @"event"             : @"callDisconnected",
         @"headers"           : headers,

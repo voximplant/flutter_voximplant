@@ -5,22 +5,16 @@
 #import <Flutter/Flutter.h>
 #import <Foundation/Foundation.h>
 #import <VoxImplant/VoxImplant.h>
-#import "VoximplantPlugin.h"
 
 NS_ASSUME_NONNULL_BEGIN
+@class VICallManager;
 
 @interface VICallModule : NSObject <FlutterStreamHandler, VICallDelegate, VIEndpointDelegate, VIEndpointDelegate>
 
-- (instancetype)initWithPlugin:(VoximplantPlugin *)plugin call:(VICall *)call;
-- (void)setCallKitUUID:(NSDictionary *)arguments result:(FlutterResult)result;
-- (void)answerCall:(NSDictionary *)arguments result:(FlutterResult)result;
-- (void)rejectCall:(NSDictionary *)arguments result:(FlutterResult)result;
-- (void)hangupCall:(NSDictionary *)arguments result:(FlutterResult)result;
-- (void)sendAudioForCall:(NSDictionary *)arguments result:(FlutterResult)result;
-- (void)sendInfoForCall:(NSDictionary *)arguments result:(FlutterResult)result;
-- (void)sendMessageForCall:(NSDictionary *)arguments result:(FlutterResult)result;
-- (void)sendToneForCall:(NSDictionary *)arguments result:(FlutterResult)result;
-- (void)holdCall:(NSDictionary *)arguments result:(FlutterResult)result;
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar
+                      callManager:(VICallManager *)callManager
+                             call:(VICall *)call;
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result;
 
 @end
 

@@ -28,6 +28,27 @@
     return self;
 }
 
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+    if ([@"selectAudioDevice" isEqualToString:call.method]) {
+        [self selectAudioDevice:call.arguments result:result];
+    } else if ([@"getActiveDevice" isEqualToString:call.method]) {
+        [self getActiveDevice:call.arguments result:result];
+    } else if ([@"getAudioDevices" isEqualToString:call.method]) {
+        [self getAudioDevices:call.arguments result:result];
+    } else if ([@"callKitConfigureAudioSession" isEqualToString:call.method]) {
+        [self callKitConfigureAudioSession:call.arguments result:result];
+    } else if ([@"callKitReleaseAudioSession" isEqualToString:call.method]) {
+        [self callKitReleaseAudioSession:call.arguments result:result];
+    } else if ([@"callKitStartAudioSession" isEqualToString:call.method]) {
+        [self callKitStartAudio:call.arguments result:result];
+    } else if ([@"callKitStopAudio" isEqualToString:call.method]) {
+        [self callKitStopAudio:call.arguments result:result];
+    } else {
+        result(FlutterMethodNotImplemented);
+    }
+
+}
+
 - (void)selectAudioDevice:(NSDictionary *)arguments result:(FlutterResult)result {
     if (!arguments) {
         result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"

@@ -34,6 +34,23 @@ class AudioDeviceModule implements IAudioDeviceEventsListener, EventChannel.Stre
         Voximplant.getAudioDeviceManager().addAudioDeviceEventsListener(this);
     }
 
+    void handleMethodCall(MethodCall call, MethodChannel.Result result) {
+        switch (call.method) {
+            case "selectAudioDevice":
+                selectAudioDevice(call, result);
+                break;
+            case "getActiveDevice":
+                getActiveDevice(call, result);
+                break;
+            case "getAudioDevices":
+                getAudioDevices(call, result);
+                break;
+            default:
+                result.notImplemented();
+                break;
+        }
+    }
+
     void selectAudioDevice(MethodCall call, MethodChannel.Result result) {
         if (call.arguments == null) {
             mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS,  "AudioDeviceManager.selectAudioDevice: Invalid arguments", null));
