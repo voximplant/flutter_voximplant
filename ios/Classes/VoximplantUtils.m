@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+* Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 */
 
 #import "VoximplantUtils.h"
@@ -97,6 +97,37 @@
     [dictionary setValue:@((NSInteger)authParams.refreshExpire) forKey:@"refreshExpire"];
     [dictionary setValue:authParams.refreshToken forKey:@"refreshToken"];
     return dictionary;
+}
+
++ (NSNumber *)convertVideoStreamTypeToNumber:(VIVideoStreamType)type {
+    switch (type) {
+        case VIVideoStreamTypeScreenSharing:
+            return [NSNumber numberWithInt:1];
+        case VIVideoStreamTypeVideo:
+        default:
+            return [NSNumber numberWithInt:0];
+    }
+}
+
++ (int)convertVideoRotationToInt:(RTCVideoRotation)rotation {
+    switch (rotation) {
+        case RTCVideoRotation_90:
+            return 1;
+        case RTCVideoRotation_180:
+            return 2;
+        case RTCVideoRotation_270:
+            return 3;
+        case RTCVideoRotation_0:
+        default:
+            return 0;
+    }
+}
+
++ (BOOL)isBackCameraByCameraType:(NSNumber *)cameraType {
+    if (!cameraType) {
+        return false;
+    }
+    return [cameraType intValue] == 0;
 }
 
 @end

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+* Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 */
 
 #import "VIClientModule.h"
@@ -13,12 +13,12 @@
 @property(nonatomic, strong) FlutterEventSink incomingCallEventSink;
 @property(nonatomic, strong) FlutterEventChannel *connectionClosedEventChannel;
 @property(nonatomic, strong) FlutterEventSink connectionClosedEventSink;
-@property(nonatomic, strong) VICallManager *callManager;
+@property(nonatomic, strong) VoximplantCallManager *callManager;
 @end
 
 @implementation VIClientModule
 
-- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar callManager:(VICallManager *)callManager {
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar callManager:(VoximplantCallManager *)callManager {
     self = [super init];
     if (self) {
         self.registrar = registrar;
@@ -111,7 +111,7 @@
     if (connectResult) {
         [self.clientMethodCallResults setObject:result forKey:@"connect"];
     } else {
-        result([FlutterError errorWithCode:@"ConnectionFailed" message:@"Invalid state" details:nil]);
+        result([FlutterError errorWithCode:@"ERROR_CONNECTION_FAILED" message:@"Invalid state" details:nil]);
     }
 }
 
@@ -259,17 +259,21 @@
 - (void)createAndStartCall:(NSDictionary *)arguments result:(FlutterResult)result {
     NSString *number = [arguments objectForKey:@"number"];
     if ([number isEqual:[NSNull null]]) {
-        result([FlutterError errorWithCode:@"ERROR_NUMBER_IS_INVALID"
+        result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
                                    message:@"Client.call: Number parameter can not be null"
                                    details:nil]);
         return;
     }
     NSString *customData = [arguments objectForKey:@"customData"] != [NSNull null] ? [arguments objectForKey:@"customData"] : nil;
     NSDictionary *headers = [arguments objectForKey:@"extraHeaders"] != [NSNull null] ? [arguments objectForKey:@"extraHeaders"] : nil;
+    NSNumber *sendVideo = [arguments objectForKey:@"sendVideo"] != [NSNull null] ? [arguments objectForKey:@"sendVideo"] : @(NO);
+    NSNumber *receiveVideo = [arguments objectForKey:@"receiveVideo"] != [NSNull null] ? [arguments objectForKey:@"receiveVideo"] : @(NO);
+    //TODO(yulia): add preferrable codec
     VICallSettings *callSettings = [[VICallSettings alloc] init];
     callSettings.customData = customData;
     callSettings.extraHeaders = headers;
-    callSettings.videoFlags = [VIVideoFlags videoFlagsWithReceiveVideo:NO sendVideo:NO];
+    callSettings.videoFlags = [VIVideoFlags videoFlagsWithReceiveVideo:receiveVideo.boolValue sendVideo:sendVideo.boolValue];
+
     VICall *call = [self.client call:number settings:callSettings];
     if (call) {
         VICallModule *callModule = [[VICallModule alloc] initWithRegistrar:self.registrar callManager:self.callManager call:call];
@@ -291,7 +295,7 @@
     if (result) {
         [self.clientMethodCallResults removeObjectForKey:@"connect"];
         result([FlutterError errorWithCode:@"ERROR_CONNECTION_FAILED"
-                                   message:error.description
+                                   message:error.localizedDescription
                                    details:nil]);
     }
 }
@@ -327,6 +331,7 @@
             @"event"               : @"incomingCall",
             @"callId"              : call.callId,
             @"uuid"                : call.callKitUUID ? call.callKitUUID.UUIDString : [NSNull null],
+            @"video"               : @(video),
             @"headers"             : headers ?: [NSNull null],
             @"endpointId"          : call.endpoints.firstObject.endpointId ?: [NSNull null],
             @"endpointUserName"    : call.endpoints.firstObject.user ?: [NSNull null],

@@ -1,12 +1,11 @@
 /*
- * Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+ * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
  */
 
 package com.voximplant.flutter_voximplant;
 
-public class VoximplantErrors {
+class  VoximplantErrors {
     static final String ERROR_CLIENT_NOT_LOGGED_IN = "ERROR_CLIENT_NOT_LOGGED_IN";
-    static final String ERROR_NUMBER_IS_INVALID = "ERROR_NUMBER_IS_INVALID";
     static final String ERROR_INCORRECT_OPERATION = "ERROR_INCORRECT_OPERATION";
     static final String ERROR_MISSING_PERMISSION = "ERROR_MISSING_PERMISSION";
     static final String ERROR_INTERNAL = "ERROR_INTERNAL";

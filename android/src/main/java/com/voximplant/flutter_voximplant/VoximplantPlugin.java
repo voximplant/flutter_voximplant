@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+ * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
  */
 
 package com.voximplant.flutter_voximplant;
@@ -24,10 +24,10 @@ public class VoximplantPlugin implements MethodCallHandler {
 
     private Handler mHandler = new Handler(Looper.getMainLooper());
 
-
     private final AudioDeviceModule mAudioDeviceModule;
     private final ClientModule mClientModule;
     private final CallManager mCallManager;
+    private final CameraModule mCameraModule;
 
     public VoximplantPlugin(Registrar registrar, MethodChannel channel) {
         mRegistrar = registrar;
@@ -35,8 +35,9 @@ public class VoximplantPlugin implements MethodCallHandler {
         mCallManager = new CallManager();
         mAudioDeviceModule = new AudioDeviceModule(registrar);
         mClientModule = new ClientModule(registrar, mCallManager);
+        mCameraModule = new CameraModule(registrar.context());
 
-        Voximplant.subVersion = "flutter-1.2.0";
+        Voximplant.subVersion = "flutter-2.0.0";
     }
 
     public static void registerWith(Registrar registrar) {
@@ -53,8 +54,15 @@ public class VoximplantPlugin implements MethodCallHandler {
             if (callModule != null) {
                 callModule.handleMethodCall(call, result);
             }
+        } else if (isVideoStreamMethod(call)) {
+            CallModule callModule = mCallManager.findCallByStreamId(call, result, "Call." + call.method);
+            if (callModule != null) {
+                callModule.handleMethodCall(call, result);
+            }
         } else if (isAudioDeviceMethod(call)) {
             mAudioDeviceModule.handleMethodCall(call, result);
+        } else if (isCameraMethod(call)) {
+            mCameraModule.handleMethodCall(call, result);
         } else {
             result.notImplemented();
         }
@@ -92,8 +100,19 @@ public class VoximplantPlugin implements MethodCallHandler {
                 method.equals("sendInfoForCall") ||
                 method.equals("sendMessageForCall") ||
                 method.equals("sendToneForCall") ||
-                method.equals("holdCall");
-     }
+                method.equals("holdCall") ||
+                method.equals("sendVideoForCall") ||
+                method.equals("receiveVideoForCall");
+    }
+
+    private boolean isVideoStreamMethod(MethodCall call) {
+        String method = call.method;
+        if (method == null) {
+            return false;
+        }
+        return method.equals("addVideoRenderer") ||
+                method.equals("removeVideoRenderer");
+    }
 
     private boolean isAudioDeviceMethod(MethodCall call) {
         String method = call.method;
@@ -105,4 +124,12 @@ public class VoximplantPlugin implements MethodCallHandler {
                 call.method.equals("getAudioDevices");
     }
 
+    private boolean isCameraMethod(MethodCall call) {
+        String method = call.method;
+        if (method == null) {
+            return false;
+        }
+        return call.method.equals("selectCamera") ||
+                call.method.equals("setCameraResolution");
+    }
 }

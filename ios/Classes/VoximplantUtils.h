@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+* Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 */
 
 #import <Flutter/Flutter.h>
@@ -12,4 +12,7 @@
 + (NSString *)convertCallErrorToString:(VICallErrorCode)code;
 + (NSString *)getErrorDescriptionForCallError:(VICallErrorCode)code;
 + (NSDictionary *)convertAuthParamsToDictionary:(VIAuthParams *)authParams;
++ (NSNumber *)convertVideoStreamTypeToNumber:(VIVideoStreamType)type;
++ (int)convertVideoRotationToInt:(RTCVideoRotation)rotation;
++ (BOOL)isBackCameraByCameraType:(NSNumber *)cameraType;
 @end

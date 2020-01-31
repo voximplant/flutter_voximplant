@@ -8,8 +8,11 @@ build/
 
 .idea/
 .flutter-plugins
+.flutter-plugins-dependencies
 android/app/
 flutter_voximplant.iml
 
 pubspec.lock
 Podfile.lock
+
+example/ios/Flutter/Flutter.podspec

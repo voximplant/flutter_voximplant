@@ -1,77 +1,185 @@
-/// Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
 part of voximplant;
 
-enum AudioDevice { Bluetooth, Earpiece, Speaker, WiredHeadset, None }
+/// Represents supported audio device types.
+enum VIAudioDevice {
+  /// Bluetooth headset
+  Bluetooth,
+  /// Earpiece
+  Earpiece,
+  /// Speaker
+  Speaker,
+  /// Wired headset
+  WiredHeadset,
+  /// No audio device, generally indicates that something went wrong with audio
+  /// device selection.
+  ///
+  /// This type should not be used with [VIAudioDeviceManager.selectAudioDevice]
+  /// API.
+  None
+}
 
-typedef void AudioDeviceChanged(AudioDevice device);
-typedef void AudioDeviceListChanged(List<AudioDevice> deviceList);
+/// Signature for callbacks reporting that the active audio device or audio
+/// device that will be used for a further call is changed.
+///
+/// If the event is triggered during a call, [device] is the audio device that
+/// is currently used.
+///
+/// If the event is triggered when there is no call, [device] is the audio device
+/// that will be used for the next call.
+typedef void VIAudioDeviceChanged(
+    VIAudioDeviceManager audioManager, VIAudioDevice device);
 
-class AudioDeviceManager {
+/// Signature for callbacks reporting that a new audio device is connected or
+/// a previously connected audio device is disconnected.
+///
+/// For iOS: if the disconnected device was not selected before via
+/// [VIAduioDeviceManager.selectAudioDevice] API, this callback may be not
+/// invoked.
+typedef void VIAudioDeviceListChanged(
+    VIAudioDeviceManager audioManager, List<VIAudioDevice> deviceList);
+
+/// Manages audio devices.
+///
+/// Limitations:
+/// * It is not possible to select an [VIAudioDevice.Earpiece] while
+///   wired headset is connected.
+///
+/// Limitations for iOS:
+/// * Wired headsets without a microphone may be recognized and selected as
+///   [VIAudioDevice.Earpiece].
+/// * iOS 12 and AirPods: during an active call, [VIAudioDevice.Earpiece] or
+///   [VIAudioDevice.Speaker] selection may fail if AirPods are used as current
+///   active device.
+///
+/// Limitations for Android:
+/// * The plug in/out of a wired headset and bluetooth devices is monitored only
+///   if a connection to the Voximplant Cloud is active.
+class VIAudioDeviceManager {
   final MethodChannel _channel;
 
-  AudioDeviceChanged onAudioDeviceChanged;
-  AudioDeviceListChanged onAudioDeviceListChanged;
+  /// Callback for getting notified about active audio device changes.
+  VIAudioDeviceChanged onAudioDeviceChanged;
 
-  AudioDeviceManager._(this._channel) {
+  /// Callback for getting notified about new connected or disconnected audio
+  /// devices.
+  VIAudioDeviceListChanged onAudioDeviceListChanged;
+
+  VIAudioDeviceManager._(this._channel) {
     EventChannel('plugins.voximplant.com/audio_device_events')
         .receiveBroadcastStream()
         .listen(_eventListener);
   }
 
-  Future<void> selectAudioDevice(AudioDevice audioDevice) async {
+  /// Changes selection of the current active audio device.
+  ///
+  /// Before a call. This API does nit activate [audioDevice], it just selects
+  /// the audio device that will be activated.
+  ///
+  /// During a call. If the [audioDevice] is available, the API activates
+  /// [audioDevice].
+  ///
+  /// Active audio device can be later changed if a new device is connected.
+  /// In this case [onAudioDeviceChanged] will be triggered.
+  ///
+  /// For iOS.
+  /// If the application uses CallKit, you should take into consideration:
+  /// * In case if Bluetooth headset is connected, audio routing depends on
+  ///   where a call is answered (from the Bluetooth headset or from the phone
+  ///   screen). Bluetooth hedset will be activated only in case if a call
+  ///   is answered via Bluetooth hedset controls. In other cases the audio will
+  ///   be played via Earpiece.
+  /// * Audio is always routed to Bluetooth headset only if the user selects
+  ///   "Bluetooth headset" as Call Audio Routing in the phone preferences.
+  /// * If audio device is selected before CallKit activates the audio session,
+  ///   it is required to reselect this audio device after
+  ///   CXProviderDelegate.didActivateAudioSession is called. Otherwise audio
+  ///   routing may be reset to default.
+  Future<void> selectAudioDevice(VIAudioDevice audioDevice) async {
     await _channel.invokeMethod<void>('selectAudioDevice', <String, dynamic>{
       'audioDevice': audioDevice.index,
     });
   }
 
-  Future<AudioDevice> getActiveDevice() async {
+  /// Returns active audio device during the call or audio device that will be
+  /// used for a call if there is no call at this moment.
+  ///
+  /// Active audio device can be later changed if a new device is connected.
+  /// In this case [onAudioDeviceChanged] will be triggered.
+  Future<VIAudioDevice> getActiveDevice() async {
     Map<String, dynamic> data =
         await _channel.invokeMapMethod('getActiveDevice');
-    AudioDevice audioDevice = AudioDevice.values[data['audioDevice']];
+    VIAudioDevice audioDevice = VIAudioDevice.values[data['audioDevice']];
     return audioDevice;
   }
 
-  Future<List<AudioDevice>> getAudioDevices() async {
+  /// Returns the list of available audio devices.
+  Future<List<VIAudioDevice>> getAudioDevices() async {
     List<int> data = await _channel.invokeListMethod('getAudioDevices');
-    List<AudioDevice> newAudioDevices = List();
+    List<VIAudioDevice> newAudioDevices = List();
     for (int device in data) {
-      newAudioDevices.add(AudioDevice.values[device]);
+      newAudioDevices.add(VIAudioDevice.values[device]);
     }
     return newAudioDevices;
   }
 
   //#region CallKit
 
+  /// iOS only. Initializes AVAudioSession for use with CallKit integration.
+  ///
+  /// Required for the correct CallKIt integration only.
+  /// Otherwise don't use this method.
+  ///
+  /// Should be called in CXProviderDelegate.performStartCallAction and
+  /// CXProviderDelegate.performAnswerCallAction.
   Future<void> callKitConfigureAudioSession() async {
     if (Platform.isIOS) {
       await _channel.invokeMethod('callKitConfigureAudioSession');
     } else {
-      Log.w('callKitConfigureAudioSession: invalid call for platform');
+      _VILog._w('callKitConfigureAudioSession: invalid call for platform');
     }
   }
 
+  /// iOS only. Restores default AVAudioSession initialization routines.
+  ///
+  /// Required for the correct CallKIt integration only.
+  /// Otherwise don't use this method.
+  ///
+  /// Must be called if CallKit becomes disabled.
   Future<void> callKitReleaseAudioSession() async {
     if (Platform.isIOS) {
       await _channel.invokeMethod('callKitReleaseAudioSession');
     } else {
-      Log.w('callKitReleaseAudioSession: invalid call for platform');
+      _VILog._w('callKitReleaseAudioSession: invalid call for platform');
     }
   }
 
+  /// iOS only. Starts AVAudioSession.
+  ///
+  /// Required for the correct CallKIt integration only.
+  /// Otherwise don't use this method.
+  ///
+  /// Should be called in CXProviderDelegate.didActivateAudioSession.
   Future<void> callKitStartAudio() async {
     if (Platform.isIOS) {
       await _channel.invokeMethod('callKitStartAudioSession');
     } else {
-      Log.w('callKitStartAudio: invalid call for platform');
+      _VILog._w('callKitStartAudio: invalid call for platform');
     }
   }
 
+  /// iOS only. Stops AVAudioSession.
+  ///
+  /// Required for the correct CallKIt integration only.
+  /// Otherwise don't use this method.
+  ///
+  /// Should be called in CXProviderDelegate.didDeactivateAudioSession.
   Future<void> callKitStopAudio() async {
     if (Platform.isIOS) {
       await _channel.invokeMethod('callKitStopAudio');
     } else {
-      Log.w('callKitStopAudio: invalid call for platform');
+      _VILog._w('callKitStopAudio: invalid call for platform');
     }
   }
 
@@ -81,19 +189,19 @@ class AudioDeviceManager {
     final Map<dynamic, dynamic> map = event;
     switch (map['event']) {
       case 'audioDeviceChanged':
-        AudioDevice device = AudioDevice.values[map['audioDevice']];
+        VIAudioDevice device = VIAudioDevice.values[map['audioDevice']];
         if (onAudioDeviceChanged != null) {
-          onAudioDeviceChanged(device);
+          onAudioDeviceChanged(this, device);
         }
         break;
       case 'audioDeviceListChanged':
         List<int> devices = map['audioDeviceList'].cast<int>();
-        List<AudioDevice> newAudioDevices = List();
+        List<VIAudioDevice> newAudioDevices = List();
         for (int device in devices) {
-          newAudioDevices.add(AudioDevice.values[device]);
+          newAudioDevices.add(VIAudioDevice.values[device]);
         }
         if (onAudioDeviceListChanged != null) {
-          onAudioDeviceListChanged(newAudioDevices);
+          onAudioDeviceListChanged(this, newAudioDevices);
         }
         break;
     }

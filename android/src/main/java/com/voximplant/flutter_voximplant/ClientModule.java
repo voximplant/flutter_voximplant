@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+ * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
  */
 
 package com.voximplant.flutter_voximplant;
@@ -28,15 +28,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
-
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 
 import static com.voximplant.flutter_voximplant.VoximplantErrors.ERROR_CONNECTION_FAILED;
+import static com.voximplant.flutter_voximplant.VoximplantErrors.ERROR_INTERNAL;
 import static com.voximplant.flutter_voximplant.VoximplantErrors.ERROR_INVALID_ARGUMENTS;
-import static com.voximplant.flutter_voximplant.VoximplantErrors.ERROR_NUMBER_IS_INVALID;
 
 class ClientModule implements IClientSessionListener, IClientLoginListener, IClientIncomingCallListener, EventChannel.StreamHandler {
     final String TAG_NAME = "VOXFLUTTER";
@@ -84,7 +83,7 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
                 if (mClient != null) {
                     result.success(mClient.getClientState().ordinal());
                 } else {
-                    result.error("ClientError", "Client does not exist", null);
+                    result.error(ERROR_INTERNAL, "Client does not exist", null);
                 }
                 break;
             case "requestOneTimeKey":
@@ -117,7 +116,7 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
 
     private void initClient(MethodCall call) {
         ClientConfig clientConfig = new ClientConfig();
-        clientConfig.enableVideo = false;
+        clientConfig.eglBase = SharedContext.getSharedEglBase();
         if (call.hasArgument("bundleId")) {
             clientConfig.packageName = call.argument("bundleId");
         }
@@ -160,14 +159,14 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
             try {
                 mClient.connect(connectivityCheck, servers);
             } catch (IllegalStateException e) {
-                result.error("ConnectionFailed", "Invalid state", null);
+                result.error(ERROR_CONNECTION_FAILED, "Invalid state", null);
                 return;
             }
         } else {
             try {
                 mClient.connect();
             } catch (IllegalStateException e) {
-                result.error("ConnectionFailed", "Invalid state", null);
+                result.error(ERROR_CONNECTION_FAILED, "Invalid state", null);
                 return;
             }
         }
@@ -226,15 +225,22 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
         if (call.arguments != null) {
             String number = call.argument("number");
             if (number == null) {
-                mHandler.post(() -> result.error(ERROR_NUMBER_IS_INVALID, "Client.call: Number parameter can not be null", null));
+                mHandler.post(() -> result.error(ERROR_INVALID_ARGUMENTS, "Client.call: Number parameter can not be null", null));
                 return;
             }
             String customData = call.argument("customData");
             Map<String, String> headers = call.argument("extraHeaders");
+            Boolean sendVideo = call.argument("sendVideo");
+            Boolean receiveVideo = call.argument("receiveVideo");
+            String videoCodec = call.argument("videoCodec");
             CallSettings callSettings = new CallSettings();
             callSettings.customData = customData;
             callSettings.extraHeaders = headers;
-            callSettings.videoFlags = new VideoFlags(false, false);
+            callSettings.videoFlags = new VideoFlags(receiveVideo != null ? receiveVideo : false,
+                    sendVideo != null ? sendVideo : false);
+            if (videoCodec != null) {
+                callSettings.preferredVideoCodec = Utils.convertStringToVideoCodec(videoCodec);
+            }
             ICall voxCall = mClient.call(number, callSettings);
             if (voxCall != null) {
                 try {
@@ -246,7 +252,7 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
                     } else if (e.getErrorCode() == CallError.MISSING_PERMISSION) {
                         mHandler.post(() -> result.error(VoximplantErrors.ERROR_MISSING_PERMISSION, "Client.call: RECORD_AUDIO permission is missing", null));
                     } else {
-                        mHandler.post(() -> result.error(VoximplantErrors.ERROR_INTERNAL, "Client.call: Internal error occurred", e.getMessage()));
+                        mHandler.post(() -> result.error(ERROR_INTERNAL, "Client.call: Internal error occurred", e.getMessage()));
                     }
                     return;
                 }
@@ -267,7 +273,7 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
 
     private void registerForPushNotifications(MethodCall call, MethodChannel.Result result) {
         if (call.arguments == null) {
-            mHandler.post(() -> result.error(ERROR_NUMBER_IS_INVALID, "Client.registerForPushNotifications: Invalid arguments", null));
+            mHandler.post(() -> result.error(ERROR_INVALID_ARGUMENTS, "Client.registerForPushNotifications: Invalid arguments", null));
             return;
         }
         String pushToken = (String) call.arguments;
@@ -277,7 +283,7 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
 
     private void unregisterFromPushNotifications(MethodCall call, MethodChannel.Result result) {
         if (call.arguments == null) {
-            mHandler.post(() -> result.error(ERROR_NUMBER_IS_INVALID, "Client.unregisterFromPushNotifications: Invalid arguments", null));
+            mHandler.post(() -> result.error(ERROR_INVALID_ARGUMENTS, "Client.unregisterFromPushNotifications: Invalid arguments", null));
             return;
         }
         String pushToken = (String) call.arguments;
@@ -287,7 +293,7 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
 
     private void handlePushNotification(MethodCall call, MethodChannel.Result result) {
         if (call.arguments == null) {
-            mHandler.post(() -> result.error(ERROR_NUMBER_IS_INVALID, "Client.handlePushNotification: Invalid arguments", null));
+            mHandler.post(() -> result.error(ERROR_INVALID_ARGUMENTS, "Client.handlePushNotification: Invalid arguments", null));
             return;
         }
         Map<String, String> payload = (Map<String, String>)call.arguments;
@@ -414,13 +420,14 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
     }
 
     @Override
-    public void onIncomingCall(ICall call, boolean b, Map<String, String> headers) {
+    public void onIncomingCall(ICall call, boolean video, Map<String, String> headers) {
         if (mIncomingCallEventSink != null) {
             CallModule callModule = new CallModule(mRegistrar, mCallManager, call);
             mCallManager.addNewCall(call.getCallId(), callModule);
             Map<String, Object> params = new HashMap<>();
             params.put("event", "incomingCall");
             params.put("callId", call.getCallId());
+            params.put("video", video);
             params.put("headers", headers);
             IEndpoint endpoint = call.getEndpoints().get(0);
             if (endpoint != null) {

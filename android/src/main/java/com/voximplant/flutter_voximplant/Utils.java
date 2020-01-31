@@ -1,10 +1,12 @@
 /*
- * Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+ * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
  */
 
 package com.voximplant.flutter_voximplant;
 
 import com.voximplant.sdk.call.CallError;
+import com.voximplant.sdk.call.VideoCodec;
+import com.voximplant.sdk.call.VideoStreamType;
 import com.voximplant.sdk.client.LoginError;
 
 class Utils {
@@ -93,6 +95,28 @@ class Utils {
             case INTERNAL_ERROR:
                 default:
                 return "Internal error occurred";
+        }
+    }
+
+    static VideoCodec convertStringToVideoCodec(String videoCodec) {
+        switch (videoCodec) {
+            case "VP8":
+                return VideoCodec.VP8;
+            case "H264":
+                return VideoCodec.H264;
+            case "AUTO":
+            default:
+                return VideoCodec.AUTO;
+        }
+    }
+
+    static int convertVideoStreamTypeToInt(VideoStreamType type) {
+        switch (type) {
+            case SCREEN_SHARING:
+                return 1;
+            default:
+            case VIDEO:
+                return 0;
         }
     }
 }

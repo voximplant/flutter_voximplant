@@ -1,15 +1,17 @@
+/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+
 part of voximplant;
 
-class Log {
-  static void e(String message) {
+class _VILog {
+  static void _e(String message) {
     _log(_error, message);
   }
 
-  static void w(String message) {
+  static void _w(String message) {
     _log(_warning, message);
   }
 
-  static void i(String message) {
+  static void _i(String message) {
     _log(_info, message);
   }
 

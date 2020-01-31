@@ -1,4 +1,4 @@
-/// Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
 import 'package:audio_call/screens/incoming_call_screen.dart';
 import 'package:audio_call/services/navigation_service.dart';
@@ -7,8 +7,8 @@ import 'package:flutter_voximplant/flutter_voximplant.dart';
 import 'package:get_it/get_it.dart';
 
 class CallService {
-  Client _client;
-  Call _call;
+  VIClient _client;
+  VICall _call;
 
   static final CallService _singleton = CallService._();
   factory CallService() {
@@ -26,13 +26,14 @@ class CallService {
     }
   }
 
-  Future<Call> makeAudioCall(String number) async {
-     _call = await _client.call(number);
-     print('CallService: created call: ${_call.callId}');
-     return _call;
+  Future<VICall> makeAudioCall(String number) async {
+    _call = await _client.call(number);
+    print('CallService: created call: ${_call.callId}');
+    return _call;
   }
 
-  _onIncomingCall(Call call, Map<String, String> headers) async {
+  _onIncomingCall(VIClient client, VICall call, bool video,
+      Map<String, String> headers) async {
     if (_call != null) {
       await call.decline();
       return;

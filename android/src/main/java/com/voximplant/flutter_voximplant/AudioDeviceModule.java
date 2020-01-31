@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+ * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
  */
 
 package com.voximplant.flutter_voximplant;
@@ -51,7 +51,7 @@ class AudioDeviceModule implements IAudioDeviceEventsListener, EventChannel.Stre
         }
     }
 
-    void selectAudioDevice(MethodCall call, MethodChannel.Result result) {
+    private void selectAudioDevice(MethodCall call, MethodChannel.Result result) {
         if (call.arguments == null) {
             mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS,  "AudioDeviceManager.selectAudioDevice: Invalid arguments", null));
             return;
@@ -65,12 +65,12 @@ class AudioDeviceModule implements IAudioDeviceEventsListener, EventChannel.Stre
         mHandler.post(() -> result.success(null));
     }
 
-    void getActiveDevice(MethodCall call,  MethodChannel.Result result) {
+    private void getActiveDevice(MethodCall call,  MethodChannel.Result result) {
         AudioDevice device = Voximplant.getAudioDeviceManager().getActiveDevice();
         mHandler.post(() -> result.success(convertAudioDeviceToInt(device)));
     }
 
-    void getAudioDevices(MethodCall call,  MethodChannel.Result result) {
+    private void getAudioDevices(MethodCall call,  MethodChannel.Result result) {
         List<AudioDevice> audioDevices = Voximplant.getAudioDeviceManager().getAudioDevices();
         List<Integer> audioDeviceList = new ArrayList<>();
         for (AudioDevice device : audioDevices) {

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+* Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 */
 
 #import "VoximplantPlugin.h"
@@ -7,12 +7,14 @@
 #import "VICallModule.h"
 #import "VIAudioDeviceModule.h"
 #import "VIClientModule.h"
-#import "VICallManager.h"
+#import "VoximplantCallManager.h"
+#import "VICameraModule.h"
 
 @interface VoximplantPlugin()
 @property(nonatomic, strong) VIClientModule *clientModule;
 @property(nonatomic, strong) VIAudioDeviceModule *audioDeviceModule;
-@property(nonatomic, strong) VICallManager *callManager;
+@property(nonatomic, strong) VoximplantCallManager *callManager;
+@property(nonatomic, strong) VICameraModule *cameraModule;
 @end
 
 @interface VIClient (Version)
@@ -41,10 +43,11 @@
     self = [super init];
     if (self) {
         self.registrar = registrar;
-        self.callManager = [[VICallManager alloc] init];
+        self.callManager = [[VoximplantCallManager alloc] init];
         self.clientModule = [[VIClientModule alloc] initWithRegistrar:self.registrar callManager:self.callManager];
         self.audioDeviceModule = [[VIAudioDeviceModule alloc] initWithPlugin:self];
-        [VIClient setVersionExtension:@"flutter-1.2.0"];
+        self.cameraModule = [[VICameraModule alloc] init];
+        [VIClient setVersionExtension:@"flutter-2.0.0"];
     }
     return self;
 }
@@ -58,8 +61,15 @@
         if (callModule) {
             [callModule handleMethodCall:call result:result];
         }
+    } else if ([self isVideoStreamMethod:call]) {
+        VICallModule *callModule = [self.callManager findCallByStreamId:call.arguments result:result methodName:call.method];
+        if (callModule) {
+            [callModule handleMethodCall:call result:result];
+        }
     } else if ([self isAudioDeviceMethod:call] ) {
         [self.audioDeviceModule handleMethodCall:call result:result];
+    } else if ([self isCameraMethod:call]) {
+        [self.cameraModule handleMethodCall:call result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -112,7 +122,28 @@
         [method isEqualToString:@"sendMessageForCall"] ||
         [method isEqualToString:@"sendToneForCall"] ||
         [method isEqualToString:@"holdCall"] ||
-        [method isEqualToString:@"setCallKitUUID"];
+        [method isEqualToString:@"setCallKitUUID"] ||
+        [method isEqualToString:@"sendVideoForCall"] ||
+        [method isEqualToString:@"receiveVideoForCall"];
 }
+
+- (BOOL)isVideoStreamMethod:(FlutterMethodCall *)call {
+    NSString *method = call.method;
+    if (!method) {
+        return false;
+    }
+    return [method isEqualToString:@"addVideoRenderer"] ||
+        [method isEqualToString:@"removeVideoRenderer"];
+}
+
+- (BOOL)isCameraMethod:(FlutterMethodCall *)call {
+    NSString *method = call.method;
+    if (!method) {
+        return false;
+    }
+    return [method isEqualToString:@"selectCamera"] ||
+        [method isEqualToString:@"setCameraResolution"];
+}
+
 
 @end

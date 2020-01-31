@@ -1,6 +1,6 @@
 # flutter_voximplant
 
-Voximplant Flutter SDK for embedding voice communication into Flutter applications.
+Voximplant Flutter SDK for embedding voice and video communication into Flutter applications.
 
 ## Demo
 https://github.com/voximplant/flutter_demos
@@ -14,8 +14,10 @@ Add the following entry to your `Info.plist` file, located in `<project root>/io
 ```
 <key>NSMicrophoneUsageDescription</key>
 <string>Microphone is required to make audio calls</string>
+<key>NSCameraUsageDescription</key>
+<string>Camera is required to make video calls</string>
 ```
-This entry allows your app to access the microphone.
+This entry allows your app to access the microphone and cameras.
 
 ### Android
 It is required to add Java 8 support.
@@ -39,37 +41,37 @@ the `Voximplant().getClient()` method is used to get its instance:
 import 'package:flutter_voximplant/flutter_voximplant.dart';
 
 
-Client client = Voximplant().getClient();
+VIClient client = Voximplant().getClient();
 ```
 
 #### Connect and log in to the Voximplant Cloud
-The `Client.getClientState()` method is used to get the current state of connection 
+The `VIClient.getClientState()` method is used to get the current state of connection 
 to the Voximplant cloud and perform the actions according to it.
 ```dart
   Future<String> loginWithPassword(String username, String password) async {
-    ClientState clientState = await _client.getClientState();
-    if (clientState == ClientState.LoggedIn) {
+    VIClientState clientState = await _client.getClientState();
+    if (clientState == VIClientState.LoggedIn) {
       return _displayName;
     }
-    if (clientState == ClientState.Disconnected) {
+    if (clientState == VIClientState.Disconnected) {
       await _client.connect();
     }
-    AuthResult authResult = await _client.login(username, password);
+    VIAuthResult authResult = await _client.login(username, password);
     _displayName = authResult.displayName;
     return _displayName;
   }
 ```
 
 #### Make calls
-To initiate a call we need the `Client.call` method. 
-There is a `CallSettings` class which could contain custom data and extra headers (SIP headers).
+To initiate a call we need the `VIClient.call` method. 
+There is a `VICallSettings` class which could contain custom data and extra headers (SIP headers).
 
 Since the call can behave in different ways, there is a group of call events. 
-They can be triggered by the `Call` class instance as the class contains all the functionality for call management.
+They can be triggered by the `VICall` class instance as the class contains all the functionality for call management.
 
 ```dart
-  Future<Call> makeAudioCall(String number) async {
-     Call call = await _client.call(number);
+  Future<VICall> makeAudioCall(String number) async {
+     VICall call = await _client.call(number);
      call.onCallDisconnected = _onCallDisconnected;
      call.onCallFailed = _onCallFailed;
      call.onCallConnected = _onCallConnected;
@@ -78,7 +80,7 @@ They can be triggered by the `Call` class instance as the class contains all the
      return call;
   }
    
-  _onCallConnected(Map<String, String> headers) {
+  _onCallConnected(VICall call, Map<String, String> headers) {
       print('Call connected');
   }
 ```
@@ -93,7 +95,7 @@ There are three methods for an incoming call: answer, decline and reject. An aud
     _client.onIncomingCall = _onIncomingCall;
   }
 
-  _onIncomingCall(Call call, Map<String, String> headers) async {
+  _onIncomingCall(VIClient client, VICall call, bool video, Map<String, String> headers) async {
     await call.answer();
   }
 ```
@@ -115,25 +117,25 @@ Audio call can be put on/off hold
 ```
 
 #### Audio device management
-`AudioDeviceManager` class API allow to:
+`VIAudioDeviceManager` class API allow to:
 - get all available audio devices
 - get currently selected audio device
 - select audio device
 - handle active audio device changes and new audio devices (for example, Bluetooth headset or wired headset connection). These changes trigger the appropriate events.
 
-All types of audio devices are represented in the `AudioDevice` enum.
+All types of audio devices are represented in the `VIAudioDevice` enum.
 
 Note that there are platform specific nuances in audio device management.
 
 To select an audio device:
 ```dart
-  _selectAudioDevice(AudioDevice device) async{
-    AudioDeviceManager audioDeviceManager = Voximplant().getAudioDeviceManager();
+  _selectAudioDevice(VIAudioDevice device) async{
+    VIAudioDeviceManager audioDeviceManager = Voximplant().getAudioDeviceManager();
     audioDeviceManager.onAudioDeviceChanged = _onAudioDeviceChange;
     await audioDeviceManager.selectAudioDevice(device);
   }
 
-  _onAudioDeviceChange(AudioDevice audioDevice) {
+  _onAudioDeviceChange(VIAudioDeviceManager audioDeviceManager, AudioDevice audioDevice) {
     // audio device is changed
   }
 ```

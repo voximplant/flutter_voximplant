@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+ * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
  */
 
 package com.voximplant.flutter_voximplant;
@@ -36,6 +36,31 @@ class CallManager {
             mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS, methodName + ": Failed to find call for callId: " + callId, null));
         }
         return callModule;
+
+    }
+
+    CallModule findCallByStreamId(MethodCall call, MethodChannel.Result result, String methodName) {
+        if (call.arguments == null) {
+            mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS, methodName + ": Invalid arguments", null));
+            return null;
+        }
+        String streamId = call.argument("streamId");
+        if (streamId == null) {
+            mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS, methodName + ": Invalid streamId", null));
+            return null;
+        }
+        CallModule targetCallModule = null;
+        for (Map.Entry<String, CallModule> entry : mCallModules.entrySet()) {
+            if (entry.getValue().hasVideoStreamId(streamId)) {
+                targetCallModule = entry.getValue();
+                break;
+            }
+        }
+        if (targetCallModule == null) {
+            mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS, methodName + ": Failed to find call for streamId: " + streamId, null));
+        }
+        return targetCallModule;
+
     }
 
     void callHasEnded(String callId) {

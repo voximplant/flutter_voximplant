@@ -1,24 +1,27 @@
 /*
-* Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+* Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 */
 
 #import "VICallModule.h"
 #import "VoximplantUtils.h"
-#import "VICallManager.h"
+#import "VoximplantCallManager.h"
 
 @interface VICallModule()
 @property(nonatomic, strong) VICall *call;
 @property(nonatomic, strong) FlutterEventChannel *eventChannel;
 @property(nonatomic, strong) FlutterEventSink eventSink;
 @property(nonatomic, weak) NSObject<FlutterPluginRegistrar> *registrar;
-@property(nonatomic, weak) VICallManager *callManager;
+@property(nonatomic, weak) VoximplantCallManager *callManager;
+@property(nonatomic, strong) VIVideoStream *localVideoStream;
+@property(nonatomic, strong) NSMutableDictionary<NSString *, VIVideoStream *> *remoteVideoStreams;
+@property(nonatomic, strong) NSMutableDictionary<NSString *, VoximplantRenderer *> *renderers;
 @end
 
 
 @implementation VICallModule
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar
-                      callManager:(VICallManager *)callManager
+                      callManager:(VoximplantCallManager *)callManager
                              call:(VICall *)call {
     self = [super init];
     
@@ -26,6 +29,8 @@
         self.registrar = registrar;
         self.callManager = callManager;
         self.call = call;
+        self.remoteVideoStreams = [NSMutableDictionary new];
+        self.renderers = [NSMutableDictionary new];
         NSString *channelName = [@"plugins.voximplant.com/call_" stringByAppendingString:self.call.callId];
         self.eventChannel = [FlutterEventChannel eventChannelWithName:channelName binaryMessenger:registrar.messenger];
         [self.eventChannel setStreamHandler:self];
@@ -53,6 +58,14 @@
         [self sendToneForCall:call.arguments result:result];
     } else if ([@"holdCall" isEqualToString:call.method]) {
         [self holdCall:call.arguments result:result];
+    } else if ([@"sendVideoForCall" isEqualToString:call.method]) {
+        [self sendVideo:call.arguments result:result];
+    } else if ([@"receiveVideoForCall" isEqualToString:call.method]) {
+        [self receiveVideoWithResult:result];
+    } else if ([@"addVideoRenderer" isEqualToString:call.method]) {
+        [self addVideoRenderer:call.arguments result:result];
+    } else if ([@"removeVideoRenderer" isEqualToString:call.method]) {
+        [self removeVideoRenderer:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -73,10 +86,13 @@
 - (void)answerCall:(NSDictionary *)arguments result:(FlutterResult)result {
     NSString *customData = [arguments objectForKey:@"customData"] != [NSNull null] ? [arguments objectForKey:@"customData"] : nil;
     NSDictionary *headers = [arguments objectForKey:@"extraHeaders"] != [NSNull null] ? [arguments objectForKey:@"extraHeaders"] : nil;
+    NSNumber *sendVideo = [arguments objectForKey:@"sendVideo"] != [NSNull null] ? [arguments objectForKey:@"sendVideo"] : @(NO);
+    NSNumber *receiveVideo = [arguments objectForKey:@"receiveVideo"] != [NSNull null] ? [arguments objectForKey:@"receiveVideo"] : @(NO);
+    //TODO(yulia): add preferrable codec
     VICallSettings *callSettings = [[VICallSettings alloc] init];
     callSettings.customData = customData;
     callSettings.extraHeaders = headers;
-    callSettings.videoFlags = [VIVideoFlags videoFlagsWithReceiveVideo:NO sendVideo:NO];
+    callSettings.videoFlags = [VIVideoFlags videoFlagsWithReceiveVideo:receiveVideo.boolValue sendVideo:sendVideo.boolValue];
     
     [self.call answerWithSettings:callSettings];
     result(nil);
@@ -174,6 +190,131 @@
     }];
 }
 
+- (void)sendVideo:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSNumber *enable = [arguments objectForKey:@"enable"];
+    if (!enable) {
+        result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
+                                   message:@"Call.sendVideo: Failed to get enable parameter"
+                                   details:nil]);
+        return;
+    }
+    [self.call setSendVideo:[enable boolValue] completion:^(NSError * _Nullable error) {
+        if (error) {
+            result([FlutterError errorWithCode:[VoximplantUtils convertCallErrorToString:error.code]
+                                       message:[VoximplantUtils getErrorDescriptionForCallError:error.code]
+                                       details:nil]);
+        } else {
+            result(nil);
+        }
+    }];
+}
+
+- (void)receiveVideoWithResult:(FlutterResult)result {
+    [self.call startReceiveVideoWithCompletion:^(NSError * _Nullable error) {
+        if (error) {
+            result([FlutterError errorWithCode:[VoximplantUtils convertCallErrorToString:error.code]
+                                       message:[VoximplantUtils getErrorDescriptionForCallError:error.code]
+                                       details:nil]);
+        } else {
+            result(nil);
+        }
+    }];
+}
+
+- (void)addVideoRenderer:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSString *streamId = [arguments objectForKey:@"streamId"];
+    if (!streamId) {
+        result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
+                            message:@"Call.addVideoRenderer: Invalid streamId"
+                            details:nil]);
+        return;
+    }
+    if ([self.localVideoStream.streamId isEqualToString:streamId]) {
+        VoximplantRenderer *renderer = [[VoximplantRenderer alloc] initWithTextureRegistry:self.registrar.textures
+                                                                                 messenger:self.registrar.messenger];
+        [self.localVideoStream addRenderer:renderer];
+        [self.renderers setObject:renderer forKey:streamId];
+        NSMutableDictionary *resultParams = [NSMutableDictionary new];
+        [resultParams setObject:@(renderer.textureId) forKey:@"textureId"];
+        result(resultParams);
+        return;
+    }
+    VIVideoStream *videoStream = [self.remoteVideoStreams objectForKey:streamId];
+    if (videoStream) {
+        VoximplantRenderer *renderer = [[VoximplantRenderer alloc] initWithTextureRegistry:self.registrar.textures
+                                                                                 messenger:self.registrar.messenger];
+        [videoStream addRenderer:renderer];
+        [self.renderers setObject:renderer forKey:streamId];
+        NSMutableDictionary *resultParams = [NSMutableDictionary new];
+        [resultParams setObject:@(renderer.textureId) forKey:@"textureId"];
+        result(resultParams);
+    } else {
+        result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
+                                   message:@"Call.addVideoRenderer: Failed to find video stream by id"
+                                   details:nil]);
+    }
+}
+
+- (void)removeVideoRenderer:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSString *streamId = [arguments objectForKey:@"streamId"];
+    if (!streamId) {
+        result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
+                            message:@"Call.removeVideoRenderer: Invalid streamId"
+                            details:nil]);
+        return;
+    }
+    if ([self.localVideoStream.streamId isEqualToString:streamId]) {
+        VoximplantRenderer *renderer = [self.renderers objectForKey:streamId];
+        [self.localVideoStream removeRenderer:renderer];
+        [renderer cleanup];
+        [self.renderers removeObjectForKey:streamId];
+        self.localVideoStream = nil;
+        result(nil);
+        return;
+    }
+    VIVideoStream *videoStream = [self.remoteVideoStreams objectForKey:streamId];
+    VoximplantRenderer *renderer = [self.renderers objectForKey:streamId];
+    if (videoStream && renderer) {
+        [videoStream removeRenderer:renderer];
+        [renderer cleanup];
+        [self.renderers removeObjectForKey:streamId];
+        result(nil);
+    } else {
+        result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
+                                   message:@"Call.removeVideoRenderer: Failed to find video stream and video renderer by stream id"
+                                   details:nil]);
+    }
+}
+ 
+- (BOOL)hasVideoStreamId:(NSString *)streamId {
+    return [self.localVideoStream.streamId isEqualToString:streamId] || [self.remoteVideoStreams objectForKey:streamId] != nil;
+}
+
+- (void)cleanupResources {
+    if (self.localVideoStream) {
+        VoximplantRenderer *renderer = [self.renderers objectForKey:self.localVideoStream.streamId];
+        if (renderer) {
+            [self.localVideoStream removeRenderer:renderer];
+            [renderer cleanup];
+        }
+        self.localVideoStream = nil;
+    }
+    [self.remoteVideoStreams enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull streamId, VIVideoStream * _Nonnull videoStream, BOOL * _Nonnull stop) {
+        VoximplantRenderer *renderer = [self.renderers objectForKey:streamId];
+        if (renderer) {
+            [videoStream removeRenderer:renderer];
+            [renderer cleanup];
+        }
+    }];
+    [self.renderers removeAllObjects];
+    [self.remoteVideoStreams removeAllObjects];
+    
+    for (VIEndpoint *endpoint in self.call.endpoints) {
+        endpoint.delegate = nil;
+    }
+    [self.call removeDelegate:self];
+}
+
 #pragma mark - VICallDelegate
 
 - (void)callDidStartAudio:(VICall *)call {
@@ -212,15 +353,12 @@
 }
 
 - (void)call:(VICall *)call didFailWithError:(NSError *)error headers:(NSDictionary *)headers {
-    for (VIEndpoint *endpoint in self.call.endpoints) {
-        endpoint.delegate = nil;
-    }
-    [self.call removeDelegate:self];
+    [self cleanupResources];
     [self.callManager callHasEnded:call.callId];
     [self sendEvent:@{
         @"event"       : @"callFailed",
         @"code"        : @(error.code),
-        @"description" : error.description,
+        @"description" : error.localizedDescription,
         @"headers"     : headers
     }];
 }
@@ -243,10 +381,7 @@
 }
 
 - (void)call:(VICall *)call didDisconnectWithHeaders:(NSDictionary *)headers answeredElsewhere:(NSNumber *)answeredElsewhere {
-    for (VIEndpoint *endpoint in self.call.endpoints) {
-        endpoint.delegate = nil;
-    }
-    [self.call removeDelegate:self];
+    [self cleanupResources];
     [self.callManager callHasEnded:call.callId];
     [self sendEvent:@{
         @"event"             : @"callDisconnected",
@@ -267,6 +402,30 @@
     }];
 }
 
+- (void)call:(VICall *)call didAddLocalVideoStream:(VIVideoStream *)videoStream {
+    if (!self.localVideoStream) {
+        self.localVideoStream = videoStream;
+        [self sendEvent:@{
+            @"event"           : @"localVideoStreamAdded",
+            @"videoStreamId"   : videoStream.streamId,
+            @"videoStreamType" : [VoximplantUtils convertVideoStreamTypeToNumber:videoStream.type]
+        }];
+    } else {
+        NSLog(@"VOXFLUTTER >  call: didAddLocalVideoStream: local video stream has been already reported");
+    }
+}
+
+- (void)call:(VICall *)call didRemoveLocalVideoStream:(VIVideoStream *)videoStream {
+    if ([self.localVideoStream.streamId isEqualToString:videoStream.streamId]) {
+        [self sendEvent:@{
+            @"event" : @"localVideoStreamRemoved",
+            @"videoStreamId"   : videoStream.streamId,
+        }];
+    } else {
+        NSLog(@"VOXFLUTTER >  call: didRemoveLocalVideoStream: video stream id does not match to previously added video stream");
+    }
+}
+
 #pragma mark - VIEndpointDeelegate
 
 - (void)endpointInfoDidUpdate:(VIEndpoint *)endpoint {
@@ -276,6 +435,24 @@
         @"endpointUserName"    : endpoint.user ? endpoint.user : [NSNull null],
         @"endpointDisplayName" : endpoint.userDisplayName ? endpoint.userDisplayName : [NSNull null],
         @"endpointSipUri"      : endpoint.sipURI ? endpoint.sipURI : [NSNull null]
+    }];
+}
+
+- (void)endpoint:(VIEndpoint *)endpoint didAddRemoteVideoStream:(VIVideoStream *)videoStream {
+    [self.remoteVideoStreams setObject:videoStream forKey:videoStream.streamId];
+    [self sendEvent:@{
+        @"event"               : @"remoteVideoStreamAdded",
+        @"endpointId"          : endpoint.endpointId,
+        @"videoStreamId"       : videoStream.streamId,
+        @"videoStreamType"     : [VoximplantUtils convertVideoStreamTypeToNumber:videoStream.type]
+    }];
+}
+
+- (void)endpoint:(VIEndpoint *)endpoint didRemoveRemoteVideoStream:(VIVideoStream *)videoStream {
+    [self sendEvent:@{
+        @"event"               : @"remoteVideoStreamRemoved",
+        @"endpointId"          : endpoint.endpointId,
+        @"videoStreamId"       : videoStream.streamId,
     }];
 }
 

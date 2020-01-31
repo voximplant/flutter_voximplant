@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+ * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
  */
 
 package com.voximplant.flutter_voximplant;
@@ -18,6 +18,7 @@ import com.voximplant.sdk.call.IEndpoint;
 import com.voximplant.sdk.call.IEndpointListener;
 import com.voximplant.sdk.call.IVideoStream;
 import com.voximplant.sdk.call.RejectMode;
+import com.voximplant.sdk.call.RenderScaleType;
 import com.voximplant.sdk.call.VideoFlags;
 
 import java.util.HashMap;
@@ -36,6 +37,10 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
     private EventChannel mEventChannel;
     private EventChannel.EventSink mEventSink;
     private Handler mHandler = new Handler(Looper.getMainLooper());
+
+    private IVideoStream mLocalVideoStream;
+    private Map<String, IVideoStream> mRemoteVideoStreams = new HashMap<>();
+    private Map<String, VoximplantRenderer> mRenderers = new HashMap<>();
 
     CallModule(PluginRegistry.Registrar registrar, CallManager callManager, ICall call) {
         mRegistrar = registrar;
@@ -71,6 +76,18 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
             case "holdCall":
                 holdCall(call, result);
                 break;
+            case "addVideoRenderer":
+                addVideoRenderer(call, result);
+                break;
+            case "removeVideoRenderer":
+                removeVideoRenderer(call, result);
+                break;
+            case "sendVideoForCall":
+                sendVideo(call, result);
+                break;
+            case "receiveVideoForCall":
+                receiveVideo(call, result);
+                break;
             default:
                 result.notImplemented();
                 break;
@@ -78,10 +95,20 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
     }
 
     private void answerCall(MethodCall call, MethodChannel.Result result) {
+        String customData = call.argument("customData");
+        Map<String, String> headers = call.argument("extraHeaders");
+        Boolean sendVideo = call.argument("sendVideo");
+        Boolean receiveVideo = call.argument("receiveVideo");
+        String videoCodec = call.argument("videoCodec");
+
         CallSettings callSettings = new CallSettings();
-        callSettings.videoFlags = new VideoFlags(false, false);
-        callSettings.customData = call.argument("customData");
-        callSettings.extraHeaders = call.argument("extraHeaders");
+        callSettings.customData = customData;
+        callSettings.extraHeaders = headers;
+        callSettings.videoFlags = new VideoFlags(receiveVideo != null ? receiveVideo : false,
+                sendVideo != null ? sendVideo : false);
+        if (videoCodec != null) {
+            callSettings.preferredVideoCodec = Utils.convertStringToVideoCodec(videoCodec);
+        }
 
         try {
             mCall.answer(callSettings);
@@ -182,6 +209,121 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         });
     }
 
+    private void sendVideo(MethodCall call, MethodChannel.Result result) {
+        Boolean value = call.argument("enable");
+        if (value == null) {
+            mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS,   "Call.sendVideo: Failed to get enable parameter", null));
+            return;
+        }
+        mCall.sendVideo(value, new ICallCompletionHandler() {
+            @Override
+            public void onComplete() {
+                mHandler.post(() -> result.success(null));
+            }
+
+            @Override
+            public void onFailure(CallException e) {
+                mHandler.post(() -> result.error(Utils.convertCallErrorToString(e.getErrorCode()),
+                        Utils.getErrorDescriptionForCallError(e.getErrorCode()), null));
+            }
+        });
+    }
+
+    private void receiveVideo(MethodCall call, MethodChannel.Result result) {
+        mCall.receiveVideo(new ICallCompletionHandler() {
+            @Override
+            public void onComplete() {
+                mHandler.post(() -> result.success(null));
+            }
+
+            @Override
+            public void onFailure(CallException e) {
+                mHandler.post(() -> result.error(Utils.convertCallErrorToString(e.getErrorCode()),
+                        Utils.getErrorDescriptionForCallError(e.getErrorCode()), null));
+            }
+        });
+    }
+
+    boolean hasVideoStreamId(String videoStreamId) {
+        return (mLocalVideoStream != null && mLocalVideoStream.getVideoStreamId().equals(videoStreamId)) ||
+                mRemoteVideoStreams.containsKey(videoStreamId);
+    }
+
+    private void addVideoRenderer(MethodCall call, MethodChannel.Result result) {
+        String streamId = call.argument("streamId");
+        if (streamId == null) {
+            mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS, "Call.addVideoRenderer: Invalid streamId", null));
+            return;
+        }
+        if (mLocalVideoStream.getVideoStreamId().equals(streamId)) {
+            VoximplantRenderer renderer = new VoximplantRenderer(mRegistrar);
+            mRenderers.put(streamId, renderer);
+            mLocalVideoStream.addVideoRenderer(renderer.getRenderer(), RenderScaleType.SCALE_FIT);
+            Map<String, Object> event = new HashMap<>();
+            event.put("textureId", renderer.getTextureId());
+            mHandler.post(() -> result.success(event));
+            return;
+        }
+        if (mRemoteVideoStreams.containsKey(streamId)) {
+            IVideoStream videoStream = mRemoteVideoStreams.get(streamId);
+            if (videoStream != null) {
+                VoximplantRenderer renderer = new VoximplantRenderer(mRegistrar);
+                mRenderers.put(streamId, renderer);
+                videoStream.addVideoRenderer(renderer.getRenderer(), RenderScaleType.SCALE_FIT);
+                Map<String, Object> event = new HashMap<>();
+                event.put("textureId", renderer.getTextureId());
+                mHandler.post(() -> result.success(event));
+                return;
+            }
+        }
+        mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS, "Call.addVideoRenderer: Failed to find video stream by id", null));
+    }
+
+    private void removeVideoRenderer(MethodCall call, MethodChannel.Result result) {
+        String streamId = call.argument("streamId");
+        if (streamId == null) {
+            mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS, "Call.removeVideoRenderer: Invalid streamId", null));
+            return;
+        }
+        if (mLocalVideoStream != null && mLocalVideoStream.getVideoStreamId().equals(streamId)) {
+            VoximplantRenderer renderer = mRenderers.remove(streamId);
+            if (renderer != null) {
+                mLocalVideoStream.removeVideoRenderer(renderer.getRenderer());
+                renderer.release();
+                mHandler.post(() -> result.success(null));
+            }
+            mLocalVideoStream = null;
+        } else {
+            for (Map.Entry<String, IVideoStream> entry : mRemoteVideoStreams.entrySet()) {
+                if (entry.getKey().equals(streamId)) {
+                    VoximplantRenderer renderer = mRenderers.remove(streamId);
+                    if (renderer != null) {
+                        entry.getValue().removeVideoRenderer(renderer.getRenderer());
+                        renderer.release();
+                        mHandler.post(() -> result.success(null));
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private void cleanupResources() {
+        if (mLocalVideoStream != null) {
+            VoximplantRenderer renderer = mRenderers.remove(mLocalVideoStream.getVideoStreamId());
+            if (renderer != null) {
+                mLocalVideoStream.removeVideoRenderer(renderer.getRenderer());
+                renderer.release();
+            }
+        }
+        for (Map.Entry<String, IVideoStream> entry : mRemoteVideoStreams.entrySet()) {
+            VoximplantRenderer renderer = mRenderers.remove(entry.getKey());
+            if (renderer != null) {
+                entry.getValue().removeVideoRenderer(renderer.getRenderer());
+                renderer.release();
+            }
+        }
+    }
 
     @Override
     public void onListen(Object arguments, EventChannel.EventSink eventSink) {
@@ -222,7 +364,9 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         for (IEndpoint endpoint : mCall.getEndpoints()) {
             endpoint.setEndpointListener(null);
         }
+        cleanupResources();
         mCall.removeCallListener(this);
+        mLocalVideoStream = null;
         mCallManager.callHasEnded(call.getCallId());
         Map<String, Object> event = new HashMap<>();
         event.put("event", "callDisconnected");
@@ -244,7 +388,9 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         for (IEndpoint endpoint : mCall.getEndpoints()) {
             endpoint.setEndpointListener(null);
         }
+        cleanupResources();
         mCall.removeCallListener(this);
+        mLocalVideoStream = null;
         mCallManager.callHasEnded(call.getCallId());
         Map<String, Object> event = new HashMap<>();
         event.put("event", "callFailed");
@@ -281,12 +427,30 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
 
     @Override
     public void onLocalVideoStreamAdded(ICall call, IVideoStream videoStream) {
-
+        if (mLocalVideoStream == null) {
+            mLocalVideoStream = videoStream;
+            Map<String, Object> event = new HashMap<>();
+            event.put("event", "localVideoStreamAdded");
+            event.put("videoStreamId", videoStream.getVideoStreamId());
+            event.put("videoStreamType", Utils.convertVideoStreamTypeToInt(videoStream.getVideoStreamType()));
+            sendCallEvent(event);
+        } else {
+            Log.w(TAG_NAME, "VoximplantPlugin: call: onLocalVideoStreamAdded: local video " +
+                    "stream has been already reported");
+        }
     }
 
     @Override
     public void onLocalVideoStreamRemoved(ICall call, IVideoStream videoStream) {
-
+        if (mLocalVideoStream.getVideoStreamId().equals(videoStream.getVideoStreamId())) {
+            Map<String, Object> event = new HashMap<>();
+            event.put("event", "localVideoStreamRemoved");
+            event.put("videoStreamId", videoStream.getVideoStreamId());
+            sendCallEvent(event);
+        } else {
+            Log.w(TAG_NAME, "VoximplantPlugin: call: onLocalVideoStreamRemoved: video stream id " +
+                    "does not match to previously added video stream");
+        }
     }
 
     @Override
@@ -324,12 +488,22 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
 
     @Override
     public void onRemoteVideoStreamAdded(IEndpoint endpoint, IVideoStream videoStream) {
-
+        mRemoteVideoStreams.put(videoStream.getVideoStreamId(), videoStream);
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "remoteVideoStreamAdded");
+        event.put("endpointId", endpoint.getEndpointId());
+        event.put("videoStreamId", videoStream.getVideoStreamId());
+        event.put("videoStreamType", Utils.convertVideoStreamTypeToInt(videoStream.getVideoStreamType()));
+        sendCallEvent(event);
     }
 
     @Override
     public void onRemoteVideoStreamRemoved(IEndpoint endpoint, IVideoStream videoStream) {
-
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "remoteVideoStreamRemoved");
+        event.put("endpointId", endpoint.getEndpointId());
+        event.put("videoStreamId", videoStream.getVideoStreamId());
+        sendCallEvent(event);
     }
 
     @Override

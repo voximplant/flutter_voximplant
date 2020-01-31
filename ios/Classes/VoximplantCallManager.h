@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+* Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 */
 
 #import <Foundation/Foundation.h>
@@ -8,8 +8,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VICallManager : NSObject
+@interface VoximplantCallManager : NSObject
 - (VICallModule *)checkCallEvent:(NSDictionary *)arguments result:(FlutterResult)result methodName:(NSString *)methodName;
+- (VICallModule *)findCallByStreamId:(NSDictionary *)arguments result:(FlutterResult)result methodName:(NSString *)methodName;
 
 - (void)callHasEnded:(NSString *)callId;
 

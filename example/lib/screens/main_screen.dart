@@ -1,4 +1,4 @@
-/// Copyright (c) 2011-2019, Zingaya, Inc. All rights reserved.
+/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
 import 'dart:io';
 
@@ -53,7 +53,7 @@ class MainScreen extends StatelessWidget {
         }
       }
     }
-    Call call = await _callService.makeAudioCall(number);
+    VICall call = await _callService.makeAudioCall(number);
     Navigator.pushReplacementNamed(
         context,
         CallScreen.routeName,
