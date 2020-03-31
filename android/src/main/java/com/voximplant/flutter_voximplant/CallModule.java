@@ -88,6 +88,9 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
             case "receiveVideoForCall":
                 receiveVideo(call, result);
                 break;
+            case "getCallDuration":
+                getCallDuration(call, result);
+                break;
             default:
                 result.notImplemented();
                 break;
@@ -306,6 +309,10 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
                 }
             }
         }
+    }
+
+    private void getCallDuration(MethodCall call, MethodChannel.Result result) {
+        result.success(mCall.getCallDuration());
     }
 
     private void cleanupResources() {

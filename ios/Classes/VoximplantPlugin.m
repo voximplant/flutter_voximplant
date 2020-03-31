@@ -47,7 +47,7 @@
         self.clientModule = [[VIClientModule alloc] initWithRegistrar:self.registrar callManager:self.callManager];
         self.audioDeviceModule = [[VIAudioDeviceModule alloc] initWithPlugin:self];
         self.cameraModule = [[VICameraModule alloc] init];
-        [VIClient setVersionExtension:@"flutter-2.0.0"];
+        [VIClient setVersionExtension:@"flutter-2.1.0"];
     }
     return self;
 }
@@ -124,7 +124,8 @@
         [method isEqualToString:@"holdCall"] ||
         [method isEqualToString:@"setCallKitUUID"] ||
         [method isEqualToString:@"sendVideoForCall"] ||
-        [method isEqualToString:@"receiveVideoForCall"];
+        [method isEqualToString:@"receiveVideoForCall"] ||
+        [method isEqualToString:@"getCallDuration"];
 }
 
 - (BOOL)isVideoStreamMethod:(FlutterMethodCall *)call {

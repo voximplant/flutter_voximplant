@@ -14,15 +14,11 @@ class VICameraManager {
 
   VICameraManager._(this._channel);
 
-  /// Android only. Selects camera.
+  /// Selects camera.
   Future<void> selectCamera(VICameraType cameraType) async {
-    if (Platform.isAndroid) {
-      await _channel.invokeMethod('selectCamera', <String, dynamic>{
-        'cameraType': cameraType.index
-      });
-    } else {
-      return Future<void>.value();
-    }
+    await _channel.invokeMethod('selectCamera', <String, dynamic>{
+      'cameraType': cameraType.index
+    });
   }
 
   /// Selects camera resolution.

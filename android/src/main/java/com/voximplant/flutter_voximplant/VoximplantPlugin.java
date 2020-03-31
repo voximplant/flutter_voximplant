@@ -37,7 +37,7 @@ public class VoximplantPlugin implements MethodCallHandler {
         mClientModule = new ClientModule(registrar, mCallManager);
         mCameraModule = new CameraModule(registrar.context());
 
-        Voximplant.subVersion = "flutter-2.0.0";
+        Voximplant.subVersion = "flutter-2.1.0";
     }
 
     public static void registerWith(Registrar registrar) {
@@ -102,7 +102,8 @@ public class VoximplantPlugin implements MethodCallHandler {
                 method.equals("sendToneForCall") ||
                 method.equals("holdCall") ||
                 method.equals("sendVideoForCall") ||
-                method.equals("receiveVideoForCall");
+                method.equals("receiveVideoForCall") ||
+                method.equals("getCallDuration");
     }
 
     private boolean isVideoStreamMethod(MethodCall call) {

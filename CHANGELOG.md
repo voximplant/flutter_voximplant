@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.16.1
+  and Voximplant iOS SDK 2.29.0
+* Improve video rendering on iOS
+* VICameraManager.selectCamera is now available for iOS
+* Add VICall.getCallDuration API
+
 ## 2.0.0
 * Update iOS platform code to use Voximplant iOS SDK 2.26.0
 * Add 'VI' prefix to public API to avoid conflicts with other packages

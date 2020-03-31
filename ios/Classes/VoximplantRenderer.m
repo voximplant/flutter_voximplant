@@ -65,7 +65,11 @@
 }
 
 - (void)setSize:(CGSize)size {
-    if (!self.pixelBufferRef) {
+    if (self.frameWidth != size.width || self.frameHeight != size.height) {
+        if (self.pixelBufferRef) {
+            CVPixelBufferRelease(self.pixelBufferRef);
+            self.pixelBufferRef = NULL;
+        }
         NSDictionary *pixelAttributes = @{(id)kCVPixelBufferIOSurfacePropertiesKey : @{}};
         CVPixelBufferCreate(kCFAllocatorDefault,
                             size.width, size.height,

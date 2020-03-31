@@ -132,7 +132,7 @@ class VICall {
   /// Callback for getting notified when the call is disconnected.
   VICallDisconnected onCallDisconnected;
   /// Callback for getting notified when progress signal is received
-  ///// from the endpoint.
+  /// from the endpoint.
   VICallRinging onCallRinging;
   /// Callback for getting notified when the call is failed.
   VICallFailed onCallFailed;
@@ -414,6 +414,18 @@ class VICall {
   Future<void> receiveVideo() async {
     try {
       await _channel.invokeMethod('receiveVideoForCall', <String, String>{
+        'callId': callId,
+      });
+    } on PlatformException catch (e) {
+      throw VIException(e.code, e.message);
+    }
+  }
+
+
+  /// Returns the call duration in milliseconds.
+  Future<int> getCallDuration() async {
+    try {
+      return await _channel.invokeMethod('getCallDuration', <String, String>{
         'callId': callId,
       });
     } on PlatformException catch (e) {

@@ -66,6 +66,8 @@
         [self addVideoRenderer:call.arguments result:result];
     } else if ([@"removeVideoRenderer" isEqualToString:call.method]) {
         [self removeVideoRenderer:call.arguments result:result];
+    } else if ([@"getCallDuration" isEqualToString:call.method]) {
+        [self getCallDuration:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -284,6 +286,12 @@
                                    message:@"Call.removeVideoRenderer: Failed to find video stream and video renderer by stream id"
                                    details:nil]);
     }
+}
+
+- (void)getCallDuration:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSTimeInterval duration = [self.call duration];
+    NSInteger durationMs = round(duration * 1000.0);
+    result(@(durationMs));
 }
  
 - (BOOL)hasVideoStreamId:(NSString *)streamId {
