@@ -37,7 +37,7 @@ public class VoximplantPlugin implements MethodCallHandler {
         mClientModule = new ClientModule(registrar, mCallManager);
         mCameraModule = new CameraModule(registrar.context());
 
-        Voximplant.subVersion = "flutter-2.1.0";
+        Voximplant.subVersion = "flutter-2.1.1";
     }
 
     public static void registerWith(Registrar registrar) {

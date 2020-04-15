@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.1.1
+* VIVideoFlags incorrect initialisation fix
+
 ## 2.1.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.16.1
   and Voximplant iOS SDK 2.29.0

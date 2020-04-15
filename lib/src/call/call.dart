@@ -15,8 +15,8 @@ class VIVideoFlags {
   bool receiveVideo;
 
   VIVideoFlags({bool receiveVideo = false, bool sendVideo = false}) {
-    this.sendVideo = receiveVideo;
-    this.receiveVideo = sendVideo;
+    this.sendVideo = sendVideo;
+    this.receiveVideo = receiveVideo;
   }
 }
 
