@@ -47,7 +47,7 @@
         self.clientModule = [[VIClientModule alloc] initWithRegistrar:self.registrar callManager:self.callManager];
         self.audioDeviceModule = [[VIAudioDeviceModule alloc] initWithPlugin:self];
         self.cameraModule = [[VICameraModule alloc] init];
-        [VIClient setVersionExtension:@"flutter-2.1.1"];
+        [VIClient setVersionExtension:@"flutter-2.1.2"];
     }
     return self;
 }

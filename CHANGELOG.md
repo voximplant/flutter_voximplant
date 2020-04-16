@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.2
+* Update iOS platform code to use Voximplant iOS SDK 2.30.0
+* Xcode 11.4 support added
+* VIVideoRenderer null handling improvements
+* VIClient bundleId won't be set to native SDK if it is null
+
 ## 2.1.1
 * VIVideoFlags incorrect initialisation fix
 

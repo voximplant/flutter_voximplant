@@ -94,6 +94,7 @@
     }
 
     NSString *bundleId = [arguments objectForKey:@"bundleId"];
+    if (bundleId == (id)[NSNull null]) bundleId = nil;
     self.client = [[VIClient alloc] initWithDelegateQueue:dispatch_get_main_queue() bundleId:bundleId];
     self.client.sessionDelegate = self;
     self.client.callManagerDelegate = self;

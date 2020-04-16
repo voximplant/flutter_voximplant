@@ -136,6 +136,9 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
       }
       _streamId = streamId;
     } else {
+      if (this._streamId == null) {
+        return Future<void>.value();
+      }
       await _channel.invokeMethod('removeVideoRenderer', <String, String>{
         'streamId': this._streamId,
       });

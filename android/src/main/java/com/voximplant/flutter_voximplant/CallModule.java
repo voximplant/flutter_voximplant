@@ -258,7 +258,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
             mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS, "Call.addVideoRenderer: Invalid streamId", null));
             return;
         }
-        if (mLocalVideoStream.getVideoStreamId().equals(streamId)) {
+        if (mLocalVideoStream != null && mLocalVideoStream.getVideoStreamId().equals(streamId)) {
             VoximplantRenderer renderer = new VoximplantRenderer(mRegistrar);
             mRenderers.put(streamId, renderer);
             mLocalVideoStream.addVideoRenderer(renderer.getRenderer(), RenderScaleType.SCALE_FIT);
