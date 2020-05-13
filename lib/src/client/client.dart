@@ -9,6 +9,14 @@ part of voximplant;
 ///
 /// It provides a [VICall] instance for the incoming call and optional
 /// SIP [headers], and indicates if the caller initiated a [video] call.
+///
+/// `client` - VIClient instance initiated the event
+///
+/// `call` - Incoming call represented by VICall instance
+///
+/// `video` - Indicates if the caller initiated a video call
+///
+/// `headers` - Optional SIP headers
 typedef void VIIncomingCall(
     VIClient client, VICall call, bool video, Map<String, String> headers);
 
@@ -20,6 +28,10 @@ typedef void VIIncomingCall(
 /// This callback can be used for CallKit integration on iOS.
 ///
 /// It is recommended to end CXCall with associated [uuid].
+///
+/// `client` - VIClient instance initiated the event
+///
+/// `uuid` - CallKit UUID associated with the VoIP push
 typedef void VIPushDidExpire(VIClient client, String uuid);
 
 /// Interface that may be used to connect, login to the Voximplant CLoud, make
@@ -72,7 +84,12 @@ class VIClient {
   ///
   /// Checks whether UDP traffic will flow correctly between device and
   /// the Voximplant Cloud if [connectivityCheck] is enabled (disabled by
-  /// default). This check reduces connection speed.
+  /// default).
+  ///
+  /// Optional `connectivityCheck` - Checks whether UDP traffic will flow correctly
+  /// between device and Voximplant cloud. This check reduces connection speed.
+  ///
+  /// Optional `servers` - List of server names of particular media gateways for connection.
   ///
   /// Throws [VIException] if the connection to the Voximplant Cloud could not
   /// be established.
@@ -111,8 +128,10 @@ class VIClient {
 
   /// Logs in a user with the given Voximplant username and password.
   ///
-  /// Voximplant [username] must include Voximplant user, application, and
-  /// account name in the format `user@application.account.voximplant.com`.
+  /// `username` - Full user name, including Voximplant user, application, and
+  ///  account name in the format `user@application.account.voximplant.com`.
+  ///
+  /// `password` - User password.
   ///
   /// Throws [VIException], if login process failed, otherwise returns [VIAuthResult].
   ///
@@ -146,8 +165,11 @@ class VIClient {
   /// Logs in a user with the given Voximplant username and one time key
   /// that was generated before.
   ///
-  /// Voximplant [username] must include Voximplant user, application, and
-  /// account name in the format `user@application.account.voximplant.com`.
+  /// `username` - Full user name, including Voximplant user, application, and
+  ///  account name in the format `user@application.account.voximplant.com`.
+  ///
+  /// `hash` - Hash that was generated using following formula:
+  /// MD5(oneTimeKey+"|"+MD5(user+":voximplant.com:"+password)).
   ///
   /// Throws [VIException], if login process failed, otherwise returns [VIAuthResult].
   ///
@@ -183,11 +205,11 @@ class VIClient {
 
   /// Logs in a user with the given Voximplant username and access token.
   ///
-  /// Voximplant [username] must include Voximplant user, application, and
-  /// account name in the format `user@application.account.voximplant.com`.
+  /// `username` - Full user name, including Voximplant user, application, and
+  ///  account name in the format `user@application.account.voximplant.com`.
   ///
-  /// Access [token] can be obtained from [VIAuthResult.loginTokens] after
-  /// previous successful login.
+  /// `token` - Access token that was obtained from [VIAuthResult.loginTokens] after
+  ///  previous successful login.
   ///
   /// Throws [VIException], if login process failed, otherwise returns [VIAuthResult].
   ///
@@ -222,8 +244,8 @@ class VIClient {
 
   /// Generates one time login key for the given Voximplant username.
   ///
-  /// Voximplant [username] must include Voximplant user, application, and
-  /// account name in the format `user@application.account.voximplant.com`.
+  /// `username` - Full user name, including Voximplant user, application, and
+  ///  account name in the format `user@application.account.voximplant.com`.
   ///
   /// Throws [VIException], if an error occurred, otherwise returns one time key.
   ///
@@ -247,10 +269,10 @@ class VIClient {
   /// Performs refresh of access token for the given Voximplant username using
   /// refresh token.
   ///
-  /// Voximplant [username] must include Voximplant user, application, and
-  /// account name in the format `user@application.account.voximplant.com`.
+  /// `username` - Full user name, including Voximplant user, application, and
+  ///  account name in the format `user@application.account.voximplant.com`.
   ///
-  /// Refresh [token] can be obtained from [VIAuthResult.loginTokens] after
+  /// `token` - Refresh token can be obtained from [VIAuthResult.loginTokens] after
   /// previous successful login.
   ///
   /// Throws [VIException], if refresh process failed, otherwise returns
@@ -287,11 +309,11 @@ class VIClient {
 
   /// Creates a new [VICall] instance and starts the outgoing call.
   ///
-  /// The call destination should be provided via [number] that might be
+  /// `number` - The call destination that might be
   /// Voximplant username, phone number or SIP URI. Actual routing is then
   /// performed by a VoxEngine scenario.
   ///
-  /// Additional call parameters are set up via [callSettings]: video direction
+  /// Optional `callSettings` - Additional call parameters like video direction
   /// for the call, preferred video codec, custom data.
   ///
   /// Throws [VIException], if the client is not logged in, otherwise returns
@@ -313,7 +335,46 @@ class VIClient {
         'videoCodec': callSettings?.preferredVideoCodec.toString() ??
             VIVideoCodec.AUTO.toString(),
         'customData': callSettings?.customData,
-        'extraHeaders': callSettings?.extraHeaders
+        'extraHeaders': callSettings?.extraHeaders,
+        'conference': false
+      });
+      VICall call = VICall._(data['callId'], _channel);
+      return call;
+    } on PlatformException catch(e) {
+      throw VIException(e.code, e.message);
+    }
+  }
+
+  /// Creates a new [VICall] instance and starts the conference.
+  ///
+  /// `conference` - The call destination.
+  /// For SIP compatibility reasons it should be a non-empty string even
+  /// if the number itself is not used by a Voximplant cloud scenario.
+  ///
+  /// Optional `callSettings` - Additional call parameters like video direction
+  /// for the call, preferred video codec, custom data.
+  ///
+  /// Throws [VIException], if the client is not logged in, otherwise returns
+  /// [VICall] instance.
+  ///
+  /// Errors:
+  /// * [VICallError.ERROR_CLIENT_NOT_LOGGED_IN] - If the client is not logged in
+  /// * [VICallError.ERROR_MISSING_PERMISSION] - Android only. If permissions
+  ///   are not granted for the call:
+  ///   audio calls - RECORD_AUDIO
+  ///   video calls - RECORD_AUDIO and CAMERA
+  Future<VICall> conference(String conference, [VICallSettings callSettings]) async {
+    try {
+      Map<String, dynamic> data =
+      await _channel.invokeMapMethod('call', <String, dynamic>{
+        'number': conference,
+        'sendVideo': callSettings?.videoFlags?.sendVideo ?? false,
+        'receiveVideo': callSettings?.videoFlags?.receiveVideo ?? false,
+        'videoCodec': callSettings?.preferredVideoCodec.toString() ??
+            VIVideoCodec.AUTO.toString(),
+        'customData': callSettings?.customData,
+        'extraHeaders': callSettings?.extraHeaders,
+        'conference': true
       });
       VICall call = VICall._(data['callId'], _channel);
       return call;
@@ -326,6 +387,8 @@ class VIClient {
   ///
   /// Application will receive push notifications from Voximplant Server after
   /// first login.
+  ///
+  /// `pushToken` - Push notification token.
   ///
   /// Throws [VIException], if [pushToken] is null.
   ///
@@ -344,6 +407,8 @@ class VIClient {
   /// Application will no longer receive push notifications from Voximplant
   /// Server.
   ///
+  /// `pushToken` - Push notification token.
+  ///
   /// Throws [VIException], if [pushToken] is null.
   ///
   /// Errors:
@@ -357,6 +422,8 @@ class VIClient {
   }
 
   /// Handles incoming push notification.
+  ///
+  /// `message` - Incoming push notification payload
   ///
   /// Throws [VIException], if [message] is null.
   ///
@@ -391,10 +458,11 @@ class VIClient {
       String userName = map['endpointUserName'];
       String displayName = map['endpointDisplayName'];
       String sipUri = map['endpointSipUri'];
+      int place = map['endpointPlace'];
       String uuid = map['uuid'];
       bool video = map['video'];
       VIEndpoint endpoint =
-          VIEndpoint._(endpointId, userName, displayName, sipUri);
+          VIEndpoint._(endpointId, userName, displayName, sipUri, place);
       VICall call = VICall._withEndpoint(map['callId'], _channel, endpoint);
       if (uuid != null) {
         call.callKitUUID = uuid;

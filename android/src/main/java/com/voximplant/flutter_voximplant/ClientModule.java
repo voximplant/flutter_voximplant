@@ -4,6 +4,7 @@
 
 package com.voximplant.flutter_voximplant;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -28,10 +29,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
+
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.view.TextureRegistry;
 
 import static com.voximplant.flutter_voximplant.VoximplantErrors.ERROR_CONNECTION_FAILED;
 import static com.voximplant.flutter_voximplant.VoximplantErrors.ERROR_INTERNAL;
@@ -43,7 +46,6 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
     private CallManager mCallManager;
 
     private Handler mHandler = new Handler(Looper.getMainLooper());
-    private final PluginRegistry.Registrar mRegistrar;
 
     private EventChannel mIncomingCallEventChannel;
     private EventChannel.EventSink mIncomingCallEventSink;
@@ -52,13 +54,19 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
 
     private HashMap<String, MethodChannel.Result> mClientMethodCallResults = new HashMap<>();
 
-    ClientModule(PluginRegistry.Registrar registrar, CallManager callManager) {
-        mRegistrar = registrar;
-        mCallManager = callManager;
+    private final Context mContext;
+    private final BinaryMessenger mMessenger;
+    private final TextureRegistry mTextures;
 
-        mIncomingCallEventChannel = new EventChannel(registrar.messenger(), "plugins.voximplant.com/incoming_calls");
+    ClientModule(BinaryMessenger messenger, Context context, TextureRegistry textures, CallManager callManager) {
+        mCallManager = callManager;
+        mMessenger = messenger;
+        mContext = context;
+        mTextures = textures;
+
+        mIncomingCallEventChannel = new EventChannel(messenger, "plugins.voximplant.com/incoming_calls");
         mIncomingCallEventChannel.setStreamHandler(this);
-        mConnectionClosedEventChannel = new EventChannel(registrar.messenger(), "plugins.voximplant.com/connection_closed");
+        mConnectionClosedEventChannel = new EventChannel(messenger, "plugins.voximplant.com/connection_closed");
         mConnectionClosedEventChannel.setStreamHandler(this);
     }
 
@@ -138,7 +146,7 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
                 clientConfig.requestAudioFocusMode = (value == 0 ? RequestAudioFocusMode.REQUEST_ON_CALL_START : RequestAudioFocusMode.REQUEST_ON_CALL_CONNECTED);
             }
         }
-        mClient = Voximplant.getClientInstance(Executors.newSingleThreadExecutor(), mRegistrar.context(), clientConfig);
+        mClient = Voximplant.getClientInstance(Executors.newSingleThreadExecutor(), mContext, clientConfig);
         mClient.setClientSessionListener(this);
         mClient.setClientLoginListener(this);
         mClient.setClientIncomingCallListener(this);
@@ -233,6 +241,8 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
             Boolean sendVideo = call.argument("sendVideo");
             Boolean receiveVideo = call.argument("receiveVideo");
             String videoCodec = call.argument("videoCodec");
+            Boolean conference = call.argument("conference");
+            if (conference == null) { conference = false; }
             CallSettings callSettings = new CallSettings();
             callSettings.customData = customData;
             callSettings.extraHeaders = headers;
@@ -241,7 +251,9 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
             if (videoCodec != null) {
                 callSettings.preferredVideoCodec = Utils.convertStringToVideoCodec(videoCodec);
             }
-            ICall voxCall = mClient.call(number, callSettings);
+            ICall voxCall = conference
+                    ? mClient.callConference(number, callSettings)
+                    : mClient.call(number, callSettings);
             if (voxCall != null) {
                 try {
                     voxCall.start();
@@ -257,7 +269,7 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
                     return;
                 }
 
-                CallModule callModule = new CallModule(mRegistrar, mCallManager, voxCall);
+                CallModule callModule = new CallModule(mMessenger, mTextures, mCallManager, voxCall);
                 mCallManager.addNewCall(voxCall.getCallId(), callModule);
 
                 Map<String, Object> returnParams = new HashMap<>();
@@ -277,7 +289,7 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
             return;
         }
         String pushToken = (String) call.arguments;
-        mClient.registerForPushNotifications(pushToken);
+        mClient.registerForPushNotifications(pushToken, null);
         mHandler.post(() -> result.success(null));
     }
 
@@ -287,7 +299,7 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
             return;
         }
         String pushToken = (String) call.arguments;
-        mClient.unregisterFromPushNotifications(pushToken);
+        mClient.unregisterFromPushNotifications(pushToken, null);
         mHandler.post(() -> result.success(null));
     }
 
@@ -422,7 +434,7 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
     @Override
     public void onIncomingCall(ICall call, boolean video, Map<String, String> headers) {
         if (mIncomingCallEventSink != null) {
-            CallModule callModule = new CallModule(mRegistrar, mCallManager, call);
+            CallModule callModule = new CallModule(mMessenger, mTextures, mCallManager, call);
             mCallManager.addNewCall(call.getCallId(), callModule);
             Map<String, Object> params = new HashMap<>();
             params.put("event", "incomingCall");
@@ -435,6 +447,7 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
                 params.put("endpointUserName", endpoint.getUserName());
                 params.put("endpointDisplayName", endpoint.getUserDisplayName());
                 params.put("endpointSipUri", endpoint.getSipUri());
+                params.put("endpointPlace", endpoint.getPlace());
             }
             mHandler.post(() -> mIncomingCallEventSink.success(params));
         }

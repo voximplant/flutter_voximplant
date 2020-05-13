@@ -4,45 +4,61 @@
 
 package com.voximplant.flutter_voximplant;
 
-import android.os.Handler;
-import android.os.Looper;
+import android.content.Context;
 
 import com.voximplant.sdk.Voximplant;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.view.TextureRegistry;
 
-
-public class VoximplantPlugin implements MethodCallHandler {
+public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
     final String TAG_NAME = "VOXFLUTTER";
 
-    private final Registrar mRegistrar;
-    private final MethodChannel mChannel;
+    private MethodChannel mChannel;
 
-    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private AudioDeviceModule mAudioDeviceModule;
+    private ClientModule mClientModule;
+    private CallManager mCallManager;
+    private CameraModule mCameraModule;
 
-    private final AudioDeviceModule mAudioDeviceModule;
-    private final ClientModule mClientModule;
-    private final CallManager mCallManager;
-    private final CameraModule mCameraModule;
+    public VoximplantPlugin() {
+        Voximplant.subVersion = "flutter-2.2.0";
+    }
 
-    public VoximplantPlugin(Registrar registrar, MethodChannel channel) {
-        mRegistrar = registrar;
-        mChannel = channel;
+    private void configure(Context context, TextureRegistry textures, BinaryMessenger messenger) {
+        mChannel = new MethodChannel(messenger, "plugins.voximplant.com/client");
         mCallManager = new CallManager();
-        mAudioDeviceModule = new AudioDeviceModule(registrar);
-        mClientModule = new ClientModule(registrar, mCallManager);
-        mCameraModule = new CameraModule(registrar.context());
-
-        Voximplant.subVersion = "flutter-2.1.2";
+        mAudioDeviceModule = new AudioDeviceModule(messenger);
+        mClientModule = new ClientModule(messenger, context, textures, mCallManager);
+        mCameraModule = new CameraModule(context);
+        mChannel.setMethodCallHandler(this);
     }
 
     public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.voximplant.com/client");
-        channel.setMethodCallHandler(new VoximplantPlugin(registrar, channel));
+        new VoximplantPlugin().configure(registrar.context(),
+                                         registrar.textures(),
+                                         registrar.messenger()
+        );
+    }
+
+    @Override
+    public void onAttachedToEngine(FlutterPluginBinding binding) {
+        configure(binding.getApplicationContext(),
+                  binding.getTextureRegistry(),
+                  binding.getBinaryMessenger()
+        );
+    }
+
+    @Override
+    public void onDetachedFromEngine(FlutterPluginBinding binding) {
+        mChannel.setMethodCallHandler(null);
+        mChannel = null;
     }
 
     @Override

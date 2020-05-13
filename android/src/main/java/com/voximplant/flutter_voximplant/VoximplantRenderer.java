@@ -19,14 +19,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.view.TextureRegistry;
 
 class VoximplantRenderer implements RendererCommon.RendererEvents, EventChannel.StreamHandler {
     private final String TAG_NAME = "VOXFLUTTER";
-    private final PluginRegistry.Registrar mRegistrar;
-    private final TextureRegistry mTextureRegistry;
     private final TextureRegistry.SurfaceTextureEntry mSurfaceTextureEntry;
     private final SurfaceTexture mSurfaceTexture;
 
@@ -41,13 +39,11 @@ class VoximplantRenderer implements RendererCommon.RendererEvents, EventChannel.
     private int mRotation;
     private Handler mHandler = new Handler(Looper.getMainLooper());
 
-    VoximplantRenderer(PluginRegistry.Registrar registrar) {
-        mRegistrar = registrar;
-        mTextureRegistry = registrar.textures();
-        mSurfaceTextureEntry = mTextureRegistry.createSurfaceTexture();
+    VoximplantRenderer(BinaryMessenger messenger, TextureRegistry textures) {
+        mSurfaceTextureEntry = textures.createSurfaceTexture();
         mSurfaceTexture = mSurfaceTextureEntry.surfaceTexture();
 
-        mRendererEventChannel = new EventChannel(mRegistrar.messenger(), "plugins.voximplant.com/renderer_" + getTextureId());
+        mRendererEventChannel = new EventChannel(messenger, "plugins.voximplant.com/renderer_" + getTextureId());
         mRendererEventChannel.setStreamHandler(this);
 
         mRenderer = new SurfaceEglRenderer("vox_renderer");

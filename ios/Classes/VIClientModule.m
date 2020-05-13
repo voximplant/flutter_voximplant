@@ -231,7 +231,8 @@
                                    details:nil]);
         return;
     }
-    [self.client registerPushNotificationsToken:[self dataFromHexString:token] imToken:nil];
+    [self.client registerVoIPPushNotificationsToken:[self dataFromHexString:token]
+                                         completion:nil];
     result(nil);
 }
 
@@ -242,7 +243,8 @@
                                    details:nil]);
         return;
     }
-    [self.client unregisterPushNotificationsToken:[self dataFromHexString:token] imToken:nil];
+    [self.client unregisterVoIPPushNotificationsToken:[self dataFromHexString:token]
+                                           completion:nil];
     result(nil);
 }
 
@@ -269,13 +271,17 @@
     NSDictionary *headers = [arguments objectForKey:@"extraHeaders"] != [NSNull null] ? [arguments objectForKey:@"extraHeaders"] : nil;
     NSNumber *sendVideo = [arguments objectForKey:@"sendVideo"] != [NSNull null] ? [arguments objectForKey:@"sendVideo"] : @(NO);
     NSNumber *receiveVideo = [arguments objectForKey:@"receiveVideo"] != [NSNull null] ? [arguments objectForKey:@"receiveVideo"] : @(NO);
+    BOOL conference = [[arguments objectForKey:@"conference"] boolValue];
     //TODO(yulia): add preferrable codec
     VICallSettings *callSettings = [[VICallSettings alloc] init];
     callSettings.customData = customData;
     callSettings.extraHeaders = headers;
     callSettings.videoFlags = [VIVideoFlags videoFlagsWithReceiveVideo:receiveVideo.boolValue sendVideo:sendVideo.boolValue];
 
-    VICall *call = [self.client call:number settings:callSettings];
+    VICall *call = conference
+        ? [self.client callConference:number settings:callSettings]
+        : [self.client call:number settings:callSettings];
+    
     if (call) {
         VICallModule *callModule = [[VICallModule alloc] initWithRegistrar:self.registrar callManager:self.callManager call:call];
         [self.callManager addNewCall:callModule callId:call.callId];
@@ -337,7 +343,8 @@
             @"endpointId"          : call.endpoints.firstObject.endpointId ?: [NSNull null],
             @"endpointUserName"    : call.endpoints.firstObject.user ?: [NSNull null],
             @"endpointDisplayName" : call.endpoints.firstObject.userDisplayName ?: [NSNull null],
-            @"endpointSipUri"      : call.endpoints.firstObject.sipURI ?: [NSNull null]
+            @"endpointSipUri"      : call.endpoints.firstObject.sipURI ?: [NSNull null],
+            @"endpointPlace"       : call.endpoints.firstObject.place ?: [NSNull null]
         });
     }
 }

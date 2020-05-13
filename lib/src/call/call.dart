@@ -56,13 +56,21 @@ class VICallSettings {
 /// Signature for callbacks reporting that the call is connected.
 ///
 /// Used in [VICall].
+///
+/// `call` - VICall instance initiated the event
+///
+/// `headers` - Optional SIP headers
 typedef void VICallConnected(VICall call, Map<String, String> headers);
 
 /// Signature for callbacks reporting that the call is disconnected.
 ///
-/// Check if the call was answered on another device with [answeredElsewhere].
-///
 /// Used in [VICall].
+///
+/// `call` - VICall instance initiated the event
+///
+/// `headers` - Optional SIP headers
+///
+/// `answeredElsewhere` - Check if the call was answered on another device
 typedef void VICallDisconnected(VICall call,
     Map<String, String> headers, bool answeredElsewhere);
 
@@ -70,24 +78,44 @@ typedef void VICallDisconnected(VICall call,
 /// from the endpoint.
 ///
 /// Used in [VICall].
+///
+/// `call` - VICall instance initiated the event
+///
+/// `headers` - Optional SIP headers
 typedef void VICallRinging(VICall call, Map<String, String> headers);
 
 /// Signature for callbacks reporting that the call was failed.
 ///
-/// Failure reason is described by [code] and [description].
-///
 /// Used in [VICall].
+///
+/// `call` - VICall instance initiated the event
+///
+/// `code` - Error code
+///
+/// `description` - Error description
+///
+/// `headers` - Optional SIP headers
 typedef void VICallFailed(VICall call,
     int code, String description, Map<String, String> headers);
 
 /// Signature for callbacks reporting that the endpoint answered the call.
 ///
 /// Used in [VICall].
+///
+/// `call` - VICall instance initiated the event
 typedef void VICallAudioStarted(VICall call);
 
 /// Signature for callbacks reporting that INFO message is received.
 ///
 /// Used in [VICall].
+///
+/// `call` - VICall instance initiated the event
+///
+/// `type` - MIME type of INFO message
+///
+/// `content` - Body of INFO message
+///
+/// `headers` - Optional SIP headers
 typedef void VISIPInfoReceived(VICall call,
     String type, String content, Map<String, String> headers);
 
@@ -97,32 +125,52 @@ typedef void VISIPInfoReceived(VICall call,
 /// Voximplant Cloud, and is separated from Voximplant messaging API.
 ///
 /// Used in [VICall].
+///
+/// `call` - VICall instance initiated the event
+///
+/// `message` - Content of the message
 typedef void VIMessageReceived(VICall call, String message);
 
 /// Signature for callbacks reporting that the connection was not established
 /// due to a network connection problem between 2 peers.
 ///
 /// Used in [VICall].
+///
+/// `call` - VICall instance initiated the event
 typedef void VIICETimeout(VICall call);
 
 /// Signature for callbacks reporting that ICE connection is complete.
 ///
 /// Used in [VICall].
+///
+/// `call` - VICall instance initiated the event
 typedef void VIICECompleted(VICall call);
 
 /// Signature for callbacks reporting that new endpoint is added to the call.
 ///
 /// Used in [VICall].
+///
+/// `call` - VICall instance initiated the event
+///
+/// `endpoint` - New endpoint
 typedef void VIEndpointAdded(VICall call, VIEndpoint endpoint);
 
 /// Signature for callbacks reporting that local video is added to the call.
 ///
 /// Used in [VICall].
+///
+/// `call` - VICall instance initiated the event
+///
+/// `videoStream` - Local video stream
 typedef void VILocalVideoStreamAdded(VICall call, VIVideoStream videoStream);
 
 /// Signature for callbacks reporting that local video is removed from the call.
 ///
 /// Used in [VICall].
+///
+/// `call` - VICall instance initiated the event
+///
+/// `videoStream` - Local video stream
 typedef void VILocalVideoStreamRemoved(VICall call, VIVideoStream videoStream);
 
 /// Represents a call.
@@ -206,6 +254,9 @@ class VICall {
   /// Additional call parameters are set up via [callSettings]: video direction
   /// for the call, preferred video codec, custom data.
   ///
+  /// Optional `callSettings` - Additional call parameters like video direction
+  /// for the call, preferred video codec, custom data.
+  ///
   /// Throws [VIException], if an error occurred.
   ///
   /// Errors:
@@ -239,6 +290,8 @@ class VICall {
   /// will terminate the call and any pending calls to other devices of
   /// the current user.
   ///
+  /// Optional `headers` - Optional SIP headers
+  ///
   /// Throws [VIException], if an error occurred.
   ///
   /// Errors:
@@ -262,6 +315,8 @@ class VICall {
   ///
   /// Indicates that the user is not available only at a particular device.
   ///
+  /// Optional `headers` - Optional SIP headers
+  ///
   /// Throws [VIException], if an error occurred.
   ///
   /// Errors:
@@ -280,6 +335,8 @@ class VICall {
   }
 
   /// Disconnects the call.
+  ///
+  /// Optional `headers` - Optional SIP headers
   Future<void> hangup([Map<String, String> headers]) async {
     try {
       await _channel.invokeMethod<void>(
@@ -291,6 +348,8 @@ class VICall {
   }
 
   /// Puts the call on/off hold.
+  ///
+  /// `enable` - True if the call should be put on hold, false for unhold
   ///
   /// Throws [VIException], if an error occurred.
   ///
@@ -311,6 +370,8 @@ class VICall {
   }
 
   /// Enables or disables audio transfer from microphone into the call.
+  ///
+  /// `enable` - True if audio should be sent, false otherwise
   Future<void> sendAudio(bool enable) async {
     try {
       await _channel.invokeMethod<void>('sendAudioForCall',
@@ -323,6 +384,12 @@ class VICall {
   /// Send INFO message within the call.
   ///
   /// INFO message will be sent, if the call is establishing or established.
+  ///
+  /// `mimeType` - MIME type of info
+  ///
+  /// `body` - Custom string data
+  ///
+  /// `headers` - Optional SIP headers
   Future<void> sendInfo(
       String mimeType, String body, Map<String, String> headers) async {
     try {
@@ -341,6 +408,8 @@ class VICall {
   ///
   /// Implemented atop SIP INFO for communication between call endpoint and the
   /// Voximplant Cloud, and is separated from Voximplant messaging API.
+  ///
+  /// `message` - Message text
   Future<void> sendMessage(String message) async {
     try {
       await _channel.invokeMethod<void>('sendMessageForCall',
@@ -352,7 +421,9 @@ class VICall {
 
   /// Sends DTMFs in the call.
   ///
-  /// DTMFs will be sent only if the call is connected.
+  /// DTMFs can be sent only if the call is connected.
+  ///
+  /// `key` - DTMFs
   Future<void> sendTone(String key) async {
     try {
       await _channel.invokeMethod<void>(
@@ -369,6 +440,8 @@ class VICall {
   ///
   /// For the conference call it mutes or un-mutes video send (video stream in
   /// the 'muted' state will still consume a small bandwidth).
+  ///
+  /// `enable` - True if video should be sent, false otherwise
   ///
   /// Throws [VIException], if an error occurred.
   ///
@@ -420,7 +493,6 @@ class VICall {
       throw VIException(e.code, e.message);
     }
   }
-
 
   /// Returns the call duration in milliseconds.
   Future<int> getCallDuration() async {
@@ -517,7 +589,9 @@ class VICall {
           String userName = map['userName'];
           String displayName = map['displayName'];
           String sipUri = map['sipUri'];
-          endpoint = VIEndpoint._(endpointId, userName, displayName, sipUri);
+          int place = map['endpointPlace'];
+          endpoint =
+              VIEndpoint._(endpointId, userName, displayName, sipUri, place);
           _endpoints.add(endpoint);
         }
         if (onEndpointAdded != null) {
@@ -537,8 +611,21 @@ class VICall {
           String userName = map['endpointUserName'];
           String displayName = map['endpointDisplayName'];
           String sipUri = map['endpointSipUri'];
-          endpoint._invokeEndpointUpdatedEvent(userName, displayName, sipUri);
+          int place = map['endpointPlace'];
+          endpoint._invokeEndpointUpdatedEvent(
+              userName, displayName, sipUri, place);
         }
+        break;
+      case 'endpointRemoved':
+        String endpointId = map['endpointId'];
+        VIEndpoint endpoint;
+        for (VIEndpoint callEndpoint in _endpoints) {
+          if (callEndpoint.endpointId == endpointId) {
+            endpoint = callEndpoint;
+            break;
+          }
+        }
+        endpoint?._invokeEndpointRemovedEvent();
         break;
       case 'localVideoStreamAdded':
         String videoStreamId = map['videoStreamId'];

@@ -334,11 +334,12 @@
 - (void)call:(VICall *)call didAddEndpoint:(VIEndpoint *)endpoint {
     [endpoint setDelegate:self];
     [self sendEvent:@{
-        @"event"       : @"endpointAdded",
-        @"endpointId"  : endpoint.endpointId,
-        @"userName"    : endpoint.user ? endpoint.user : [NSNull null],
-        @"displayName" : endpoint.userDisplayName ? endpoint.userDisplayName : [NSNull null],
-        @"sipUri"      : endpoint.sipURI ? endpoint.sipURI : [NSNull null]
+        @"event"         : @"endpointAdded",
+        @"endpointId"    : endpoint.endpointId,
+        @"userName"      : endpoint.user ? endpoint.user : [NSNull null],
+        @"displayName"   : endpoint.userDisplayName ? endpoint.userDisplayName : [NSNull null],
+        @"sipUri"        : endpoint.sipURI ? endpoint.sipURI : [NSNull null],
+        @"endpointPlace" : endpoint.place ? endpoint.place : [NSNumber numberWithInt:0]
     }];
 }
 
@@ -426,8 +427,8 @@
 - (void)call:(VICall *)call didRemoveLocalVideoStream:(VIVideoStream *)videoStream {
     if ([self.localVideoStream.streamId isEqualToString:videoStream.streamId]) {
         [self sendEvent:@{
-            @"event" : @"localVideoStreamRemoved",
-            @"videoStreamId"   : videoStream.streamId,
+            @"event"         : @"localVideoStreamRemoved",
+            @"videoStreamId" : videoStream.streamId,
         }];
     } else {
         NSLog(@"VOXFLUTTER >  call: didRemoveLocalVideoStream: video stream id does not match to previously added video stream");
@@ -442,7 +443,8 @@
         @"endpointId"          : endpoint.endpointId,
         @"endpointUserName"    : endpoint.user ? endpoint.user : [NSNull null],
         @"endpointDisplayName" : endpoint.userDisplayName ? endpoint.userDisplayName : [NSNull null],
-        @"endpointSipUri"      : endpoint.sipURI ? endpoint.sipURI : [NSNull null]
+        @"endpointSipUri"      : endpoint.sipURI ? endpoint.sipURI : [NSNull null],
+        @"endpointPlace"       : endpoint.place ? endpoint.place : [NSNumber numberWithInt:0]
     }];
 }
 
@@ -461,6 +463,14 @@
         @"event"               : @"remoteVideoStreamRemoved",
         @"endpointId"          : endpoint.endpointId,
         @"videoStreamId"       : videoStream.streamId,
+    }];
+}
+
+- (void)endpointDidRemove:(VIEndpoint *)endpoint {
+    [endpoint setDelegate:nil];
+    [self sendEvent:@{
+        @"event"      : @"endpointRemoved",
+        @"endpointId" : endpoint.endpointId,
     }];
 }
 

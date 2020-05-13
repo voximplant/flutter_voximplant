@@ -6,13 +6,26 @@ part of voximplant;
 /// display name, user name, and SIP URI is updates.
 ///
 /// Used in [VIEndpoint].
+///
+/// `endpoint` - VIEndpoint instance initiated the event
 typedef void VIEndpointUpdated(VIEndpoint endpoint);
+
+/// Signature for callbacks reporting that the endpoint removed from a call.
+///
+/// Used in [VIEndpoint].
+///
+/// `endpoint` - VIEndpoint instance initiated the event
+typedef void VIEndpointRemoved(VIEndpoint endpoint);
 
 /// Signature for callbacks reporting that the endpoint added the video stream
 /// to the call.
 ///
 /// Used in [VIEndpoint].
-typedef void VIRemoteVideoStreamAdded(VIEndpoint endpoint, VIVideoStream videoStream);
+/// `endpoint` - VIEndpoint instance initiated the event
+///
+/// `videoStream` - Remote video stream
+typedef void VIRemoteVideoStreamAdded(
+    VIEndpoint endpoint, VIVideoStream videoStream);
 
 /// Signature for callbacks reporting that the endpoint removed the video stream
 /// from the call.
@@ -20,12 +33,21 @@ typedef void VIRemoteVideoStreamAdded(VIEndpoint endpoint, VIVideoStream videoSt
 /// This callback is not triggered on call end.
 ///
 /// Used in [VIEndpoint].
-typedef void VIRemoteVideoStreamRemoved(VIEndpoint endpoint, VIVideoStream videoStream);
+///
+/// `endpoint` - VIEndpoint instance initiated the event
+///
+/// `videoStream` - Remote video stream
+typedef void VIRemoteVideoStreamRemoved(
+    VIEndpoint endpoint, VIVideoStream videoStream);
 
 /// Represents a remote call participant.
 class VIEndpoint {
   /// Callback for getting notified when the endpoint information is updated.
   VIEndpointUpdated onEndpointUpdated;
+
+  /// Callback for getting notified when the endpoint is removed from the call.
+  /// It is not triggered on call end.
+  VIEndpointRemoved onEndpointRemoved;
 
   /// Callback for getting notified when the endpoint added the video stream to
   /// the call.
@@ -39,6 +61,7 @@ class VIEndpoint {
   String _displayName;
   String _sipUri;
   String _endpointId;
+  int _place;
   List<VIVideoStream> _remoteVideoStreams = [];
 
   /// This endpoint's user name.
@@ -56,15 +79,28 @@ class VIEndpoint {
   /// All active video streams of the endpoint.
   List<VIVideoStream> get remoteVideoStreams => _remoteVideoStreams;
 
-  VIEndpoint._(this._endpointId, this._userName, this._displayName, this._sipUri);
+  /// Place of this endpoint in a video conference.
+  /// May be used as a position of this endpoint’s video stream
+  /// to render in a video conference call.
+  int get place => _place;
+
+  VIEndpoint._(this._endpointId, this._userName, this._displayName,
+      this._sipUri, this._place);
 
   _invokeEndpointUpdatedEvent(
-      String username, String displayName, String sipUri) {
+      String username, String displayName, String sipUri, int place) {
     this._displayName = displayName;
     this._userName = username;
     this._sipUri = sipUri;
+    this._place = place;
     if (onEndpointUpdated != null) {
       onEndpointUpdated(this);
+    }
+  }
+
+  _invokeEndpointRemovedEvent() {
+    if (onEndpointRemoved != null) {
+      onEndpointRemoved(this);
     }
   }
 

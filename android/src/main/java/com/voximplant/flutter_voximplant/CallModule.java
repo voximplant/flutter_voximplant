@@ -24,29 +24,32 @@ import com.voximplant.sdk.call.VideoFlags;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.view.TextureRegistry;
 
 public class CallModule implements ICallListener, IEndpointListener, EventChannel.StreamHandler {
     private final String TAG_NAME = "VOXFLUTTER";
-    private final PluginRegistry.Registrar mRegistrar;
     private final CallManager mCallManager;
     private final ICall mCall;
     private EventChannel mEventChannel;
     private EventChannel.EventSink mEventSink;
     private Handler mHandler = new Handler(Looper.getMainLooper());
+    private final BinaryMessenger mMessenger;
+    private final TextureRegistry mTextures;
 
     private IVideoStream mLocalVideoStream;
     private Map<String, IVideoStream> mRemoteVideoStreams = new HashMap<>();
     private Map<String, VoximplantRenderer> mRenderers = new HashMap<>();
 
-    CallModule(PluginRegistry.Registrar registrar, CallManager callManager, ICall call) {
-        mRegistrar = registrar;
+    CallModule(BinaryMessenger messenger, TextureRegistry textures, CallManager callManager, ICall call) {
         mCallManager = callManager;
+        mTextures = textures;
+        mMessenger = messenger;
         mCall = call;
-        mEventChannel = new EventChannel(mRegistrar.messenger(), "plugins.voximplant.com/call_" + mCall.getCallId());
+        mEventChannel = new EventChannel(messenger, "plugins.voximplant.com/call_" + mCall.getCallId());
         mEventChannel.setStreamHandler(this);
     }
 
@@ -259,7 +262,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
             return;
         }
         if (mLocalVideoStream != null && mLocalVideoStream.getVideoStreamId().equals(streamId)) {
-            VoximplantRenderer renderer = new VoximplantRenderer(mRegistrar);
+            VoximplantRenderer renderer = new VoximplantRenderer(mMessenger, mTextures);
             mRenderers.put(streamId, renderer);
             mLocalVideoStream.addVideoRenderer(renderer.getRenderer(), RenderScaleType.SCALE_FIT);
             Map<String, Object> event = new HashMap<>();
@@ -270,7 +273,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         if (mRemoteVideoStreams.containsKey(streamId)) {
             IVideoStream videoStream = mRemoteVideoStreams.get(streamId);
             if (videoStream != null) {
-                VoximplantRenderer renderer = new VoximplantRenderer(mRegistrar);
+                VoximplantRenderer renderer = new VoximplantRenderer(mMessenger, mTextures);
                 mRenderers.put(streamId, renderer);
                 videoStream.addVideoRenderer(renderer.getRenderer(), RenderScaleType.SCALE_FIT);
                 Map<String, Object> event = new HashMap<>();
@@ -485,6 +488,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         event.put("endpointUserName", endpoint.getUserName());
         event.put("endpointDisplayName", endpoint.getUserDisplayName());
         event.put("endpointSipUri", endpoint.getSipUri());
+        event.put("endpointPlace", endpoint.getPlace());
         sendCallEvent(event);
     }
 
@@ -515,7 +519,11 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
 
     @Override
     public void onEndpointRemoved(IEndpoint endpoint) {
-
+        endpoint.setEndpointListener(null);
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "endpointRemoved");
+        event.put("endpointId", endpoint.getEndpointId());
+        sendCallEvent(event);
     }
 
     @Override
@@ -526,6 +534,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         event.put("endpointUserName", endpoint.getUserName());
         event.put("endpointDisplayName", endpoint.getUserDisplayName());
         event.put("endpointSipUri", endpoint.getSipUri());
+        event.put("endpointPlace", endpoint.getPlace());
         sendCallEvent(event);
     }
 
@@ -535,6 +544,5 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
             mHandler.post(() -> mEventSink.success(event));
         }
     }
-
 
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.17.0 
+  and Voximplant iOS SDK 2.31.0
+* Supporting the new Android plugins APIs based on FlutterPlugin
+* VIClient.conference method added
+* VIEndpoint.place value added
+* VIEndpoint.onEndpointRemoved callback added
+
 ## 2.1.2
 * Update iOS platform code to use Voximplant iOS SDK 2.30.0
 * Xcode 11.4 support added

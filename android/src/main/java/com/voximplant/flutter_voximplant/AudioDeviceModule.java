@@ -16,20 +16,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
 
 class AudioDeviceModule implements IAudioDeviceEventsListener, EventChannel.StreamHandler {
     private Handler mHandler = new Handler(Looper.getMainLooper());
-    private final PluginRegistry.Registrar mRegistrar;
     private EventChannel mEventChannel;
     private EventChannel.EventSink mEventSink;
 
-    AudioDeviceModule(PluginRegistry.Registrar registar) {
-        mRegistrar = registar;
-        mEventChannel = new EventChannel(registar.messenger(), "plugins.voximplant.com/audio_device_events");
+    AudioDeviceModule(BinaryMessenger messenger) {
+        mEventChannel = new EventChannel(messenger, "plugins.voximplant.com/audio_device_events");
         mEventChannel.setStreamHandler(this);
         Voximplant.getAudioDeviceManager().addAudioDeviceEventsListener(this);
     }
