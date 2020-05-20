@@ -32,7 +32,7 @@ compileOptions {
 
 ## Usage
 
-To get started, you'll need to [register](https://voximplant.com) a free Voximplant developer account.
+To get started, you'll need to [register](https://manage.voximplant.com/auth/sign_up/) a free Voximplant developer account.
 
 #### Initialization
 Client is the main class of the SDK that provides access to Voximplant’s functions, 
