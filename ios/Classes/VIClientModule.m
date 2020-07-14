@@ -62,6 +62,10 @@
         [self unregisterFromPushNotifications:call.arguments result:result];
     } else if ([@"handlePushNotification" isEqualToString:call.method]) {
         [self handlePushNotification:call.arguments result:result];
+    } else if ([@"registerIMPushNotificationsToken" isEqualToString:call.method]) {
+        [self registerIMPushNotificationsToken:call.arguments result:result];
+    } else if ([@"unregisterIMPushNotificationsToken" isEqualToString:call.method]) {
+        [self unregisterIMPushNotificationsToken:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -256,6 +260,30 @@
         return;
     }
     [self.client handlePushNotification:arguments];
+    result(nil);
+}
+
+- (void)unregisterIMPushNotificationsToken:(NSString *)token result:(FlutterResult)result {
+    if (!token) {
+        result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
+                                   message:@"Client.unregisterIMPushNotificationsToken: Invalid arguments"
+                                   details:nil]);
+        return;
+    }
+    [self.client unregisterIMPushNotificationsToken:[self dataFromHexString:token]
+                                         completion:nil];
+    result(nil);
+}
+
+- (void)registerIMPushNotificationsToken:(NSString *)token result:(FlutterResult)result {
+    if (!token) {
+        result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
+                                   message:@"Client.registerIMPushNotificationsToken: Invalid arguments"
+                                   details:nil]);
+        return;
+    }
+    [self.client registerIMPushNotificationsToken:[self dataFromHexString:token]
+                                       completion:nil];
     result(nil);
 }
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.19.0 
+  and Voximplant iOS SDK 2.33.0
+* Introduce Messaging API
+* Fix for [#14](https://github.com/voximplant/flutter_voximplant/issues/14)
+
 ## 2.2.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.17.0 
   and Voximplant iOS SDK 2.31.0

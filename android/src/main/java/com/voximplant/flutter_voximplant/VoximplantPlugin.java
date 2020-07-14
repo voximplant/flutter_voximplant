@@ -8,6 +8,8 @@ import android.content.Context;
 
 import com.voximplant.sdk.Voximplant;
 
+import java.util.regex.Pattern;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -18,17 +20,16 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.TextureRegistry;
 
 public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
-    final String TAG_NAME = "VOXFLUTTER";
-
     private MethodChannel mChannel;
 
     private AudioDeviceModule mAudioDeviceModule;
     private ClientModule mClientModule;
     private CallManager mCallManager;
     private CameraModule mCameraModule;
+    private MessagingModule mMessagingModule;
 
     public VoximplantPlugin() {
-        Voximplant.subVersion = "flutter-2.2.0";
+        Voximplant.subVersion = "flutter-2.3.0";
     }
 
     private void configure(Context context, TextureRegistry textures, BinaryMessenger messenger) {
@@ -38,6 +39,7 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
         mClientModule = new ClientModule(messenger, context, textures, mCallManager);
         mCameraModule = new CameraModule(context);
         mChannel.setMethodCallHandler(this);
+        mMessagingModule = new MessagingModule(messenger);
     }
 
     public static void registerWith(Registrar registrar) {
@@ -63,90 +65,52 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
 
     @Override
     public void onMethodCall(MethodCall call, Result result) {
-        if (isClientMethod(call)) {
-            mClientModule.handleMethodCall(call, result);
-        } else if (isCallMethod(call)) {
-            CallModule callModule = mCallManager.checkCallEvent(call, result, "Call." + call.method);
+        String MESSAGING = "Messaging";
+        String CLIENT = "Client";
+        String CALL = "Call";
+        String AUDIO_DEVICE = "AudioDevice";
+        String VIDEO_STREAM = "VideoStream";
+        String CAMERA = "Camera";
+        if (isMethodCallOfType(MESSAGING, call)) {
+            mMessagingModule.handleMethodCall(excludeMethodType(call), result);
+
+        } else if (isMethodCallOfType(CLIENT, call)) {
+            mClientModule.handleMethodCall(excludeMethodType(call), result);
+
+        } else if (isMethodCallOfType(CALL, call)) {
+            MethodCall method = excludeMethodType(call);
+            CallModule callModule = mCallManager.checkCallEvent(method, result, "Call." + method);
             if (callModule != null) {
-                callModule.handleMethodCall(call, result);
+                callModule.handleMethodCall(method, result);
             }
-        } else if (isVideoStreamMethod(call)) {
-            CallModule callModule = mCallManager.findCallByStreamId(call, result, "Call." + call.method);
+
+        } else if (isMethodCallOfType(VIDEO_STREAM, call)) {
+            MethodCall method = excludeMethodType(call);
+            CallModule callModule = mCallManager.findCallByStreamId(method, result, "Call." + method);
             if (callModule != null) {
-                callModule.handleMethodCall(call, result);
+                callModule.handleMethodCall(method, result);
             }
-        } else if (isAudioDeviceMethod(call)) {
-            mAudioDeviceModule.handleMethodCall(call, result);
-        } else if (isCameraMethod(call)) {
-            mCameraModule.handleMethodCall(call, result);
+
+        } else if (isMethodCallOfType(AUDIO_DEVICE, call)) {
+            mAudioDeviceModule.handleMethodCall(excludeMethodType(call), result);
+
+        } else if (isMethodCallOfType(CAMERA, call)) {
+            mCameraModule.handleMethodCall(excludeMethodType(call), result);
+
         } else {
             result.notImplemented();
         }
     }
 
-    private boolean isClientMethod(MethodCall call) {
-        String method = call.method;
-        if (method == null) {
-            return false;
-        }
-        return method.equals("initClient") ||
-                method.equals("connect") ||
-                method.equals("disconnect") ||
-                method.equals("login") ||
-                method.equals("loginWithToken") ||
-                method.equals("getClientState") ||
-                method.equals("requestOneTimeKey") ||
-                method.equals("tokenRefresh") ||
-                method.equals("loginWithKey") ||
-                method.equals("call") ||
-                method.equals("registerForPushNotifications") ||
-                method.equals("unregisterFromPushNotifications") ||
-                method.equals("handlePushNotification");
+    private boolean isMethodCallOfType(String type, MethodCall call) {
+        String separator = ".";
+        String methodName = call.method;
+        String[] methodNameComponents = methodName.split(Pattern.quote(separator));
+        return  methodNameComponents.length > 0 && methodNameComponents[0].equals(type);
     }
 
-    private boolean isCallMethod(MethodCall call) {
-        String method = call.method;
-        if (method == null) {
-            return false;
-        }
-        return method.equals("answerCall") ||
-                method.equals("rejectCall") ||
-                method.equals("hangupCall") ||
-                method.equals("sendAudioForCall") ||
-                method.equals("sendInfoForCall") ||
-                method.equals("sendMessageForCall") ||
-                method.equals("sendToneForCall") ||
-                method.equals("holdCall") ||
-                method.equals("sendVideoForCall") ||
-                method.equals("receiveVideoForCall") ||
-                method.equals("getCallDuration");
-    }
-
-    private boolean isVideoStreamMethod(MethodCall call) {
-        String method = call.method;
-        if (method == null) {
-            return false;
-        }
-        return method.equals("addVideoRenderer") ||
-                method.equals("removeVideoRenderer");
-    }
-
-    private boolean isAudioDeviceMethod(MethodCall call) {
-        String method = call.method;
-        if (method == null) {
-            return false;
-        }
-        return call.method.equals("selectAudioDevice") ||
-                call.method.equals("getActiveDevice") ||
-                call.method.equals("getAudioDevices");
-    }
-
-    private boolean isCameraMethod(MethodCall call) {
-        String method = call.method;
-        if (method == null) {
-            return false;
-        }
-        return call.method.equals("selectCamera") ||
-                call.method.equals("setCameraResolution");
+    private MethodCall excludeMethodType(MethodCall call) {
+        String[] methodNameComponents = call.method.split(Pattern.quote("."));
+        return new MethodCall(methodNameComponents.length > 0 ? methodNameComponents[1] : call.method, call.arguments);
     }
 }

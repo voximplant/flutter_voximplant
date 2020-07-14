@@ -242,7 +242,9 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
             Boolean receiveVideo = call.argument("receiveVideo");
             String videoCodec = call.argument("videoCodec");
             Boolean conference = call.argument("conference");
-            if (conference == null) { conference = false; }
+            if (conference == null) {
+                conference = false;
+            }
             CallSettings callSettings = new CallSettings();
             callSettings.customData = customData;
             callSettings.extraHeaders = headers;
@@ -303,12 +305,13 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
         mHandler.post(() -> result.success(null));
     }
 
+    @SuppressWarnings("unchecked")
     private void handlePushNotification(MethodCall call, MethodChannel.Result result) {
         if (call.arguments == null) {
             mHandler.post(() -> result.error(ERROR_INVALID_ARGUMENTS, "Client.handlePushNotification: Invalid arguments", null));
             return;
         }
-        Map<String, String> payload = (Map<String, String>)call.arguments;
+        Map<String, String> payload = (Map<String, String>) call.arguments;
         mClient.handlePushNotification(payload);
         mHandler.post(() -> result.success(null));
     }
@@ -455,7 +458,6 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
 
     //endregion
 
-
     @Override
     public void onListen(Object arguments, EventChannel.EventSink eventSink) {
         if (arguments instanceof String) {
@@ -481,6 +483,4 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
             }
         }
     }
-
-
 }

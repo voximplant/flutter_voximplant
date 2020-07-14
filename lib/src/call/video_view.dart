@@ -119,8 +119,8 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
       return Future<void>.value();
     }
     if (streamId != null) {
-      Map<String, int> data =
-          await _channel.invokeMapMethod('addVideoRenderer', <String, String>{
+      Map<String, int> data = await _channel
+          .invokeMapMethod('VideoStream.addVideoRenderer', <String, String>{
         'streamId': streamId,
       });
       _VILog._i('VideoView: setStreamId: textureId ${data['textureId']} '
@@ -139,7 +139,8 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
       if (this._streamId == null) {
         return Future<void>.value();
       }
-      await _channel.invokeMethod('removeVideoRenderer', <String, String>{
+      await _channel
+          .invokeMethod('VideoStream.removeVideoRenderer', <String, String>{
         'streamId': this._streamId,
       });
       if (_rendererSubscription != null) {
@@ -156,7 +157,8 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
   void _onRendererEvent(dynamic event) {
     final Map<dynamic, dynamic> map = event;
     if (map['event'] == 'resolutionChanged') {
-      _VILog._i('VideoView: resolutionChanged: ${map['width']} x ${map['height']}, '
+      _VILog._i(
+          'VideoView: resolutionChanged: ${map['width']} x ${map['height']}, '
           'aspect ratio: ${map['aspectRatio']}, '
           'rotation: ${map['rotation']}, '
           'textureId: ${map['textureId']}');

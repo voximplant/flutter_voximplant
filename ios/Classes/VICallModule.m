@@ -289,9 +289,7 @@
 }
 
 - (void)getCallDuration:(NSDictionary *)arguments result:(FlutterResult)result {
-    NSTimeInterval duration = [self.call duration];
-    NSInteger durationMs = round(duration * 1000.0);
-    result(@(durationMs));
+    result([NSNumber fromTimeInterval:[self.call duration]]);
 }
  
 - (BOOL)hasVideoStreamId:(NSString *)streamId {

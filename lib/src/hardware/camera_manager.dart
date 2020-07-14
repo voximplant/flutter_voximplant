@@ -15,18 +15,24 @@ class VICameraManager {
   VICameraManager._(this._channel);
 
   /// Selects camera.
+  ///
+  /// `cameraType` - Back or front camera
   Future<void> selectCamera(VICameraType cameraType) async {
-    await _channel.invokeMethod('selectCamera', <String, dynamic>{
-      'cameraType': cameraType.index
-    });
+      await _channel.invokeMethod('Camera.selectCamera', <String, dynamic>{
+        'cameraType': cameraType.index
+      });
   }
 
   /// Selects camera resolution.
   ///
-  /// Camera will capture frames in a format that is as close as posssible
+  /// Camera will capture frames in a format that is as close as possible
   /// to [width] x [height].
+  ///
+  /// `width` - Camera resolution width
+  ///
+  /// `height` - Camera resolution height
   Future<void> setCameraResolution(int width, int height) async {
-    await _channel.invokeMethod('setCameraResolution', <String, dynamic>{
+    await _channel.invokeMethod('Camera.setCameraResolution', <String, dynamic>{
       'width': width,
       'height': height
     });

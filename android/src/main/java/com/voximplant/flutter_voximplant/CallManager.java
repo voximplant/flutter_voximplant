@@ -36,7 +36,6 @@ class CallManager {
             mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS, methodName + ": Failed to find call for callId: " + callId, null));
         }
         return callModule;
-
     }
 
     CallModule findCallByStreamId(MethodCall call, MethodChannel.Result result, String methodName) {

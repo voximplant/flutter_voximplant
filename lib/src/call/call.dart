@@ -3,11 +3,7 @@
 part of voximplant;
 
 /// Represents supported video codecs.
-enum VIVideoCodec {
-  AUTO,
-  H264,
-  VP8
-}
+enum VIVideoCodec { AUTO, H264, VP8 }
 
 /// Specifies video direction for a call.
 class VIVideoFlags {
@@ -71,8 +67,8 @@ typedef void VICallConnected(VICall call, Map<String, String> headers);
 /// `headers` - Optional SIP headers
 ///
 /// `answeredElsewhere` - Check if the call was answered on another device
-typedef void VICallDisconnected(VICall call,
-    Map<String, String> headers, bool answeredElsewhere);
+typedef void VICallDisconnected(
+    VICall call, Map<String, String> headers, bool answeredElsewhere);
 
 /// Signature for callbacks reporting when progress signal is received
 /// from the endpoint.
@@ -95,8 +91,8 @@ typedef void VICallRinging(VICall call, Map<String, String> headers);
 /// `description` - Error description
 ///
 /// `headers` - Optional SIP headers
-typedef void VICallFailed(VICall call,
-    int code, String description, Map<String, String> headers);
+typedef void VICallFailed(
+    VICall call, int code, String description, Map<String, String> headers);
 
 /// Signature for callbacks reporting that the endpoint answered the call.
 ///
@@ -116,8 +112,8 @@ typedef void VICallAudioStarted(VICall call);
 /// `content` - Body of INFO message
 ///
 /// `headers` - Optional SIP headers
-typedef void VISIPInfoReceived(VICall call,
-    String type, String content, Map<String, String> headers);
+typedef void VISIPInfoReceived(
+    VICall call, String type, String content, Map<String, String> headers);
 
 /// Signature for callbacks reporting that [message] is received within the call.
 ///
@@ -177,27 +173,38 @@ typedef void VILocalVideoStreamRemoved(VICall call, VIVideoStream videoStream);
 class VICall {
   /// Callback for getting notified when the call is connected.
   VICallConnected onCallConnected;
+
   /// Callback for getting notified when the call is disconnected.
   VICallDisconnected onCallDisconnected;
+
   /// Callback for getting notified when progress signal is received
   /// from the endpoint.
   VICallRinging onCallRinging;
+
   /// Callback for getting notified when the call is failed.
   VICallFailed onCallFailed;
+
   /// Callback for getting notified when the endpoint answered the call.
   VICallAudioStarted onCallAudioStarted;
+
   /// Callback for getting notified when INFO message in received.
   VISIPInfoReceived onSIPInfoReceived;
+
   /// Callback for getting notified when message is received.
   VIMessageReceived onMessageReceived;
+
   /// Callback for getting notified about failure to connect peers.
   VIICETimeout onICETimeout;
+
   /// Callback for getting notified when ICE connection is completed.
   VIICECompleted onICECompleted;
+
   /// Callback for getting notified when new endpoint is added to the call.
   VIEndpointAdded onEndpointAdded;
+
   /// Callback for getting notified when local video is added to the call.
   VILocalVideoStreamAdded onLocalVideoStreamAdded;
+
   /// Callback for getting notified when local video is removed from the call.
   VILocalVideoStreamRemoved onLocalVideoStreamRemoved;
 
@@ -226,6 +233,7 @@ class VICall {
 
   /// The call id.
   String get callId => _callId;
+
   /// The CallKit UUID that may be used to match an incoming call with a push
   /// notification received before.
   ///
@@ -236,16 +244,18 @@ class VICall {
   /// For outgoing calls it is recommended to set CXStartCallAction.callUUID
   /// value to this property on handling CXStartCallAction.
   String get callKitUUID => _callKitUUID;
+
   set callKitUUID(String uuid) {
     _callKitUUID = uuid.toUpperCase();
     if (Platform.isIOS) {
-      _channel.invokeMethod<void>('setCallKitUUID',
+      _channel.invokeMethod<void>('Call.setCallKitUUID',
           <String, dynamic>{'callId': _callId, 'uuid': _callKitUUID});
     }
   }
 
   /// The endpoints associated with the call.
   List<VIEndpoint> get endpoints => _endpoints;
+
   /// The active local video stream.
   VIVideoStream get localVideoStream => _localVideoStream;
 
@@ -268,7 +278,7 @@ class VICall {
   ///   already answered.
   Future<void> answer([VICallSettings callSettings]) async {
     try {
-      await _channel.invokeMethod<void>('answerCall', <String, dynamic>{
+      await _channel.invokeMethod<void>('Call.answerCall', <String, dynamic>{
         'callId': _callId,
         'sendVideo': callSettings?.videoFlags?.sendVideo ?? false,
         'receiveVideo': callSettings?.videoFlags?.receiveVideo ?? false,
@@ -299,7 +309,7 @@ class VICall {
   ///   already answered or ended.
   Future<void> decline([Map<String, String> headers]) async {
     try {
-      await _channel.invokeMethod<void>('rejectCall', <String, dynamic>{
+      await _channel.invokeMethod<void>('Call.rejectCall', <String, dynamic>{
         'callId': _callId,
         'headers': headers,
         'rejectMode': 'decline'
@@ -324,7 +334,7 @@ class VICall {
   ///   already answered or ended.
   Future<void> reject([Map<String, String> headers]) async {
     try {
-      await _channel.invokeMethod<void>('rejectCall', <String, dynamic>{
+      await _channel.invokeMethod<void>('Call.rejectCall', <String, dynamic>{
         'callId': _callId,
         'headers': headers,
         'rejectMode': 'reject'
@@ -339,8 +349,7 @@ class VICall {
   /// Optional `headers` - Optional SIP headers
   Future<void> hangup([Map<String, String> headers]) async {
     try {
-      await _channel.invokeMethod<void>(
-          'hangupCall',
+      await _channel.invokeMethod<void>('Call.hangupCall',
           <String, dynamic>{'callId': _callId, 'headers': headers});
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -362,8 +371,8 @@ class VICall {
   /// * [VICallError.ERROR_TIMEOUT] - If the operation is not completed in time.
   Future<void> hold(bool enable) async {
     try {
-      await _channel.invokeMethod<void>(
-          'holdCall', <String, dynamic>{'callId': _callId, 'enable': enable});
+      await _channel.invokeMethod<void>('Call.holdCall',
+          <String, dynamic>{'callId': _callId, 'enable': enable});
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     }
@@ -374,7 +383,7 @@ class VICall {
   /// `enable` - True if audio should be sent, false otherwise
   Future<void> sendAudio(bool enable) async {
     try {
-      await _channel.invokeMethod<void>('sendAudioForCall',
+      await _channel.invokeMethod<void>('Call.sendAudioForCall',
           <String, dynamic>{'callId': _callId, 'enable': enable});
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -393,7 +402,8 @@ class VICall {
   Future<void> sendInfo(
       String mimeType, String body, Map<String, String> headers) async {
     try {
-      await _channel.invokeMethod<void>('sendInfoForCall', <String, dynamic>{
+      await _channel.invokeMethod<void>(
+          'Call.sendInfoForCall', <String, dynamic>{
         'callId': _callId,
         'mimetype': mimeType,
         'body': body,
@@ -412,7 +422,7 @@ class VICall {
   /// `message` - Message text
   Future<void> sendMessage(String message) async {
     try {
-      await _channel.invokeMethod<void>('sendMessageForCall',
+      await _channel.invokeMethod<void>('Call.sendMessageForCall',
           <String, dynamic>{'callId': _callId, 'message': message});
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -426,8 +436,8 @@ class VICall {
   /// `key` - DTMFs
   Future<void> sendTone(String key) async {
     try {
-      await _channel.invokeMethod<void>(
-          'sendToneForCall', <String, String>{'callId': _callId, 'tone': key});
+      await _channel.invokeMethod<void>('Call.sendToneForCall',
+          <String, String>{'callId': _callId, 'tone': key});
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     }
@@ -458,7 +468,7 @@ class VICall {
   ///   Put the call off hold and repeat the operation.
   Future<void> sendVideo(bool enable) async {
     try {
-      await _channel.invokeMethod('sendVideoForCall', <String, dynamic>{
+      await _channel.invokeMethod('Call.sendVideoForCall', <String, dynamic>{
         'callId': _callId,
         'enable': enable,
       });
@@ -486,7 +496,7 @@ class VICall {
   ///   Put the call off hold and repeat the operation.
   Future<void> receiveVideo() async {
     try {
-      await _channel.invokeMethod('receiveVideoForCall', <String, String>{
+      await _channel.invokeMethod('Call.receiveVideoForCall', <String, String>{
         'callId': callId,
       });
     } on PlatformException catch (e) {
@@ -497,7 +507,8 @@ class VICall {
   /// Returns the call duration in milliseconds.
   Future<int> getCallDuration() async {
     try {
-      return await _channel.invokeMethod('getCallDuration', <String, String>{
+      return await _channel
+          .invokeMethod('Call.getCallDuration', <String, String>{
         'callId': callId,
       });
     } on PlatformException catch (e) {

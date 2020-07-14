@@ -6,12 +6,16 @@ part of voximplant;
 enum VIAudioDevice {
   /// Bluetooth headset
   Bluetooth,
+
   /// Earpiece
   Earpiece,
+
   /// Speaker
   Speaker,
+
   /// Wired headset
   WiredHeadset,
+
   /// No audio device, generally indicates that something went wrong with audio
   /// device selection.
   ///
@@ -28,6 +32,10 @@ enum VIAudioDevice {
 ///
 /// If the event is triggered when there is no call, [device] is the audio device
 /// that will be used for the next call.
+///
+/// `audioManager` - VIAudioDeviceManager instance initiated the event
+///
+/// `device` - Audio device to be used
 typedef void VIAudioDeviceChanged(
     VIAudioDeviceManager audioManager, VIAudioDevice device);
 
@@ -35,8 +43,12 @@ typedef void VIAudioDeviceChanged(
 /// a previously connected audio device is disconnected.
 ///
 /// For iOS: if the disconnected device was not selected before via
-/// [VIAduioDeviceManager.selectAudioDevice] API, this callback may be not
+/// [VIAudioDeviceManager.selectAudioDevice] API, this callback may be not
 /// invoked.
+///
+/// `audioManager` - VIAudioDeviceManager instance initiated the event
+///
+/// `deviceList` - List of currently available audio devices.
 typedef void VIAudioDeviceListChanged(
     VIAudioDeviceManager audioManager, List<VIAudioDevice> deviceList);
 
@@ -96,8 +108,11 @@ class VIAudioDeviceManager {
   ///   it is required to reselect this audio device after
   ///   CXProviderDelegate.didActivateAudioSession is called. Otherwise audio
   ///   routing may be reset to default.
+  ///
+  /// `audioDevice` - Audio device to be set active
   Future<void> selectAudioDevice(VIAudioDevice audioDevice) async {
-    await _channel.invokeMethod<void>('selectAudioDevice', <String, dynamic>{
+    await _channel
+        .invokeMethod<void>('AudioDevice.selectAudioDevice', <String, dynamic>{
       'audioDevice': audioDevice.index,
     });
   }
@@ -109,14 +124,15 @@ class VIAudioDeviceManager {
   /// In this case [onAudioDeviceChanged] will be triggered.
   Future<VIAudioDevice> getActiveDevice() async {
     Map<String, dynamic> data =
-        await _channel.invokeMapMethod('getActiveDevice');
+        await _channel.invokeMapMethod('AudioDevice.getActiveDevice');
     VIAudioDevice audioDevice = VIAudioDevice.values[data['audioDevice']];
     return audioDevice;
   }
 
   /// Returns the list of available audio devices.
   Future<List<VIAudioDevice>> getAudioDevices() async {
-    List<int> data = await _channel.invokeListMethod('getAudioDevices');
+    List<int> data =
+        await _channel.invokeListMethod('AudioDevice.getAudioDevices');
     List<VIAudioDevice> newAudioDevices = List();
     for (int device in data) {
       newAudioDevices.add(VIAudioDevice.values[device]);
@@ -135,7 +151,7 @@ class VIAudioDeviceManager {
   /// CXProviderDelegate.performAnswerCallAction.
   Future<void> callKitConfigureAudioSession() async {
     if (Platform.isIOS) {
-      await _channel.invokeMethod('callKitConfigureAudioSession');
+      await _channel.invokeMethod('AudioDevice.callKitConfigureAudioSession');
     } else {
       _VILog._w('callKitConfigureAudioSession: invalid call for platform');
     }
@@ -149,7 +165,7 @@ class VIAudioDeviceManager {
   /// Must be called if CallKit becomes disabled.
   Future<void> callKitReleaseAudioSession() async {
     if (Platform.isIOS) {
-      await _channel.invokeMethod('callKitReleaseAudioSession');
+      await _channel.invokeMethod('AudioDevice.callKitReleaseAudioSession');
     } else {
       _VILog._w('callKitReleaseAudioSession: invalid call for platform');
     }
@@ -163,7 +179,7 @@ class VIAudioDeviceManager {
   /// Should be called in CXProviderDelegate.didActivateAudioSession.
   Future<void> callKitStartAudio() async {
     if (Platform.isIOS) {
-      await _channel.invokeMethod('callKitStartAudioSession');
+      await _channel.invokeMethod('AudioDevice.callKitStartAudioSession');
     } else {
       _VILog._w('callKitStartAudio: invalid call for platform');
     }
@@ -177,7 +193,7 @@ class VIAudioDeviceManager {
   /// Should be called in CXProviderDelegate.didDeactivateAudioSession.
   Future<void> callKitStopAudio() async {
     if (Platform.isIOS) {
-      await _channel.invokeMethod('callKitStopAudio');
+      await _channel.invokeMethod('AudioDevice.callKitStopAudio');
     } else {
       _VILog._w('callKitStopAudio: invalid call for platform');
     }

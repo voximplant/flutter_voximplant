@@ -26,7 +26,6 @@ class MainScreen extends StatelessWidget {
   MainScreen({Key key}) : super(key: key) {
     _authService.onConnectionClosed = _onConnectionClosed;
     _displayName = _authService.displayName;
-
   }
 
   void _onConnectionClosed() {
@@ -123,5 +122,4 @@ class MainScreen extends StatelessWidget {
       ),
     );
   }
-
 }

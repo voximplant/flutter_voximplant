@@ -39,6 +39,7 @@ typedef void VIPushDidExpire(VIClient client, String uuid);
 class VIClient {
   /// Callback for getting notified about new incoming call.
   VIIncomingCall onIncomingCall;
+
   /// Callback for getting notified when push notification is expired.
   VIPushDidExpire onPushDidExpire;
 
@@ -69,14 +70,14 @@ class VIClient {
       platformConfig['bundleId'] = clientConfig.bundleId;
       platformConfig['logLevel'] = clientConfig.logLevel.index;
     }
-    _channel.invokeMethod("initClient", platformConfig);
+    _channel.invokeMethod("Client.initClient", platformConfig);
 
     _clientStateStreamController = StreamController.broadcast();
   }
 
   /// Returns the current client state
   Future<VIClientState> getClientState() async {
-    int result = await _channel.invokeMethod('getClientState');
+    int result = await _channel.invokeMethod('Client.getClientState');
     return VIClientState.values[result];
   }
 
@@ -101,7 +102,7 @@ class VIClient {
       {bool connectivityCheck = false, List<String> servers}) async {
     _changeClientState(VIClientState.Connecting);
     try {
-      await _channel.invokeMethod<void>('connect', <String, dynamic>{
+      await _channel.invokeMethod<void>('Client.connect', <String, dynamic>{
         'connectivityCheck': connectivityCheck,
         'servers': servers,
       });
@@ -121,7 +122,7 @@ class VIClient {
 
   /// Closes the connection with the Voximplant Cloud.
   Future<void> disconnect() async {
-    await _channel.invokeMethod('disconnect');
+    await _channel.invokeMethod('Client.disconnect');
     VIClientState state = await getClientState();
     _changeClientState(state);
   }
@@ -148,9 +149,10 @@ class VIClient {
   Future<VIAuthResult> login(String username, String password) async {
     _changeClientState(VIClientState.LoggingIn);
     try {
-      Map<String, dynamic> data = await _channel.invokeMapMethod('login',
+      Map<String, dynamic> data = await _channel.invokeMapMethod('Client.login',
           <String, String>{'username': username, 'password': password});
-      return _processLoginSuccess(data);
+      _saveUsername(username);
+      return await _processLoginSuccess(data);
     } on PlatformException catch (e) {
       VIClientState state = await getClientState();
       _changeClientState(state);
@@ -186,12 +188,13 @@ class VIClient {
   Future<VIAuthResult> loginWithOneTimeKey(String username, String hash) async {
     _changeClientState(VIClientState.LoggingIn);
     try {
-      Map<String, dynamic> data =
-          await _channel.invokeMapMethod('loginWithKey', <String, dynamic>{
+      Map<String, dynamic> data = await _channel
+          .invokeMapMethod('Client.loginWithKey', <String, dynamic>{
         'username': username,
         'hash': hash,
       });
-      return _processLoginSuccess(data);
+      _saveUsername(username);
+      return await _processLoginSuccess(data);
     } on PlatformException catch (e) {
       VIClientState state = await getClientState();
       _changeClientState(state);
@@ -228,9 +231,10 @@ class VIClient {
     _changeClientState(VIClientState.LoggingIn);
     try {
       Map<String, dynamic> data = await _channel.invokeMapMethod(
-          'loginWithToken',
+          'Client.loginWithToken',
           <String, String>{'username': username, 'token': token});
-      return _processLoginSuccess(data);
+      _saveUsername(username);
+      return await _processLoginSuccess(data);
     } on PlatformException catch (e) {
       VIClientState state = await getClientState();
       _changeClientState(state);
@@ -260,8 +264,8 @@ class VIClient {
   /// * [VIClientError.ERROR_TIMEOUT] - If timeout occurred.
   Future<String> requestOneTimeLoginKey(String username) async {
     try {
-      return await _channel.invokeMethod('requestOneTimeKey', username);
-    } on PlatformException catch(e) {
+      return await _channel.invokeMethod('Client.requestOneTimeKey', username);
+    } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     }
   }
@@ -288,11 +292,10 @@ class VIClient {
   ///   Cloud is closed while the client is logging in.
   /// * [VIClientError.ERROR_TIMEOUT] - If timeout occurred.
   /// * [VIClientError.ERROR_TOKEN_EXPIRED] - If the refresh token is expired.
-  Future<VILoginTokens> tokenRefresh(
-      String username, String token) async {
+  Future<VILoginTokens> tokenRefresh(String username, String token) async {
     try {
-      Map<String, dynamic> data =
-      await _channel.invokeMapMethod('tokenRefresh', <String, String>{
+      Map<String, dynamic> data = await _channel
+          .invokeMapMethod('Client.tokenRefresh', <String, String>{
         'username': username,
         'refreshToken': token,
       });
@@ -328,7 +331,7 @@ class VIClient {
   Future<VICall> call(String number, [VICallSettings callSettings]) async {
     try {
       Map<String, dynamic> data =
-      await _channel.invokeMapMethod('call', <String, dynamic>{
+          await _channel.invokeMapMethod('Client.call', <String, dynamic>{
         'number': number,
         'sendVideo': callSettings?.videoFlags?.sendVideo ?? false,
         'receiveVideo': callSettings?.videoFlags?.receiveVideo ?? false,
@@ -340,7 +343,7 @@ class VIClient {
       });
       VICall call = VICall._(data['callId'], _channel);
       return call;
-    } on PlatformException catch(e) {
+    } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     }
   }
@@ -363,10 +366,11 @@ class VIClient {
   ///   are not granted for the call:
   ///   audio calls - RECORD_AUDIO
   ///   video calls - RECORD_AUDIO and CAMERA
-  Future<VICall> conference(String conference, [VICallSettings callSettings]) async {
+  Future<VICall> conference(String conference,
+      [VICallSettings callSettings]) async {
     try {
       Map<String, dynamic> data =
-      await _channel.invokeMapMethod('call', <String, dynamic>{
+          await _channel.invokeMapMethod('Client.call', <String, dynamic>{
         'number': conference,
         'sendVideo': callSettings?.videoFlags?.sendVideo ?? false,
         'receiveVideo': callSettings?.videoFlags?.receiveVideo ?? false,
@@ -378,7 +382,7 @@ class VIClient {
       });
       VICall call = VICall._(data['callId'], _channel);
       return call;
-    } on PlatformException catch(e) {
+    } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     }
   }
@@ -396,7 +400,42 @@ class VIClient {
   /// * [VIClientError.ERROR_INVALID_ARGUMENTS] - If [pushToken] is null.
   Future<void> registerForPushNotifications(String pushToken) async {
     try {
-      await _channel.invokeMethod('registerForPushNotifications', pushToken);
+      await _channel.invokeMethod(
+          'Client.registerForPushNotifications', pushToken);
+    } on PlatformException catch (e) {
+      throw VIException(e.code, e.message);
+    }
+  }
+
+  /// Register Apple Push Notifications token.
+  ///
+  /// After calling this function application will receive push notifications from Voximplant Server.
+  /// If the provided token is not nil, but the client is not logged in, the token will be registered just after login.
+  ///
+  /// IOS ONLY.
+  ///
+  /// `imToken` - The APNS token for IM push notification.
+  Future<void> registerIMPushNotificationsTokenIOS(String imToken) async {
+    try {
+      await _channel.invokeMethod(
+          'Client.registerIMPushNotificationsToken', imToken);
+    } on PlatformException catch (e) {
+      throw VIException(e.code, e.message);
+    }
+  }
+
+  /// Unregister Apple Push Notifications token.
+  ///
+  /// After calling this function application stops receive push notifications from Voximplant Server.
+  /// If the provided token is not nil, but the client is not logged in, the token will be unregistered just after login.
+  ///
+  /// IOS ONLY.
+  ///
+  /// `imToken` - The APNS token for IM push notification.
+  Future<void> unregisterIMPushNotificationsTokenIOS(String imToken) async {
+    try {
+      await _channel.invokeMethod(
+          'Client.unregisterIMPushNotificationsToken', imToken);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     }
@@ -415,8 +454,9 @@ class VIClient {
   /// * [VIClientError.ERROR_INVALID_ARGUMENTS] - If [pushToken] is null.
   Future<void> unregisterFromPushNotifications(String pushToken) async {
     try {
-      await _channel.invokeMethod('unregisterFromPushNotifications', pushToken);
-    } on PlatformException catch(e) {
+      await _channel.invokeMethod(
+          'Client.unregisterFromPushNotifications', pushToken);
+    } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     }
   }
@@ -430,7 +470,7 @@ class VIClient {
   /// Errors:
   /// * [VIClientError.ERROR_INVALID_ARGUMENTS] - If [message] is null.
   Future<void> handlePushNotification(Map<String, dynamic> message) async {
-    await _channel.invokeMethod('handlePushNotification', message);
+    await _channel.invokeMethod('Client.handlePushNotification', message);
   }
 
   Future<VIAuthResult> _processLoginSuccess(Map<String, dynamic> data) async {
@@ -489,10 +529,15 @@ class VIClient {
         _incomingCallEventSubscription.cancel();
         _incomingCallEventSubscription = null;
       }
+      _saveUsername(null);
     }
   }
 
   void _changeClientState(VIClientState newState) {
     _clientStateStreamController.add(newState);
+  }
+
+  void _saveUsername(String username) {
+    _MessengerShared._saveMe(username);
   }
 }

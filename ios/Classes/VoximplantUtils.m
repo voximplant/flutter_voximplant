@@ -90,6 +90,86 @@
     }
 }
 
++ (NSString *)convertMessagingErrorToString:(VIErrorEvent *)error {
+    switch (error.errorCode) {
+        case 1:
+            return @"ERROR_TRANSPORT_MESSAGE_STRUCTURE_IS_WRONG";
+        case 2:
+            return @"ERROR_EVENT_NAME_IS_UNKNOWN";
+        case 3:
+            return @"ERROR_NOT_AUTHORIZED";
+        case 8:
+            return @"ERROR_CONVERSATION_DOES_NOT_EXIST";
+        case 10:
+            return @"ERROR_MESSAGE_DOES_NOT_EXIST";
+        case 11:
+            return @"ERROR_MESSAGE_DELETED";
+        case 12:
+            return @"ERROR_ACL";
+        case 13:
+            return @"ERROR_ALREADY_IN_PARTICIPANTS_LIST";
+        case 15:
+            return @"ERROR_PUBLIC_JOIN_IS_UNAVAILABLE";
+        case 16:
+            return @"ERROR_CONVERSATION_DELETED";
+        case 18:
+            return @"ERROR_USER_VALIDATION";
+        case 19:
+            return @"ERROR_USER_IS_NOT_IN_THE_PARTICIPANT_LIST";
+        case 21:
+            return @"ERROR_REQUESTED_NUMBER_TOO_BIG_OR_0";
+        case 22:
+            return @"ERROR_REQUESTED_NUMBER_TOO_BIG";
+        case 23:
+            return @"ERROR_MESSAGE_SIZE_EXCEEDS_LIMIT";
+        case 24:
+            return @"ERROR_WRONG_SEQUENCE_ARGUMENT";
+        case 25:
+            return @"ERROR_USER_NOT_FOUND";
+        case 26:
+            return @"ERROR_NOTIFICATION_EVENT_INCORRECT";
+        case 28:
+            return @"ERROR_FROM_GREATER_THAN_TO";
+        case 30:
+            return @"ERROR_IM_SERVICE_UNAVAILABLE";
+        case 32:
+            return @"ERROR_LIMIT_PER_SECOND";
+        case 33:
+            return @"ERROR_LIMIT_PER_MINUTE";
+        case 34:
+            return @"ERROR_DIRECT_CANNOT_BE_PUBLIC_OR_UBER";
+        case 35:
+            return @"ERROR_NUMBER_OF_USERS_IN_DIRECT";
+        case 36:
+            return @"ERROR_SPECIFY_MAXIMUM_TWO_PARAMS";
+        case 37:
+            return @"ERROR_ADDING_TO_DIRECT";
+        case 38:
+            return @"ERROR_REMOVING_FROM_DIRECT";
+        case 39:
+            return @"ERROR_EDITING_PARTICIPANTS_IN_DIRECT";
+        case 40:
+            return @"ERROR_LEAVING_DIRECT_NOT_ALLOWED";
+        case 41:
+            return @"ERROR_SPECIFY_AT_LEAST_TWO_PARAMS";
+        case 500:
+            return @"ERROR_INTERNAL";
+        case 10000:
+            return @"ERROR_METHOD_CALL_DISCARDED";
+        case 10001:
+            return @"ERROR_INVALID_ARGUMENTS";
+        case 10002:
+            return @"ERROR_TIMEOUT";
+        case 10003:
+            return @"ERROR_CLIENT_NOT_LOGGED_IN";
+        case 10004:
+            return @"ERROR_FAILED_TO_PROCESS_RESPONSE";
+        case 0:
+        default:
+            return @"ERROR_SOMETHING_WENT_WRONG";
+    }
+}
+
 + (NSDictionary *)convertAuthParamsToDictionary:(VIAuthParams *)authParams {
     NSMutableDictionary *dictionary = [NSMutableDictionary new];
     [dictionary setValue:@((NSInteger)authParams.accessExpire) forKey:@"accessExpire"];
@@ -128,6 +208,37 @@
         return false;
     }
     return [cameraType intValue] == 0;
+}
+
+@end
+
+
+@implementation FlutterMethodCall (MethodType)
+
+- (BOOL)isMethodCallOfType:(VIMethodType)type {
+    NSArray<NSString *> *methodNameComponents = [self.method componentsSeparatedByString:@"."];
+    return methodNameComponents && methodNameComponents.firstObject
+    ? [methodNameComponents.firstObject isEqualToString:type]
+    : NO;
+}
+
+- (FlutterMethodCall *)excludingType {
+    NSArray<NSString *> *methodNameComponents = [self.method componentsSeparatedByString:@"."];
+    NSString *method = methodNameComponents && methodNameComponents.count > 0
+    ? methodNameComponents[1]
+    : self.method;
+    
+    return [FlutterMethodCall methodCallWithMethodName:method
+                                             arguments:self.arguments];
+}
+
+@end
+
+
+@implementation NSNumber (FromTimeInterval)
+
++ (instancetype)fromTimeInterval:(NSTimeInterval)timeInterval {
+    return @((NSInteger)round(timeInterval * 1000.0));
 }
 
 @end

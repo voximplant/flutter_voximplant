@@ -9,12 +9,14 @@
 #import "VIClientModule.h"
 #import "VoximplantCallManager.h"
 #import "VICameraModule.h"
+#import "VIMessagingModule.h"
 
 @interface VoximplantPlugin()
 @property(nonatomic, strong) VIClientModule *clientModule;
 @property(nonatomic, strong) VIAudioDeviceModule *audioDeviceModule;
 @property(nonatomic, strong) VoximplantCallManager *callManager;
 @property(nonatomic, strong) VICameraModule *cameraModule;
+@property(nonatomic, strong) VIMessagingModule *messagingModule;
 @end
 
 @interface VIClient (Version)
@@ -27,10 +29,9 @@
 
 @implementation VoximplantPlugin
 
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-    FlutterMethodChannel* channel = [FlutterMethodChannel
-                                     methodChannelWithName:@"plugins.voximplant.com/client"
-                                     binaryMessenger:[registrar messenger]];
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+    FlutterMethodChannel* channel = [FlutterMethodChannel methodChannelWithName:@"plugins.voximplant.com/client"
+                                                                binaryMessenger:[registrar messenger]];
     VoximplantPlugin* instance = [[VoximplantPlugin alloc] initWithRegistrar:registrar];
     [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -39,7 +40,7 @@
     return [VIClient uuidForPushNotification:notification];
 }
 
-- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
     self = [super init];
     if (self) {
         self.registrar = registrar;
@@ -47,104 +48,50 @@
         self.clientModule = [[VIClientModule alloc] initWithRegistrar:self.registrar callManager:self.callManager];
         self.audioDeviceModule = [[VIAudioDeviceModule alloc] initWithPlugin:self];
         self.cameraModule = [[VICameraModule alloc] init];
-        [VIClient setVersionExtension:@"flutter-2.2.0"];
+        self.messagingModule = [[VIMessagingModule alloc] initWithRegistrar:self.registrar];
+        [VIClient setVersionExtension:@"flutter-2.3.0"];
     }
     return self;
 }
 
-
-- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-    if ([self isClientMethod:call]) {
-        [self.clientModule handleMethodCall:call result:result];
-    } else if ([self isCallMethod:call]) {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+    if ([call isMethodCallOfType:VIMethodTypeMessaging]) {
+        if (!self.clientModule.client) {
+            result([FlutterError errorWithCode:@"ERROR_CLIENT_NOT_LOGGED_IN"
+                                       message:@"Client is not logged in."
+                                       details:nil]);
+            return;
+        }
+        if (!self.messagingModule.messenger) {
+            self.messagingModule.messenger = self.clientModule.client.messenger;
+        }
+        [self.messagingModule handleMethodCall:[call excludingType] result:result];
+        
+    } else if ([call isMethodCallOfType:VIMethodTypeClient]) {
+        [self.clientModule handleMethodCall:[call excludingType] result:result];
+        
+    } else if ([call isMethodCallOfType:VIMethodTypeCall]) {
         VICallModule *callModule = [self.callManager checkCallEvent:call.arguments result:result methodName:call.method];
         if (callModule) {
-            [callModule handleMethodCall:call result:result];
+            [callModule handleMethodCall:[call excludingType] result:result];
         }
-    } else if ([self isVideoStreamMethod:call]) {
+        
+    } else if ([call isMethodCallOfType:VIMethodTypeVideoStream]) {
         VICallModule *callModule = [self.callManager findCallByStreamId:call.arguments result:result methodName:call.method];
         if (callModule) {
-            [callModule handleMethodCall:call result:result];
+            [callModule handleMethodCall:[call excludingType] result:result];
         }
-    } else if ([self isAudioDeviceMethod:call] ) {
-        [self.audioDeviceModule handleMethodCall:call result:result];
-    } else if ([self isCameraMethod:call]) {
-        [self.cameraModule handleMethodCall:call result:result];
+        
+    } else if ([call isMethodCallOfType:VIMethodTypeAudioDevice]) {
+        [self.audioDeviceModule handleMethodCall:[call excludingType] result:result];
+        
+    } else if ([call isMethodCallOfType:VIMethodTypeCamera]) {
+        [self.cameraModule handleMethodCall:[call excludingType] result:result];
+        
     } else {
         result(FlutterMethodNotImplemented);
     }
 }
 
-- (BOOL)isClientMethod:(FlutterMethodCall *)call {
-    NSString *method = call.method;
-    if (!method) {
-        return false;
-    }
-    return [method isEqualToString:@"initClient"] ||
-        [method isEqualToString:@"connect"] ||
-        [method isEqualToString:@"disconnect"] ||
-        [method isEqualToString:@"login"] ||
-        [method isEqualToString:@"loginWithToken"] ||
-        [method isEqualToString:@"getClientState"] ||
-        [method isEqualToString:@"requestOneTimeKey"] ||
-        [method isEqualToString:@"tokenRefresh"] ||
-        [method isEqualToString:@"loginWithKey"] ||
-        [method isEqualToString:@"call"] ||
-        [method isEqualToString:@"registerForPushNotifications"] ||
-        [method isEqualToString:@"unregisterFromPushNotifications"] ||
-        [method isEqualToString:@"handlePushNotification"];
-}
-
-- (BOOL)isAudioDeviceMethod:(FlutterMethodCall *)call {
-    NSString *method = call.method;
-    if (!method) {
-        return false;
-    }
-    return [method isEqualToString:@"selectAudioDevice"] ||
-        [method isEqualToString:@"getActiveDevice"] ||
-        [method isEqualToString:@"getAudioDevices"] ||
-        [method isEqualToString:@"callKitConfigureAudioSession"] ||
-        [method isEqualToString:@"callKitReleaseAudioSession"] ||
-        [method isEqualToString:@"callKitStartAudioSession"] ||
-        [method isEqualToString:@"callKitStopAudio"];
-}
-
-- (BOOL)isCallMethod:(FlutterMethodCall *)call {
-    NSString *method = call.method;
-    if (!method) {
-        return false;
-    }
-    return [method isEqualToString:@"answerCall"] ||
-        [method isEqualToString:@"rejectCall"] ||
-        [method isEqualToString:@"hangupCall"] ||
-        [method isEqualToString:@"sendAudioForCall"] ||
-        [method isEqualToString:@"sendInfoForCall"] ||
-        [method isEqualToString:@"sendMessageForCall"] ||
-        [method isEqualToString:@"sendToneForCall"] ||
-        [method isEqualToString:@"holdCall"] ||
-        [method isEqualToString:@"setCallKitUUID"] ||
-        [method isEqualToString:@"sendVideoForCall"] ||
-        [method isEqualToString:@"receiveVideoForCall"] ||
-        [method isEqualToString:@"getCallDuration"];
-}
-
-- (BOOL)isVideoStreamMethod:(FlutterMethodCall *)call {
-    NSString *method = call.method;
-    if (!method) {
-        return false;
-    }
-    return [method isEqualToString:@"addVideoRenderer"] ||
-        [method isEqualToString:@"removeVideoRenderer"];
-}
-
-- (BOOL)isCameraMethod:(FlutterMethodCall *)call {
-    NSString *method = call.method;
-    if (!method) {
-        return false;
-    }
-    return [method isEqualToString:@"selectCamera"] ||
-        [method isEqualToString:@"setCameraResolution"];
-}
-
-
 @end
+

@@ -9,13 +9,16 @@ class Voximplant {
 
   static final Voximplant _instance = Voximplant.private();
   VIClient _client;
+  VIMessenger _messenger;
   VIAudioDeviceManager _audioDeviceManager;
   VICameraManager _cameraManager;
   static const MethodChannel _channel =
-      MethodChannel('plugins.voximplant.com/client');
+    MethodChannel('plugins.voximplant.com/client');
 
   /// Get [VIClient] instance to connect and login to the Voximplant Cloud,
   /// make and receive calls
+  ///
+  /// Optional `clientConfig` - Configuration for VIClient instance
   VIClient getClient([VIClientConfig clientConfig]) {
     if (_client == null) {
       if (clientConfig == null) {
@@ -24,6 +27,14 @@ class Voximplant {
       _client = VIClient._(_channel, clientConfig);
     }
     return _client;
+  }
+
+  /// Get [VIMessenger] instance of messaging subsystem
+  VIMessenger getMessenger() {
+    if (_messenger == null) {
+      _messenger = VIMessenger._(_channel);
+    }
+    return _messenger;
   }
 
   /// Get [VIAudioDeviceManager] instance to control audio hardware settings

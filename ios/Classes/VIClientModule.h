@@ -10,8 +10,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VIClientModule : NSObject<VIClientSessionDelegate, FlutterStreamHandler, VIClientCallManagerDelegate>
+
+@property(nonatomic, strong, readonly) VIClient *client;
+
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar callManager:(VoximplantCallManager *)callManager;
+
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result;
+
 @end
 
 NS_ASSUME_NONNULL_END
