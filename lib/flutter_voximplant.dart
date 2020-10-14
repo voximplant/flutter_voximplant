@@ -26,3 +26,4 @@ part 'src/messaging/messenger_shared.dart';
 part 'src/messaging/user.dart';
 part 'src/messaging/message.dart';
 part 'src/messaging/events.dart';
+part 'src/hardware/audio_file.dart';

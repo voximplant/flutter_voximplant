@@ -12,6 +12,7 @@
 + (NSString *)convertCallErrorToString:(VICallErrorCode)code;
 + (NSString *)getErrorDescriptionForCallError:(VICallErrorCode)code;
 + (NSString *)convertMessagingErrorToString:(VIErrorEvent *)error;
++ (NSString *)convertAudioFileErrorToString:(VIAudioFileErrorCode)audioFileError;
 + (NSDictionary *)convertAuthParamsToDictionary:(VIAuthParams *)authParams;
 + (NSNumber *)convertVideoStreamTypeToNumber:(VIVideoStreamType)type;
 + (int)convertVideoRotationToInt:(RTCVideoRotation)rotation;
@@ -24,6 +25,7 @@ typedef NSString *VIMethodType NS_TYPED_ENUM;
 static VIMethodType const VIMethodTypeMessaging = @"Messaging";
 static VIMethodType const VIMethodTypeClient= @"Client";
 static VIMethodType const VIMethodTypeAudioDevice = @"AudioDevice";
+static VIMethodType const VIMethodTypeAudioFile = @"AudioFile";
 static VIMethodType const VIMethodTypeCall = @"Call";
 static VIMethodType const VIMethodTypeCamera = @"Camera";
 static VIMethodType const VIMethodTypeVideoStream = @"VideoStream";

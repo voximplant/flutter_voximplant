@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.4.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.20.4
+  and Voximplant iOS SDK 2.34.3
+* Introduce VIAudioFile API
+
 ## 2.3.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.19.0 
   and Voximplant iOS SDK 2.33.0

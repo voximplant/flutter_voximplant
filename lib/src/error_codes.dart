@@ -15,6 +15,7 @@ class VIException implements Exception {
 class VIClientError {
   static const String ERROR_ACCOUNT_FROZEN = 'ERROR_ACCOUNT_FROZEN';
   static const String ERROR_INTERNAL = 'ERROR_INTERNAL';
+  static const String ERROR_MAU_ACCESS_DENIED = 'ERROR_MAU_ACCESS_DENIED';
   static const String ERROR_INVALID_PASSWORD = 'ERROR_INVALID_PASSWORD';
   static const String ERROR_INVALID_STATE = 'ERROR_INVALID_STATE';
   static const String ERROR_INVALID_USERNAME = 'ERROR_INVALID_USERNAME';
@@ -36,6 +37,24 @@ class VICallError {
   static const String ERROR_INTERNAL = 'ERROR_INTERNAL';
   static const String ERROR_MISSING_PERMISSION = 'ERROR_MISSING_PERMISSION';
   static const String ERROR_INVALID_ARGUMENTS = 'ERROR_INVALID_ARGUMENTS';
+}
+
+class VIAudioFileError {
+  /// Audio file playing was stopped due to <VIAudioFile> instance is deallocated.
+  static const String ERROR_DESTROYED = 'ERROR_DESTROYED';
+  /// Audio file playing was interrupted by a third party application.
+  static const String ERROR_INTERRUPTED = 'ERROR_INTERRUPTED';
+  /// The audio file is already playing.
+  static const String ERROR_ALREADY_PLAYING = 'ERROR_ALREADY_PLAYING';
+  /// Audio file playing was interrupted by CallKit activation.
+  static const String ERROR_CALLKIT_ACTIVATED = 'ERROR_CALLKIT_ACTIVATED';
+  /// Audio file playing was interrupted by CallKit deactivation.
+  static const String ERROR_CALLKIT_DEACTIVATED = 'ERROR_CALLKIT_DEACTIVATED';
+  /// Audio file failed to start playing due to audio session configuration issues.
+  static const String ERROR_FAILED_TO_CONFIGURE_AUDIO_SESSION =
+      'ERROR_FAILED_TO_CONFIGURE_AUDIO_SESSION';
+  /// Internal error occurred.
+  static const String ERROR_INTERNAL = 'ERROR_INTERNAL';
 }
 
 class VIMessagingError {

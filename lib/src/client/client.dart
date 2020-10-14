@@ -138,6 +138,7 @@ class VIClient {
   ///
   /// Errors:
   /// * [VIClientError.ERROR_ACCOUNT_FROZEN] - If the account is frozen.
+  /// * [VIClientError.ERROR_MAU_ACCESS_DENIED] - Monthly Active Users (MAU) limit is reached. Payment is required.
   /// * [VIClientError.ERROR_INTERNAL] - If an internal error occurred.
   /// * [VIClientError.ERROR_INVALID_PASSWORD] - if the given password is invalid.
   /// * [VIClientError.ERROR_INVALID_STATE] - If the client is not connected,
@@ -177,6 +178,7 @@ class VIClient {
   ///
   /// Errors:
   /// * [VIClientError.ERROR_ACCOUNT_FROZEN] - If the account is frozen.
+  /// * [VIClientError.ERROR_MAU_ACCESS_DENIED] - Monthly Active Users (MAU) limit is reached. Payment is required.
   /// * [VIClientError.ERROR_INTERNAL] - If an internal error occurred.
   /// * [VIClientError.ERROR_INVALID_PASSWORD] - if the given password is invalid.
   /// * [VIClientError.ERROR_INVALID_STATE] - If the client is not connected,

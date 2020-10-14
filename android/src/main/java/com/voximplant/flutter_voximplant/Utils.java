@@ -8,6 +8,7 @@ import com.voximplant.sdk.call.CallError;
 import com.voximplant.sdk.call.VideoCodec;
 import com.voximplant.sdk.call.VideoStreamType;
 import com.voximplant.sdk.client.LoginError;
+import com.voximplant.sdk.hardware.AudioFileUsage;
 import com.voximplant.sdk.messaging.IErrorEvent;
 
 import static com.voximplant.flutter_voximplant.VoximplantErrors.ERROR_INTERNAL;
@@ -65,6 +66,8 @@ class Utils {
                 return VoximplantErrors.ERROR_NETWORK_ISSUES;
             case TOKEN_EXPIRED:
                 return VoximplantErrors.ERROR_TOKEN_EXPIRED;
+            case MAU_ACCESS_DENIED:
+                return VoximplantErrors.ERROR_MAU_ACCESS_DENIED;
             case INTERNAL_ERROR:
             default:
                 return ERROR_INTERNAL;
@@ -87,6 +90,8 @@ class Utils {
                 return "Connection to the Voximplant Cloud is closed due to network issues.";
             case TOKEN_EXPIRED:
                 return "Token expired.";
+            case MAU_ACCESS_DENIED:
+                return "Monthly Active Users (MAU) limit is reached. Payment is required.";
             case INTERNAL_ERROR:
             default:
                 return "Internal error.";
@@ -236,6 +241,23 @@ class Utils {
             default:
             case VIDEO:
                 return 0;
+        }
+    }
+
+    static AudioFileUsage convertStringToAudioFileUsage(String usage) {
+        if (usage == null) {
+            return AudioFileUsage.UNKNOWN;
+        }
+        switch (usage) {
+            case "incall":
+                return AudioFileUsage.IN_CALL;
+            case "notification":
+                return AudioFileUsage.NOTIFICATION;
+            case "ringtone":
+                return AudioFileUsage.RINGTONE;
+            case "unknown":
+            default:
+                return AudioFileUsage.UNKNOWN;
         }
     }
 }

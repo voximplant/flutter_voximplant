@@ -10,10 +10,13 @@
 #import "VoximplantCallManager.h"
 #import "VICameraModule.h"
 #import "VIMessagingModule.h"
+#import "VIAudioFileModule.h"
+#import "VIAudioFileManager.h"
 
 @interface VoximplantPlugin()
 @property(nonatomic, strong) VIClientModule *clientModule;
 @property(nonatomic, strong) VIAudioDeviceModule *audioDeviceModule;
+@property(nonatomic, strong) VIAudioFileManager *audioFileManager;
 @property(nonatomic, strong) VoximplantCallManager *callManager;
 @property(nonatomic, strong) VICameraModule *cameraModule;
 @property(nonatomic, strong) VIMessagingModule *messagingModule;
@@ -47,9 +50,10 @@
         self.callManager = [[VoximplantCallManager alloc] init];
         self.clientModule = [[VIClientModule alloc] initWithRegistrar:self.registrar callManager:self.callManager];
         self.audioDeviceModule = [[VIAudioDeviceModule alloc] initWithPlugin:self];
+        self.audioFileManager = [[VIAudioFileManager alloc] initWithPlugin:self];
         self.cameraModule = [[VICameraModule alloc] init];
         self.messagingModule = [[VIMessagingModule alloc] initWithRegistrar:self.registrar];
-        [VIClient setVersionExtension:@"flutter-2.3.0"];
+        [VIClient setVersionExtension:@"flutter-2.4.0"];
     }
     return self;
 }
@@ -87,6 +91,9 @@
         
     } else if ([call isMethodCallOfType:VIMethodTypeCamera]) {
         [self.cameraModule handleMethodCall:[call excludingType] result:result];
+        
+    } else if ([call isMethodCallOfType:VIMethodTypeAudioFile]) {
+        [self.audioFileManager handleMethodCall:[call excludingType] result:result];
         
     } else {
         result(FlutterMethodNotImplemented);

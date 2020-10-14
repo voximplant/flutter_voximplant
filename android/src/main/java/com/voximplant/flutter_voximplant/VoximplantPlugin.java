@@ -27,9 +27,10 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
     private CallManager mCallManager;
     private CameraModule mCameraModule;
     private MessagingModule mMessagingModule;
+    private AudioFileManager mAudioFileManager;
 
     public VoximplantPlugin() {
-        Voximplant.subVersion = "flutter-2.3.0";
+        Voximplant.subVersion = "flutter-2.4.0";
     }
 
     private void configure(Context context, TextureRegistry textures, BinaryMessenger messenger) {
@@ -40,6 +41,7 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
         mCameraModule = new CameraModule(context);
         mChannel.setMethodCallHandler(this);
         mMessagingModule = new MessagingModule(messenger);
+        mAudioFileManager = new AudioFileManager(messenger, context);
     }
 
     public static void registerWith(Registrar registrar) {
@@ -71,6 +73,8 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
         String AUDIO_DEVICE = "AudioDevice";
         String VIDEO_STREAM = "VideoStream";
         String CAMERA = "Camera";
+        String AUDIO_FILE = "AudioFile";
+
         if (isMethodCallOfType(MESSAGING, call)) {
             mMessagingModule.handleMethodCall(excludeMethodType(call), result);
 
@@ -96,6 +100,9 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
 
         } else if (isMethodCallOfType(CAMERA, call)) {
             mCameraModule.handleMethodCall(excludeMethodType(call), result);
+
+        } else if (isMethodCallOfType(AUDIO_FILE, call)) {
+            mAudioFileManager.handleMethodCall(excludeMethodType(call), result);
 
         } else {
             result.notImplemented();

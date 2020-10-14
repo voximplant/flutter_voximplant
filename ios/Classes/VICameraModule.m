@@ -33,8 +33,8 @@
 - (void)selectCamera:(NSDictionary *)arguments result:(FlutterResult)result {
     if (!arguments) {
         result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
-                            message:@"VICameraManager.selectCamera: Invalid arguments"
-                            details:nil]);
+                                   message:@"VICameraManager.selectCamera: Invalid arguments"
+                                   details:nil]);
         return;
     }
     NSNumber *cameraType = [arguments objectForKey:@"cameraType"];

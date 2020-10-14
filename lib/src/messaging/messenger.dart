@@ -4,7 +4,7 @@ part of voximplant;
 
 /// Signature for callbacks reporting that an user was edited
 /// as the result of [VIMessenger.editUser], [VIMessenger.managePushNotifications]
-//  /// or analogous methods from other Voximplant SDKs and Messaging API.
+/// or analogous methods from other Voximplant SDKs and Messaging API.
 ///
 /// Used in [VIMessenger].
 ///

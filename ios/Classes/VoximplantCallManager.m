@@ -5,6 +5,7 @@
 #import "VoximplantCallManager.h"
 
 @interface VoximplantCallManager()
+
 @property(nonatomic, strong) NSMutableDictionary *callModules;
 
 @end

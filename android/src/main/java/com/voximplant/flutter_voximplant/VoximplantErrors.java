@@ -16,6 +16,7 @@ class VoximplantErrors {
     static final String ERROR_MEDIA_IS_ON_HOLD = "ERROR_MEDIA_IS_ON_HOLD";
 
     static final String ERROR_ACCOUNT_FROZEN = "ERROR_ACCOUNT_FROZEN";
+    static final String ERROR_MAU_ACCESS_DENIED = "ERROR_MAU_ACCESS_DENIED";
     static final String ERROR_INVALID_PASSWORD = "ERROR_INVALID_PASSWORD";
     static final String ERROR_INVALID_STATE = "ERROR_INVALID_STATE";
     static final String ERROR_INVALID_USERNAME = "ERROR_INVALID_USERNAME";

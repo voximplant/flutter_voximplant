@@ -24,6 +24,8 @@
             return @"ERROR_INVALID_PASSWORD";
         case VILoginErrorCodeConnectionClosed:
             return @"ERROR_NETWORK_ISSUES";
+        case VILoginErrorCodeMAUAccessDenied:
+            return @"ERROR_MAU_ACCESS_DENIED";
         case VILoginErrorCodeInternalError:
         default:
             return @"ERROR_INTERNAL";
@@ -48,6 +50,8 @@
             return @"Invalid password.";
         case VILoginErrorCodeConnectionClosed:
             return @"Connection to the Voximplant Cloud is closed";
+        case VILoginErrorCodeMAUAccessDenied:
+            return @"Monthly Active Users (MAU) limit is reached. Payment is required.";
         case VILoginErrorCodeInternalError:
         default:
             return @"Internal error.";
@@ -169,6 +173,26 @@
             return @"ERROR_SOMETHING_WENT_WRONG";
     }
 }
+
++ (NSString *)convertAudioFileErrorToString:(VIAudioFileErrorCode)audioFileError {
+     switch (audioFileError) {
+         case VIAudioFileErrorCodeDestroyed:
+             return @"ERROR_DESTROYED";
+         case VIAudioFileErrorCodeInterrupted:
+             return @"ERROR_INTERRUPTED";
+         case VIAudioFileErrorCodeAlreadyPlaying:
+             return @"ERROR_ALREADY_PLAYING";
+         case VIAudioFileErrorCodeCallKitActivated:
+             return @"ERROR_CALLKIT_ACTIVATED";
+         case VIAudioFileErrorCodeCallKitDeactivated:
+             return @"ERROR_CALLKIT_DEACTIVATED";
+         case VIAudioFileErrorCodeFailedToConfigureAudioSession:
+             return @"ERROR_FAILED_TO_CONFIGURE_AUDIO_SESSION";
+         case VIAudioFileErrorCodeInternal:
+         default:
+             return @"ERROR_INTERNAL";
+     }
+ }
 
 + (NSDictionary *)convertAuthParamsToDictionary:(VIAuthParams *)authParams {
     NSMutableDictionary *dictionary = [NSMutableDictionary new];
