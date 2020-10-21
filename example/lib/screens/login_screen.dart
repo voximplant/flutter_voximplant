@@ -1,5 +1,4 @@
 /// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
-
 import 'package:audio_call/screens/main_screen.dart';
 import 'package:audio_call/services/auth_service.dart';
 import 'package:audio_call/theme/voximplant_theme.dart';
@@ -22,10 +21,9 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _authService.getUsername()
-        .then((value) {
-          _loginController.text = value;
-        });
+    _authService.getUsername().then((value) {
+      _loginController.text = value;
+    });
   }
 
   @override
@@ -38,10 +36,11 @@ class LoginScreenState extends State<LoginScreen> {
   Future<void> _loginWithPassword(String user, String password) async {
     print('LoginScreen: login with password: username: $user');
     try {
-      String displayName = await _authService.loginWithPassword(user + '.voximplant.com', password);
+      String displayName = await _authService.loginWithPassword(
+          user + '.voximplant.com', password);
       print('LoginScreen: login with password: displayName: $displayName');
       Navigator.pushReplacementNamed(context, MainScreen.routeName);
-    } catch(e) {
+    } catch (e) {
       _showAlertDialog(e.message);
     }
   }
@@ -62,8 +61,7 @@ class LoginScreenState extends State<LoginScreen> {
               )
             ],
           );
-        }
-    );
+        });
   }
 
   @override
@@ -88,7 +86,8 @@ class LoginScreenState extends State<LoginScreen> {
               child: Column(
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
                     child: TextFormField(
                       decoration: InputDecoration(
                         suffixText: '.voximplant.com',
@@ -101,7 +100,8 @@ class LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
                     child: TextFormField(
                       obscureText: true,
                       decoration: InputDecoration(
@@ -115,11 +115,13 @@ class LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.only(top: 20),
                     child: FlatButton(
                       onPressed: () {
-                        _loginWithPassword(_loginController.text, _passwordController.text);
+                        _loginWithPassword(
+                            _loginController.text, _passwordController.text);
                       },
                       child: Text(
                         'LOG IN',
-                        style: TextStyle(fontSize: 20, color: VoximplantColors.button),
+                        style: TextStyle(
+                            fontSize: 20, color: VoximplantColors.button),
                       ),
                     ),
                   ),

@@ -5,7 +5,6 @@ part of voximplant;
 /// Base interface that represents all messenger events provided
 /// via [VIMessenger] callbacks or as a result of method calls.
 abstract class VIMessengerEvent {
-
   /// The IM id for the user that initiated the event.
   final int imUserId;
 

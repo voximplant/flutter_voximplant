@@ -4,7 +4,6 @@ part of voximplant;
 
 /// Interface that may be used to manage a conversation.
 class VIConversation {
-
   /// An universally unique identifier (UUID) of this conversation.
   final String uuid;
 
@@ -239,7 +238,7 @@ class VIConversation {
   /// participants can subscribe to the [VIMessengerNotification.onSendMessage] messenger push notification.
   ///
   /// Optional `text` - Message text, maximum 5000 characters
-  /// 
+  ///
   /// Optional `payload` - Message payload
   ///
   /// Throws [VIException], if operation failed, otherwise returns [VIMessageEvent] instance.
@@ -382,7 +381,6 @@ class VIConversation {
 /// - [VIMessenger.createConversation]
 /// - [VIMessenger.recreateConversation]
 class VIConversationConfig {
-
   /// Check if a conversation is configured as direct or not.
   ///
   /// There can be only 2 participants in a direct conversation which is unique and the only one for these participants.

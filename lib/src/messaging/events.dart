@@ -6,7 +6,6 @@ part of voximplant;
 ///
 /// Extends [VIMessengerEvent] which provides service information (IM user id, action, event type).
 class VIUserEvent extends VIMessengerEvent {
-
   /// VIUser instance with the user details.
   final VIUser user;
 
@@ -23,7 +22,6 @@ class VIUserEvent extends VIMessengerEvent {
 ///
 /// Extends [VIMessengerEvent] which provides service information (IM user id, action, event type).
 class VIRetransmitEvent extends VIMessengerEvent {
-
   /// The list of the event objects that were retransmitted.
   final List<VIMessengerEvent> events;
 
@@ -50,7 +48,6 @@ class VIRetransmitEvent extends VIMessengerEvent {
 ///
 /// Extends [VIMessengerEvent] which provides service information (IM user id, action, event type).
 class VIMessageEvent extends VIMessengerEvent {
-
   /// VIMessage instance with the message information.
   final VIMessage message;
 
@@ -71,7 +68,6 @@ class VIMessageEvent extends VIMessengerEvent {
 ///
 /// Extends [VIMessengerEvent] which provides service information (IM user id, action, event type).
 class VIConversationEvent extends VIMessengerEvent {
-
   /// VIConversation with the conversation details.
   final VIConversation conversation;
 
@@ -92,7 +88,6 @@ class VIConversationEvent extends VIMessengerEvent {
 ///
 /// Extends [VIMessengerEvent] which provides service information (IM user id, action, event type).
 class VIStatusEvent extends VIMessengerEvent {
-
   /// The user status.
   final bool isOnline;
 
@@ -105,7 +100,6 @@ class VIStatusEvent extends VIMessengerEvent {
 ///
 /// Extends [VIMessengerEvent] which provides service information (IM user id, action, event type).
 class VISubscriptionEvent extends VIMessengerEvent {
-
   /// The list of the IM user identifiers of the current (un)subscription.
   final List<int> users;
 
@@ -118,7 +112,6 @@ class VISubscriptionEvent extends VIMessengerEvent {
 ///
 /// Extends [VIMessengerEvent] which provides service information (IM user id, action, event type).
 class VIConversationServiceEvent extends VIMessengerEvent {
-
   /// The conversation UUID associated with this event.
   final String conversationUuid;
 
@@ -136,7 +129,6 @@ class VIConversationServiceEvent extends VIMessengerEvent {
 ///
 /// Extends [VIMessengerEvent] which provides service information (IM user id, action, event type).
 class VIConversationListEvent extends VIMessengerEvent {
-
   /// The list of conversations UUIDs.
   final List<String> conversationList;
 

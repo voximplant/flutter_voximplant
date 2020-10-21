@@ -135,7 +135,6 @@ typedef void VITyping(VIConversationServiceEvent conversationServiceEvent);
 /// `conversationServiceEvent` - VIConversationServiceEvent object with conversation UUID and service information
 typedef void VIIsRead(VIConversationServiceEvent conversationServiceEvent);
 
-
 /// Interface that may be used to control messaging functions.
 class VIMessenger {
   final MethodChannel _methodChannel;
@@ -185,7 +184,6 @@ class VIMessenger {
 
   /// Get the Voximplant user identifier for the current user, e.g., 'username@appname.accname'
   String get me => _MessengerShared._me;
-
 
   /// Recreate a message.
   ///

@@ -4,7 +4,6 @@ part of voximplant;
 
 /// Interface that represents message within a conversation.
 class VIMessage {
-
   /// The universally unique identifier (UUID) of the message.
   final String uuid;
 
@@ -23,7 +22,6 @@ class VIMessage {
   final List<Map<String, dynamic>> payload;
 
   final MethodChannel _methodChannel;
-
 
   /// Send text and payload changes to the cloud.
   ///

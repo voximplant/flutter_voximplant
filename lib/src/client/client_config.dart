@@ -8,6 +8,7 @@ part of voximplant;
 enum VIRequestAudioFocusMode {
   /// Request of audio focus is performed when a call is established.
   onCallStart,
+
   /// Request of audio focus is performed when a call is started.
   onCallConnected,
 }
@@ -18,12 +19,16 @@ enum VIRequestAudioFocusMode {
 enum VILogLevel {
   /// Include only error messages.
   error,
+
   /// Include only error and warning messages.
   warning,
+
   /// Include error, warning, and info messages.
   info,
+
   /// Include error, warning, info, and debug messages.
   debug,
+
   /// Include all log messages.
   verbose
 }
@@ -69,10 +74,13 @@ class VIClientConfig {
 class VILoginTokens {
   /// Time in seconds to access token expire.
   int accessExpire;
+
   /// Access token.
   String accessToken;
+
   /// Time in seconds to refresh token expire.
   int refreshExpire;
+
   /// Refresh token.
   String refreshToken;
 }
@@ -81,6 +89,7 @@ class VILoginTokens {
 class VIAuthResult {
   /// Display name of the logged in user.
   String displayName;
+
   /// Authentication parameters that may be used for login with access token.
   VILoginTokens loginTokens;
 
@@ -91,12 +100,16 @@ class VIAuthResult {
 enum VIClientState {
   /// The client is currently disconnected.
   Disconnected,
+
   /// The client is currently connecting.
   Connecting,
+
   /// The client is currently connected.
   Connected,
+
   /// The client is currently logging in.
   LoggingIn,
+
   /// The client is currently logged in.
   LoggedIn,
 }

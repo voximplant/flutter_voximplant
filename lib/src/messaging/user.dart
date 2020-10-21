@@ -5,7 +5,6 @@ part of voximplant;
 /// Interface that represents user information.
 /// Voximplant users are created via the Voximplant control panel or HTTP API.
 class VIUser {
-
   /// The IM unique id that is used to identify users in events and specify in user-related methods.
   final int imId;
 

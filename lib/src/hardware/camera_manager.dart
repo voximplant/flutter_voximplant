@@ -3,10 +3,7 @@
 part of voximplant;
 
 /// Represents supported camera types.
-enum VICameraType {
-  Back,
-  Front
-}
+enum VICameraType { Back, Front }
 
 /// Manages cameras.
 class VICameraManager {
@@ -18,9 +15,8 @@ class VICameraManager {
   ///
   /// `cameraType` - Back or front camera
   Future<void> selectCamera(VICameraType cameraType) async {
-      await _channel.invokeMethod('Camera.selectCamera', <String, dynamic>{
-        'cameraType': cameraType.index
-      });
+    await _channel.invokeMethod('Camera.selectCamera',
+        <String, dynamic>{'cameraType': cameraType.index});
   }
 
   /// Selects camera resolution.
@@ -32,9 +28,7 @@ class VICameraManager {
   ///
   /// `height` - Camera resolution height
   Future<void> setCameraResolution(int width, int height) async {
-    await _channel.invokeMethod('Camera.setCameraResolution', <String, dynamic>{
-      'width': width,
-      'height': height
-    });
+    await _channel.invokeMethod('Camera.setCameraResolution',
+        <String, dynamic>{'width': width, 'height': height});
   }
 }

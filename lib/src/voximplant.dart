@@ -13,7 +13,7 @@ class Voximplant {
   VIAudioDeviceManager _audioDeviceManager;
   VICameraManager _cameraManager;
   static const MethodChannel _channel =
-    MethodChannel('plugins.voximplant.com/client');
+      MethodChannel('plugins.voximplant.com/client');
 
   /// Get [VIClient] instance to connect and login to the Voximplant Cloud,
   /// make and receive calls

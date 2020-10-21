@@ -35,7 +35,6 @@ enum VIAudioFileUsage {
 
 /// Class may be used to play audio files.
 class VIAudioFile {
-
   /// HTTP URL of the stream to play
   final String url;
 
@@ -188,6 +187,4 @@ class VIAudioFile {
   }
 }
 
-enum _VIAudioFileDataSource {
-  file, network
-}
+enum _VIAudioFileDataSource { file, network }

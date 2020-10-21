@@ -123,9 +123,8 @@ class VIAudioDeviceManager {
   /// Active audio device can be later changed if a new device is connected.
   /// In this case [onAudioDeviceChanged] will be triggered.
   Future<VIAudioDevice> getActiveDevice() async {
-    Map<String, dynamic> data =
-        await _channel.invokeMapMethod('AudioDevice.getActiveDevice');
-    VIAudioDevice audioDevice = VIAudioDevice.values[data['audioDevice']];
+    int device = await _channel.invokeMethod('AudioDevice.getActiveDevice');
+    VIAudioDevice audioDevice = VIAudioDevice.values[device];
     return audioDevice;
   }
 

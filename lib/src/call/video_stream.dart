@@ -6,6 +6,7 @@ part of voximplant;
 enum VIVideoStreamType {
   /// Indicates that a video stream source is camera or custom video source.
   VIDEO,
+
   /// Indicates that a video stream source is screen sharing.
   SCREEN_SHARING
 }
@@ -26,4 +27,3 @@ class VIVideoStream {
 
   VIVideoStream._(this._streamId, this._streamType);
 }
-

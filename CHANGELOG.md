@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.1
+* Reformat code according to Dartfmt
+* Fix VIAudioDeviceManager.getAudioDevice always throws issue
+
 ## 2.4.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.20.4
   and Voximplant iOS SDK 2.34.3
