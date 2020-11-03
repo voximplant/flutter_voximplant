@@ -1,6 +1,6 @@
 name: flutter_voximplant
 description: Voximplant plugin for embedding voice and video communication into Flutter applications.
-version: 2.4.1
+version: 2.4.2
 authors:
   - Voximplant Team <mobiledev@zingaya.com>
   - Yulia Grigorieva <grigorieva@voximplant.com>

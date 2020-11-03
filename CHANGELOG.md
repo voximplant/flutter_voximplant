@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.2
+* Fix a crash on stop non-looped VIAudioFile (iOS)
+
 ## 2.4.1
 * Reformat code according to Dartfmt
 * Fix VIAudioDeviceManager.getAudioDevice always throws issue

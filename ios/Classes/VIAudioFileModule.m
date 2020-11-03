@@ -87,12 +87,10 @@
         if (playbackError) {
             error = [VoximplantUtils convertAudioFileErrorToString:playbackError.code];
         }
-        if (_fileID) {
-            self.eventSink(@{
-                @"name": @"didStopPlaying",
-                @"error": error
-            });
-        }
+        self.eventSink(@{
+            @"name": @"didStopPlaying",
+            @"error": error ?: [NSNull null]
+        });
     }
 }
 
