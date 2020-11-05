@@ -14,6 +14,7 @@
 @property(nonatomic, strong) NSString *fileID;
 @property(nonatomic) FlutterResult playCompletion;
 @property(nonatomic) FlutterResult stopCompletion;
+@property(atomic) BOOL isPlaying;
 
 @end
 
@@ -30,6 +31,7 @@
         _fileID = fileID;
         _audioFile = file;
         _audioFile.delegate = self;
+        _isPlaying = NO;
     }
     return self;
 }
@@ -51,8 +53,12 @@
         [_audioFile play];
         _playCompletion = result;
     } else if ([@"stop" isEqualToString:call.method]) {
-        [_audioFile stop];
-        _stopCompletion = result;
+        if (_isPlaying) {
+            [_audioFile stop];
+            _stopCompletion = result;
+        } else {
+            result(nil);
+        }
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -66,6 +72,7 @@
                                                 message:playbackError.localizedDescription
                                                 details:nil]);
         } else {
+            _isPlaying = YES;
             _playCompletion(nil);
         }
         _playCompletion = nil;
@@ -73,6 +80,7 @@
 }
 
 - (void)audioFile:(VIAudioFile *)audioFile didStopPlaying:(NSError *)playbackError {
+    _isPlaying = NO;
     if (_stopCompletion) {
         if (playbackError) {
             _stopCompletion([FlutterError errorWithCode:[VoximplantUtils convertAudioFileErrorToString:playbackError.code]

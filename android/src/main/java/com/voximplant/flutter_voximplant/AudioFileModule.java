@@ -23,6 +23,7 @@ public class AudioFileModule implements EventChannel.StreamHandler, IAudioFileLi
     private MethodChannel.Result mLoadFileCompletion;
     private MethodChannel.Result mPlayCompletion;
     private MethodChannel.Result mStopCompletion;
+    private boolean mIsPlaying;
 
     AudioFileModule(BinaryMessenger messenger, IAudioFile file, String fileId, MethodChannel.Result loadFileCompletion) {
         mLoadFileCompletion = loadFileCompletion;
@@ -31,6 +32,7 @@ public class AudioFileModule implements EventChannel.StreamHandler, IAudioFileLi
         mFileId = fileId;
         mAudioFile = file;
         mAudioFile.setAudioFileListener(this);
+        mIsPlaying = false;
     }
 
     void handleMethodCall(MethodCall call, MethodChannel.Result result) {
@@ -61,13 +63,18 @@ public class AudioFileModule implements EventChannel.StreamHandler, IAudioFileLi
 
     void stop(MethodChannel.Result result) {
         if (mAudioFile != null) {
-            mStopCompletion = result;
-            mAudioFile.stop(false);
+            if (mIsPlaying) {
+                mStopCompletion = result;
+                mAudioFile.stop(false);
+            } else {
+                result.success(null);
+            }
         }
     }
 
     @Override
     public void onStart(IAudioFile audioFile) {
+        mIsPlaying = true;
         if (mPlayCompletion != null) {
             mHandler.post(() -> {
                 mPlayCompletion.success(null);
@@ -78,6 +85,7 @@ public class AudioFileModule implements EventChannel.StreamHandler, IAudioFileLi
 
     @Override
     public void onStop(IAudioFile audioFile) {
+        mIsPlaying = false;
         if (mStopCompletion != null) {
             mHandler.post(() -> {
                 mStopCompletion.success(null);

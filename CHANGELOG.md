@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.3
+* Fix a bug leading to non-execution of VIAudioFile.stop() Future in some cases
+
 ## 2.4.2
 * Fix a crash on stop non-looped VIAudioFile (iOS)
 
