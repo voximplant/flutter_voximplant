@@ -325,7 +325,7 @@
 
 - (void)callDidStartAudio:(VICall *)call {
     [self sendEvent:@{
-        @"event" : @"callStartAudio"
+        @"event" : @"callAudioStarted"
     }];
 }
 

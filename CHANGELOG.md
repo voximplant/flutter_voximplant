@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.5.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.21.0
+  and Voximplant iOS SDK 2.35.0
+* Fix [VICall.onCallAudioStarted](/docs/references/fluttersdk/call/vicall#oncallaudiostarted)
+  callback execution on iOS
+
 ## 2.4.3
 * Fix a bug leading to non-execution of VIAudioFile.stop() Future in some cases
 
