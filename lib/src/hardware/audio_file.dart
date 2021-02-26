@@ -41,6 +41,9 @@ class VIAudioFile {
   /// Local audio file name
   final String name;
 
+  /// Local audio file type/format, for example ".mp3"
+  final String type;
+
   /// Indicate if the audio file should be played repeatedly or once
   bool get looped => _looped;
 
@@ -50,7 +53,6 @@ class VIAudioFile {
   static MethodChannel get _methodChannel => Voximplant._channel;
   StreamSubscription<dynamic> _eventSubscription;
   String _fileId;
-  final String _type;
   final VIAudioFileUsage _usage;
   final _VIAudioFileDataSource _dataSource;
   bool _looped = false;
@@ -64,7 +66,7 @@ class VIAudioFile {
   /// `usage` - Audio file usage mode. ANDROID ONLY.
   ///
   /// On android, the audio file must be located in resources "raw" folder.
-  VIAudioFile.file(this.name, this._type,
+  VIAudioFile.file(this.name, this.type,
       {VIAudioFileUsage usage = VIAudioFileUsage.unknown})
       : _dataSource = _VIAudioFileDataSource.file,
         _usage = usage,
@@ -80,7 +82,7 @@ class VIAudioFile {
       : _dataSource = _VIAudioFileDataSource.network,
         _usage = usage,
         name = null,
-        _type = null;
+        type = null;
 
   /// Initialize and prepare the audio file to play
   ///
@@ -91,7 +93,7 @@ class VIAudioFile {
         _fileId = await _methodChannel.invokeMethod(
             'AudioFile.initWithFile', <String, dynamic>{
           'name': name,
-          'type': _type,
+          'type': type,
           'usage': _audioFileUsageToString(_usage)
         });
       } else if (_dataSource == _VIAudioFileDataSource.network) {
