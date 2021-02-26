@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.6.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.21.3
+  and Voximplant iOS SDK 2.36.2
+* VIAudioFile._type private field changed to VIAudioFile.type public final field
+
 ## 2.5.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.21.0
   and Voximplant iOS SDK 2.35.0
