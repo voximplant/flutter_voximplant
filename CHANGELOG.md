@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.6.1
+* Fix for [#20](https://github.com/voximplant/flutter_voximplant/issues/20)
+
 ## 2.6.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.21.3
   and Voximplant iOS SDK 2.36.2
