@@ -563,7 +563,7 @@ class VICall {
         break;
       case 'sipInfoReceived':
         String type = map['type'];
-        String content = map['content'];
+        String content = map['body'];
         Map<String, String> headers = new Map();
         map['headers'].forEach(
             (key, value) => {headers[key as String] = value as String});
