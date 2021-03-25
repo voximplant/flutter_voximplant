@@ -10,7 +10,7 @@ repository: https://github.com/voximplant/flutter_voximplant
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.6 <2.0.0"
+  flutter: ">=1.12.13+hotfix.6"
 
 dependencies:
   flutter:
