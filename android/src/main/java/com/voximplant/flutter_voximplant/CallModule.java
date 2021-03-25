@@ -422,7 +422,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         Map<String, Object> event = new HashMap<>();
         event.put("event", "sipInfoReceived");
         event.put("type", type);
-        event.put("content", content);
+        event.put("body", content);
         event.put("headers", headers);
         sendCallEvent(event);
     }
