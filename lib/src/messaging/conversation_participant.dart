@@ -103,10 +103,10 @@ class VIConversationParticipant {
   VIConversationParticipant(
     this.imUserId, {
     this.isOwner = false,
-    this.canWrite = false,
-    this.canEditMessages = false,
+    this.canWrite = true,
+    this.canEditMessages = true,
     this.canEditAllMessages = false,
-    this.canRemoveMessages = false,
+    this.canRemoveMessages = true,
     this.canRemoveAllMessages = false,
     this.canManageParticipants = false,
   }) : this.lastReadSequence = 0;
