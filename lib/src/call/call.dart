@@ -272,7 +272,7 @@ class VICall {
   /// Additional call parameters are set up via [callSettings]: video direction
   /// for the call, preferred video codec, custom data.
   ///
-  /// `settings` - Additional call parameters like video direction
+  /// Optional `settings` - Additional call parameters like video direction
   /// for the call, preferred video codec, custom data.
   ///
   /// Throws [VIException], if an error occurred.

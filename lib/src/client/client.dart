@@ -366,7 +366,7 @@ class VIClient {
   /// Voximplant username, phone number or SIP URI. Actual routing is then
   /// performed by a VoxEngine scenario.
   ///
-  /// `settings` - Additional call parameters like video direction
+  /// Optional `settings` - Additional call parameters like video direction
   /// for the call, preferred video codec, custom data.
   ///
   /// Throws [VIException], if the client is not logged in, otherwise returns
@@ -413,7 +413,7 @@ class VIClient {
   /// For SIP compatibility reasons it should be a non-empty string even
   /// if the number itself is not used by a Voximplant cloud scenario.
   ///
-  /// `callSettings` - Additional call parameters like video direction
+  /// Optional `settings` - Additional call parameters like video direction
   /// for the call, preferred video codec, custom data.
   ///
   /// Throws [VIException], if the client is not logged in, otherwise returns
