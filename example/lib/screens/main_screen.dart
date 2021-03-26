@@ -44,18 +44,16 @@ class MainScreen extends StatelessWidget {
       PermissionStatus permission = await PermissionHandler()
           .checkPermissionStatus(PermissionGroup.microphone);
       if (permission != PermissionStatus.granted) {
-        Map<PermissionGroup,
-            PermissionStatus> result = await PermissionHandler()
-            .requestPermissions([PermissionGroup.microphone]);
+        Map<PermissionGroup, PermissionStatus> result =
+            await PermissionHandler()
+                .requestPermissions([PermissionGroup.microphone]);
         if (result[PermissionGroup.microphone] != PermissionStatus.granted) {
           return;
         }
       }
     }
     VICall call = await _callService.makeAudioCall(number);
-    Navigator.pushReplacementNamed(
-        context,
-        CallScreen.routeName,
+    Navigator.pushReplacementNamed(context, CallScreen.routeName,
         arguments: CallArguments(call));
   }
 
@@ -90,9 +88,7 @@ class MainScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
               child: Text(
                 'Logged in as $_displayName',
-                style: TextStyle(
-                  fontSize: 20
-                ),
+                style: TextStyle(fontSize: 20),
               ),
             ),
             Padding(
@@ -113,7 +109,8 @@ class MainScreen extends StatelessWidget {
                 },
                 child: Text(
                   'CALL',
-                  style: TextStyle(fontSize: 20, color: VoximplantColors.button),
+                  style:
+                      TextStyle(fontSize: 20, color: VoximplantColors.button),
                 ),
               ),
             ),

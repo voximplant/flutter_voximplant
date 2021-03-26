@@ -169,7 +169,7 @@ void main() {
         'testPrivateData2': 'Test private data 2222'
       };
       VIUserEvent event =
-      await messenger.editUser(customData, privateCustomData);
+          await messenger.editUser(customData, privateCustomData);
       logUserEvent(event);
       expect(event.user.name, isNotNull);
       expect(event.user.displayName, isNotNull);
@@ -196,7 +196,7 @@ void main() {
         'testPrivateData2': 890
       };
       VIUserEvent event =
-      await messenger.editUser(customData, privateCustomData);
+          await messenger.editUser(customData, privateCustomData);
       logUserEvent(event);
       expect(event.user.name, isNotNull);
       expect(event.user.displayName, isNotNull);
@@ -223,7 +223,7 @@ void main() {
         'testPrivateData2': true
       };
       VIUserEvent event =
-      await messenger.editUser(customData, privateCustomData);
+          await messenger.editUser(customData, privateCustomData);
       logUserEvent(event);
       expect(event.user.name, isNotNull);
       expect(event.user.displayName, isNotNull);
@@ -250,7 +250,7 @@ void main() {
         'testPrivateData2': []
       };
       VIUserEvent event =
-      await messenger.editUser(customData, privateCustomData);
+          await messenger.editUser(customData, privateCustomData);
       logUserEvent(event);
       expect(event.user.name, isNotNull);
       expect(event.user.displayName, isNotNull);
@@ -277,7 +277,7 @@ void main() {
         'testPrivateData2': {"key": false}
       };
       VIUserEvent event =
-      await messenger.editUser(customData, privateCustomData);
+          await messenger.editUser(customData, privateCustomData);
       logUserEvent(event);
       expect(event.user.name, isNotNull);
       expect(event.user.displayName, isNotNull);
@@ -419,7 +419,7 @@ void main() {
   group('subscriptions', () {
     test('subscribe', () async {
       List<int> users =
-      [_testUsers[1], _testUsers[2]].map((e) => e.id).toList();
+          [_testUsers[1], _testUsers[2]].map((e) => e.id).toList();
       VISubscriptionEvent event = await messenger.subscribe(users);
       logSubscriptionEvent(event);
       expect(event.type, VIMessengerEventType.subscribe);
@@ -427,7 +427,7 @@ void main() {
       expect(event.imUserId, _testUsers[0].id);
       expect(event.users, users);
       VISubscriptionEvent subscriptionEvent =
-      await messenger.getSubscriptions();
+          await messenger.getSubscriptions();
       expect(subscriptionEvent.type, VIMessengerEventType.getSubscriptions);
       expect(subscriptionEvent.action, VIMessengerAction.getSubscriptions);
       expect(subscriptionEvent.imUserId, _testUsers[0].id);
@@ -436,18 +436,18 @@ void main() {
 
     test('unsubscribe', () async {
       VISubscriptionEvent subscriptionEvent =
-      await messenger.getSubscriptions();
+          await messenger.getSubscriptions();
       expect(subscriptionEvent.type, VIMessengerEventType.getSubscriptions);
       expect(subscriptionEvent.action, VIMessengerAction.getSubscriptions);
       expect(subscriptionEvent.imUserId, _testUsers[0].id);
       expect(subscriptionEvent.users, isNotNull);
       if (!subscriptionEvent.users.contains(_testUsers[2].id)) {
         VISubscriptionEvent subscribeEvent =
-        await messenger.subscribe([_testUsers[2].id]);
+            await messenger.subscribe([_testUsers[2].id]);
         logSubscriptionEvent(subscribeEvent);
       }
       VISubscriptionEvent unsubscribeEvent =
-      await messenger.unsubscribe([_testUsers[2].id]);
+          await messenger.unsubscribe([_testUsers[2].id]);
       logSubscriptionEvent(unsubscribeEvent);
       expect(unsubscribeEvent.type, VIMessengerEventType.unsubscribe);
       expect(unsubscribeEvent.action, VIMessengerAction.unsubscribe);
@@ -459,7 +459,7 @@ void main() {
 
     test('unsubscribeFromAll', () async {
       VISubscriptionEvent subscriptionsEvent =
-      await messenger.getSubscriptions();
+          await messenger.getSubscriptions();
       logSubscriptionEvent(subscriptionsEvent);
       expect(subscriptionsEvent.type, VIMessengerEventType.getSubscriptions);
       expect(subscriptionsEvent.action, VIMessengerAction.getSubscriptions);
@@ -468,12 +468,12 @@ void main() {
       int length = subscriptionsEvent.users.length;
       if (length == 0) {
         VISubscriptionEvent subscribeEvent =
-        await messenger.subscribe([_testUsers[1].id, _testUsers[2].id]);
+            await messenger.subscribe([_testUsers[1].id, _testUsers[2].id]);
         logSubscriptionEvent(subscribeEvent);
         length = subscribeEvent.users.length;
       }
       VISubscriptionEvent unsubscribeEvent =
-      await messenger.unsubscribeFromAll();
+          await messenger.unsubscribeFromAll();
       logSubscriptionEvent(unsubscribeEvent);
       expect(unsubscribeEvent.type, VIMessengerEventType.unsubscribe);
       expect(unsubscribeEvent.action, VIMessengerAction.unsubscribe);

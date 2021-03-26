@@ -55,7 +55,8 @@ class AuthService {
     VILoginTokens loginTokens = _getAuthDetails(prefs);
     String user = username ?? prefs.getString('username');
 
-    VIAuthResult authResult = await _client.loginWithAccessToken(user, loginTokens.accessToken);
+    VIAuthResult authResult =
+        await _client.loginWithAccessToken(user, loginTokens.accessToken);
     await _saveAuthDetails(user, authResult.loginTokens);
     _displayName = authResult.displayName;
     return _displayName;
@@ -70,7 +71,8 @@ class AuthService {
     return prefs.getString('username')?.replaceAll('.voximplant.com', '');
   }
 
-  Future<void> _saveAuthDetails(String username, VILoginTokens loginTokens) async {
+  Future<void> _saveAuthDetails(
+      String username, VILoginTokens loginTokens) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('username', username);
     prefs.setString('accessToken', loginTokens.accessToken);
