@@ -23,7 +23,7 @@ void main() {
     await client.connect();
     await client.login(
         '${_testUsers[0].name}.voximplant.com', _testUsers[0].pass);
-    messenger = instance.getMessenger();
+    messenger = instance.messenger;
     print('setUp completed');
   });
 

@@ -15,7 +15,7 @@ void main() {
 
   test('use messenger before client', () async {
     try {
-      VIMessenger messenger = Voximplant().getMessenger();
+      VIMessenger messenger = Voximplant().messenger;
       await messenger.getUserByName(_testUsers[1].name);
     } on VIException catch (e) {
       expect(e.code, VIMessagingError.ERROR_CLIENT_NOT_LOGGED_IN);
