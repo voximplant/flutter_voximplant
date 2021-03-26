@@ -1,5 +1,5 @@
 group 'com.voximplant.flutter_voximplant'
-version '2.6.1'
+version '3.0.0'
 
 buildscript {
     repositories {

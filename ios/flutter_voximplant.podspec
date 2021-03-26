@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'flutter_voximplant'
-  s.version          = '2.6.1'
+  s.version          = '3.0.0'
   s.summary          = 'Voximplant Flutter SDK'
   s.description      = <<-DESC
 Voximplant plugin for embedding voice and video communication into Flutter applications.
