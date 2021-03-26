@@ -168,7 +168,10 @@ class VIClient {
       );
       if (data == null) {
         _VILog._e('VIClient: login: data was null, skipping');
-        throw VIClientError.ERROR_INTERNAL;
+        throw VIException(
+          VIClientError.ERROR_INTERNAL,
+          'VIClient:login: data was null',
+        );
       }
       _saveUsername(username);
       return await _processLoginSuccess(data);
@@ -215,7 +218,10 @@ class VIClient {
       });
       if (data == null) {
         _VILog._e('VIClient: login: data was null, skipping');
-        throw VIClientError.ERROR_INTERNAL;
+        throw VIException(
+          VIClientError.ERROR_INTERNAL,
+          'VIClient:login: data was null',
+        );
       }
       _saveUsername(username);
       return await _processLoginSuccess(data);
@@ -263,7 +269,10 @@ class VIClient {
       );
       if (data == null) {
         _VILog._e('VIClient: login: data was null, skipping');
-        throw VIClientError.ERROR_INTERNAL;
+        throw VIException(
+          VIClientError.ERROR_INTERNAL,
+          'VIClient:login: data was null',
+        );
       }
       _saveUsername(username);
       return await _processLoginSuccess(data);
@@ -334,7 +343,10 @@ class VIClient {
       });
       if (data == null) {
         _VILog._e('VIClient: tokenRefresh: data was null, skipping');
-        throw VIClientError.ERROR_INTERNAL;
+        throw VIException(
+          VIClientError.ERROR_INTERNAL,
+          'VIClient:tokenRefresh: data was null',
+        );
       }
       VILoginTokens loginTokens = VILoginTokens(
         accessExpire: data['accessExpire'],
@@ -383,7 +395,10 @@ class VIClient {
       });
       if (data == null) {
         _VILog._e('VIClient: call: data was null, skipping');
-        throw VIClientError.ERROR_INTERNAL;
+        throw VIException(
+          VIClientError.ERROR_INTERNAL,
+          'VIClient:call: data was null',
+        );
       }
       VICall call = VICall._(data['callId'], _channel);
       return call;
@@ -430,7 +445,10 @@ class VIClient {
       });
       if (data == null) {
         _VILog._e('VIClient: conference: data was null, skipping');
-        throw VIClientError.ERROR_INTERNAL;
+        throw VIException(
+          VIClientError.ERROR_INTERNAL,
+          'VIClient:conference: data was null',
+        );
       }
       VICall call = VICall._(data['callId'], _channel);
       return call;

@@ -87,7 +87,10 @@ class VIConversation {
       });
       if (data == null) {
         _VILog._e('VIConversation: addParticipants: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIConversation:addParticipants: data was null',
+        );
       }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -119,7 +122,10 @@ class VIConversation {
       });
       if (data == null) {
         _VILog._e('VIConversation: editParticipants: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIConversation:editParticipants: data was null',
+        );
       }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -161,7 +167,10 @@ class VIConversation {
       if (data == null) {
         _VILog._e(
             'VIConversation: removeParticipants: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIConversation:removeParticipants: data was null',
+        );
       }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -186,7 +195,10 @@ class VIConversation {
       });
       if (data == null) {
         _VILog._e('VIConversation: update: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIConversation:update: data was null',
+        );
       }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -217,7 +229,10 @@ class VIConversation {
           'Messaging.markAsRead', {'conversation': uuid, 'sequence': sequence});
       if (data == null) {
         _VILog._e('VIConversation: markAsRead: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIConversation:markAsRead: data was null',
+        );
       }
       return VIConversationServiceEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -245,7 +260,10 @@ class VIConversation {
           .invokeMapMethod('Messaging.typing', {'conversation': uuid});
       if (data == null) {
         _VILog._e('VIConversation: typing: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIConversation:typing: data was null',
+        );
       }
       return VIConversationServiceEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -281,7 +299,10 @@ class VIConversation {
           {'conversation': uuid, 'text': text, 'payload': payload});
       if (data == null) {
         _VILog._e('VIConversation: sendMessage: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIConversation:sendMessage: data was null',
+        );
       }
       return VIMessageEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -317,7 +338,10 @@ class VIConversation {
           {'conversation': uuid, 'from': from, 'to': to});
       if (data == null) {
         _VILog._e('VIConversation: retransmitEvents: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIConversation:retransmitEvents: data was null',
+        );
       }
       return VIRetransmitEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -353,7 +377,10 @@ class VIConversation {
           {'conversation': uuid, 'from': from, 'count': count});
       if (data == null) {
         _VILog._e('VIConversation: retransmitEvents: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIConversation:retransmitEvents: data was null',
+        );
       }
       return VIRetransmitEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -389,7 +416,10 @@ class VIConversation {
           {'conversation': uuid, 'to': to, 'count': count});
       if (data == null) {
         _VILog._e('VIConversation: retransmitEvents: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIConversation:retransmitEvents: data was null',
+        );
       }
       return VIRetransmitEvent._fromMap(data);
     } on PlatformException catch (e) {

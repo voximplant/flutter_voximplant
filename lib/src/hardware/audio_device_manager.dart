@@ -131,7 +131,10 @@ class VIAudioDeviceManager {
         await _channel.invokeMethod<int>('AudioDevice.getActiveDevice');
     if (device == null) {
       _VILog._e('AudioDeviceManager: getActiveDevice: data was null, skipping');
-      throw VIClientError.ERROR_INTERNAL;
+      throw VIException(
+        VIClientError.ERROR_INTERNAL,
+        'AudioDeviceManager:getActiveDevice: data was null',
+      );
     }
     VIAudioDevice audioDevice = VIAudioDevice.values[device];
     return audioDevice;
@@ -144,7 +147,10 @@ class VIAudioDeviceManager {
     if (data == null) {
       _VILog._e(
           'VIAudioDeviceManager: getAudioDevices: devices were null, skipping');
-      throw VIClientError.ERROR_INTERNAL;
+      throw VIException(
+        VIClientError.ERROR_INTERNAL,
+        'VIAudioDeviceManager:getAudioDevices: devices were null',
+      );
     }
     List<VIAudioDevice> newAudioDevices = [];
     for (int device in data) {

@@ -253,7 +253,10 @@ class VIMessenger {
           .invokeMapMethod('Messaging.getUserByName', {'name': username});
       if (data == null) {
         _VILog._e('VIMessenger: getUserByName: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:getUserByName: data was null',
+        );
       }
       return VIUserEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -275,7 +278,10 @@ class VIMessenger {
           .invokeListMethod('Messaging.getUsersByName', {'users': users});
       if (data == null) {
         _VILog._e('VIMessenger: getUsersByName: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:getUsersByName: data was null',
+        );
       }
       return data.map((e) => VIUserEvent._fromMap(e)).toList();
     } on PlatformException catch (e) {
@@ -297,7 +303,10 @@ class VIMessenger {
           .invokeMapMethod('Messaging.getUserByIMId', {'id': userId});
       if (data == null) {
         _VILog._e('VIMessenger: getUserByIMId: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:getUserByIMId: data was null',
+        );
       }
       return VIUserEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -319,7 +328,10 @@ class VIMessenger {
           .invokeListMethod('Messaging.getUsersByIMId', {'users': users});
       if (data == null) {
         _VILog._e('VIMessenger: getUsersByIMId: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:getUsersByIMId: data was null',
+        );
       }
       return data.map((e) => VIUserEvent._fromMap(e)).toList();
     } on PlatformException catch (e) {
@@ -347,7 +359,10 @@ class VIMessenger {
       });
       if (data == null) {
         _VILog._e('VIMessenger: editUser: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:editUser: data was null',
+        );
       }
       return VIUserEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -371,7 +386,10 @@ class VIMessenger {
       if (data == null) {
         _VILog._e(
             'VIMessenger: managePushNotifications: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:managePushNotifications: data was null',
+        );
       }
       return VIUserEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -394,7 +412,10 @@ class VIMessenger {
           .invokeMapMethod('Messaging.setStatus', {'online': online});
       if (data == null) {
         _VILog._e('VIMessenger: setStatus: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:setStatus: data was null',
+        );
       }
       return VIStatusEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -412,7 +433,10 @@ class VIMessenger {
           await _methodChannel.invokeMapMethod('Messaging.getSubscriptions');
       if (data == null) {
         _VILog._e('VIMessenger: getSubscriptions: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:getSubscriptions: data was null',
+        );
       }
       return VISubscriptionEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -438,7 +462,10 @@ class VIMessenger {
           .invokeMapMethod('Messaging.subscribe', {'users': users});
       if (data == null) {
         _VILog._e('VIMessenger: subscribe: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:subscribe: data was null',
+        );
       }
       return VISubscriptionEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -464,7 +491,10 @@ class VIMessenger {
           .invokeMapMethod('Messaging.unsubscribe', {'users': users});
       if (data == null) {
         _VILog._e('VIMessenger: unsubscribe: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:unsubscribe: data was null',
+        );
       }
       return VISubscriptionEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -486,7 +516,10 @@ class VIMessenger {
           await _methodChannel.invokeMapMethod('Messaging.unsubscribeFromAll');
       if (data == null) {
         _VILog._e('VIMessenger: unsubscribeFromAll: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:unsubscribeFromAll: data was null',
+        );
       }
       return VISubscriptionEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -512,7 +545,10 @@ class VIMessenger {
           'Messaging.createConversation', {'config': config._toMap});
       if (data == null) {
         _VILog._e('VIMessenger: createConversation: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:createConversation: data was null',
+        );
       }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -536,7 +572,10 @@ class VIMessenger {
           .invokeMapMethod('Messaging.getConversation', {'uuid': uuid});
       if (data == null) {
         _VILog._e('VIMessenger: getConversation: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:getConversation: data was null',
+        );
       }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -560,7 +599,10 @@ class VIMessenger {
           .invokeListMethod('Messaging.getConversations', {'uuids': uuids});
       if (data == null) {
         _VILog._e('VIMessenger: getConversations: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:getConversations: data was null',
+        );
       }
       return data.map((e) => VIConversationEvent._fromMap(e)).toList();
     } on PlatformException catch (e) {
@@ -585,7 +627,10 @@ class VIMessenger {
       if (data == null) {
         _VILog._e(
             'VIMessenger: getPublicConversations: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:getPublicConversations: data was null',
+        );
       }
       return VIConversationListEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -615,7 +660,10 @@ class VIMessenger {
           .invokeMapMethod('Messaging.joinConversation', {'uuid': uuid});
       if (data == null) {
         _VILog._e('VIMessenger: joinConversation: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:joinConversation: data was null',
+        );
       }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -642,7 +690,10 @@ class VIMessenger {
           .invokeMapMethod('Messaging.leaveConversation', {'uuid': uuid});
       if (data == null) {
         _VILog._e('VIMessenger: leaveConversation: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessenger:leaveConversation: data was null',
+        );
       }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {

@@ -52,7 +52,10 @@ class VIMessage {
       );
       if (data == null) {
         _VILog._e('VIMessage: update: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL; //TODO(vladimir): VIException
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessage:update: data was null',
+        );
       }
       return VIMessageEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -74,7 +77,10 @@ class VIMessage {
       );
       if (data == null) {
         _VILog._e('VIMessage: remove: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIException(
+          VIMessagingError.ERROR_INTERNAL,
+          'VIMessage:remove: data was null',
+        );
       }
       return VIMessageEvent._fromMap(data);
     } on PlatformException catch (e) {
