@@ -142,48 +142,48 @@ class VIMessenger {
       EventChannel('plugins.voximplant.com/messaging');
 
   /// Callback for getting notified when an user changes
-  VIEditUser onEditUser;
+  VIEditUser? onEditUser;
 
   /// Callback for getting notified about new subscriptions.
-  VISubscribe onSubscribe;
+  VISubscribe? onSubscribe;
 
   /// Callback for getting notified about changes in current subscriptions.
-  VIUnsubscribe onUnsubscribe;
+  VIUnsubscribe? onUnsubscribe;
 
   /// Callback for getting notified when a new conversation is created
   /// with the current user.
-  VICreateConversation onCreateConversation;
+  VICreateConversation? onCreateConversation;
 
   /// Callback for getting notified when a conversation
   /// the current user belongs to is removed
-  VIRemoveConversation onRemoveConversation;
+  VIRemoveConversation? onRemoveConversation;
 
   /// Callback for getting notified when the properties of a conversation
   /// the current user belongs to were modified
-  VIEditConversation onEditConversation;
+  VIEditConversation? onEditConversation;
 
   /// Callback for getting notified when an user status was changed
-  VISetStatus onSetStatus;
+  VISetStatus? onSetStatus;
 
   /// Callback for getting notified when a message was edited
-  VIEditMessage onEditMessage;
+  VIEditMessage? onEditMessage;
 
   /// Callback for getting notified when a new message was sent to a conversation
   /// the current user belongs to
-  VISendMessage onSendMessage;
+  VISendMessage? onSendMessage;
 
   /// Callback for getting notified when a message was removed from a conversation
   /// the current user belongs to
-  VIRemoveMessage onRemoveMessage;
+  VIRemoveMessage? onRemoveMessage;
 
   /// Callback for getting notified when some user is typing text in a conversation.
-  VITyping onTyping;
+  VITyping? onTyping;
 
   /// Callback for getting notified when a participant in a conversation mark the event as read
-  VIIsRead onRead;
+  VIIsRead? onRead;
 
   /// Get the Voximplant user identifier for the current user, e.g., 'username@appname.accname'
-  String get me => _MessengerShared._me;
+  String? get me => _MessengerShared._me;
 
   /// Recreate a message.
   ///
@@ -200,20 +200,14 @@ class VIMessenger {
   /// Optional `payload` - List of payload objects associated with the message
   ///
   /// Optional `sequence` - Message sequence number
-  VIMessage recreateMessage(String uuid, String conversationUuid,
-      {String text, List<Map<String, Object>> payload, int sequence}) {
-    if (uuid == null) {
-      _VILog._w(
-          'Attempt to recreate message with uuid == null, returning null');
-      return null;
-    }
-    if (conversationUuid == null) {
-      _VILog._w('Attempt to recreate message with conversationUuid == null, '
-          'returning null');
-      return null;
-    }
-    return VIMessage._recreate(uuid, conversationUuid, text, payload, sequence);
-  }
+  VIMessage recreateMessage(
+    String uuid,
+    String conversationUuid, {
+    required String text,
+    required List<Map<String, Object>> payload,
+    int sequence = 0,
+  }) =>
+      VIMessage._recreate(uuid, conversationUuid, text, payload, sequence);
 
   /// Recreate a conversation.
   ///
@@ -230,19 +224,20 @@ class VIMessenger {
   /// Optional `lastUpdateTime` - UNIX timestamp that specifies the time of the last event stored in a local storage (database)
   ///
   /// Optional `createdTime` - UNIX timestamp that specifies the time of the conversation creation
-  VIConversation recreateConversation(String uuid,
-      {VIConversationConfig conversationConfig,
-      int lastSequence,
-      int lastUpdateTime,
-      int createdTime}) {
-    if (uuid == null) {
-      _VILog._w(
-          'Attempt to recreate conversation with uuid == null, returning null');
-      return null;
-    }
-    return VIConversation._recreate(
-        conversationConfig, uuid, lastSequence, lastUpdateTime, createdTime);
-  }
+  VIConversation recreateConversation(
+    String uuid, {
+    required VIConversationConfig conversationConfig,
+    required int lastSequence,
+    required int lastUpdateTime,
+    required int createdTime,
+  }) =>
+      VIConversation._recreate(
+        conversationConfig,
+        uuid,
+        lastSequence,
+        lastUpdateTime,
+        createdTime,
+      );
 
   /// Get information for the user specified by the Voximplant user name, e.g., 'username@appname.accname'.
   ///
@@ -254,8 +249,12 @@ class VIMessenger {
   /// For all possible errors see [VIMessagingError]
   Future<VIUserEvent> getUserByName(String username) async {
     try {
-      Map<String, dynamic> data = await _methodChannel
+      Map<String, dynamic>? data = await _methodChannel
           .invokeMapMethod('Messaging.getUserByName', {'name': username});
+      if (data == null) {
+        _VILog._e('VIMessenger: getUserByName: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIUserEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -272,8 +271,12 @@ class VIMessenger {
   /// For all possible errors see [VIMessagingError]
   Future<List<VIUserEvent>> getUsersByName(List<String> users) async {
     try {
-      List<dynamic> data = await _methodChannel
+      List<dynamic>? data = await _methodChannel
           .invokeListMethod('Messaging.getUsersByName', {'users': users});
+      if (data == null) {
+        _VILog._e('VIMessenger: getUsersByName: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return data.map((e) => VIUserEvent._fromMap(e)).toList();
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -290,8 +293,12 @@ class VIMessenger {
   /// For all possible errors see [VIMessagingError]
   Future<VIUserEvent> getUserByIMId(int userId) async {
     try {
-      Map<String, dynamic> data = await _methodChannel
+      Map<String, dynamic>? data = await _methodChannel
           .invokeMapMethod('Messaging.getUserByIMId', {'id': userId});
+      if (data == null) {
+        _VILog._e('VIMessenger: getUserByIMId: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIUserEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -308,8 +315,12 @@ class VIMessenger {
   /// For all possible errors see [VIMessagingError]
   Future<List<VIUserEvent>> getUsersByIMId(List<int> users) async {
     try {
-      List<dynamic> data = await _methodChannel
+      List<dynamic>? data = await _methodChannel
           .invokeListMethod('Messaging.getUsersByIMId', {'users': users});
+      if (data == null) {
+        _VILog._e('VIMessenger: getUsersByIMId: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return data.map((e) => VIUserEvent._fromMap(e)).toList();
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -324,12 +335,18 @@ class VIMessenger {
   ///
   /// Throws [VIException], if operation failed, otherwise returns [VIUserEvent] instance.
   /// For all possible errors see [VIMessagingError]
-  Future<VIUserEvent> editUser(Map<String, Object> customData,
-      Map<String, Object> privateCustomData) async {
+  Future<VIUserEvent> editUser(
+    Map<String, Object>? customData,
+    Map<String, Object>? privateCustomData,
+  ) async {
     try {
-      Map<String, dynamic> data = await _methodChannel.invokeMapMethod(
+      Map<String, dynamic>? data = await _methodChannel.invokeMapMethod(
           'Messaging.editUser',
-          {'customData': customData, 'privateCustomData': privateCustomData});
+          {'customData': customData, 'privateCustomData': privateCustomData,});
+      if (data == null) {
+        _VILog._e('VIMessenger: editUser: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIUserEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -343,11 +360,16 @@ class VIMessenger {
   /// Throws [VIException], if operation failed, otherwise returns [VIUserEvent] instance.
   /// For all possible errors see [VIMessagingError]
   Future<VIUserEvent> managePushNotifications(
-      List<VIMessengerNotification> notifications) async {
+    List<VIMessengerNotification>? notifications,
+  ) async {
     try {
-      Map<String, dynamic> data = await _methodChannel.invokeMapMethod(
+      Map<String, dynamic>? data = await _methodChannel.invokeMapMethod(
           'Messaging.managePushNotifications',
-          {'notifications': notifications?.map((e) => e.index)?.toList()});
+          {'notifications': notifications?.map((e) => e.index).toList()});
+      if (data == null) {
+        _VILog._e('VIMessenger: managePushNotifications: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIUserEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -365,8 +387,12 @@ class VIMessenger {
   /// For all possible errors see [VIMessagingError]
   Future<VIStatusEvent> setStatus(bool online) async {
     try {
-      Map<String, dynamic> data = await _methodChannel
+      Map<String, dynamic>? data = await _methodChannel
           .invokeMapMethod('Messaging.setStatus', {'online': online});
+      if (data == null) {
+        _VILog._e('VIMessenger: setStatus: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIStatusEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -379,8 +405,12 @@ class VIMessenger {
   /// For all possible errors see [VIMessagingError]
   Future<VISubscriptionEvent> getSubscriptions() async {
     try {
-      Map<String, dynamic> data =
+      Map<String, dynamic>? data =
           await _methodChannel.invokeMapMethod('Messaging.getSubscriptions');
+      if (data == null) {
+        _VILog._e('VIMessenger: getSubscriptions: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VISubscriptionEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -401,8 +431,12 @@ class VIMessenger {
   /// For all possible errors see [VIMessagingError]
   Future<VISubscriptionEvent> subscribe(List<int> users) async {
     try {
-      Map<String, dynamic> data = await _methodChannel
+      Map<String, dynamic>? data = await _methodChannel
           .invokeMapMethod('Messaging.subscribe', {'users': users});
+      if (data == null) {
+        _VILog._e('VIMessenger: subscribe: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VISubscriptionEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -423,8 +457,12 @@ class VIMessenger {
   /// For all possible errors see [VIMessagingError]
   Future<VISubscriptionEvent> unsubscribe(List<int> users) async {
     try {
-      Map<String, dynamic> data = await _methodChannel
+      Map<String, dynamic>? data = await _methodChannel
           .invokeMapMethod('Messaging.unsubscribe', {'users': users});
+      if (data == null) {
+        _VILog._e('VIMessenger: unsubscribe: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VISubscriptionEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -441,8 +479,12 @@ class VIMessenger {
   /// For all possible errors see [VIMessagingError]
   Future<VISubscriptionEvent> unsubscribeFromAll() async {
     try {
-      Map<String, dynamic> data =
+      Map<String, dynamic>? data =
           await _methodChannel.invokeMapMethod('Messaging.unsubscribeFromAll');
+      if (data == null) {
+        _VILog._e('VIMessenger: unsubscribeFromAll: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VISubscriptionEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -460,10 +502,15 @@ class VIMessenger {
   /// Throws [VIException], if operation failed, otherwise returns [VIConversationEvent] instance.
   /// For all possible errors see [VIMessagingError]
   Future<VIConversationEvent> createConversation(
-      VIConversationConfig config) async {
+    VIConversationConfig config,
+  ) async {
     try {
-      Map<String, dynamic> data = await _methodChannel.invokeMapMethod(
+      Map<String, dynamic>? data = await _methodChannel.invokeMapMethod(
           'Messaging.createConversation', {'config': config._toMap});
+      if (data == null) {
+        _VILog._e('VIMessenger: createConversation: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -482,8 +529,13 @@ class VIMessenger {
   /// For all possible errors see [VIMessagingError]
   Future<VIConversationEvent> getConversation(String uuid) async {
     try {
-      Map<String, dynamic> data = await _methodChannel
+      Map<String, dynamic>? data = await _methodChannel
           .invokeMapMethod('Messaging.getConversation', {'uuid': uuid});
+      if (data == null) {
+        _VILog._e(
+            'VIMessenger: getConversation: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -502,8 +554,12 @@ class VIMessenger {
   /// For all possible errors see [VIMessagingError]
   Future<List<VIConversationEvent>> getConversations(List<String> uuids) async {
     try {
-      List<dynamic> data = await _methodChannel
+      List<dynamic>? data = await _methodChannel
           .invokeListMethod('Messaging.getConversations', {'uuids': uuids});
+      if (data == null) {
+        _VILog._e('VIMessenger: getConversations: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return data.map((e) => VIConversationEvent._fromMap(e)).toList();
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -522,8 +578,12 @@ class VIMessenger {
   /// For all possible errors see [VIMessagingError]
   Future<VIConversationListEvent> getPublicConversations() async {
     try {
-      Map<String, dynamic> data = await _methodChannel
+      Map<String, dynamic>? data = await _methodChannel
           .invokeMapMethod('Messaging.getPublicConversations');
+      if (data == null) {
+        _VILog._e('VIMessenger: getPublicConversations: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIConversationListEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -548,8 +608,12 @@ class VIMessenger {
   /// For all possible errors see [VIMessagingError]
   Future<VIConversationEvent> joinConversation(String uuid) async {
     try {
-      Map<String, dynamic> data = await _methodChannel
+      Map<String, dynamic>? data = await _methodChannel
           .invokeMapMethod('Messaging.joinConversation', {'uuid': uuid});
+      if (data == null) {
+        _VILog._e('VIMessenger: joinConversation: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -571,8 +635,12 @@ class VIMessenger {
   /// For all possible errors see [VIMessagingError]
   Future<VIConversationEvent> leaveConversation(String uuid) async {
     try {
-      Map<String, dynamic> data = await _methodChannel
+      Map<String, dynamic>? data = await _methodChannel
           .invokeMapMethod('Messaging.leaveConversation', {'uuid': uuid});
+      if (data == null) {
+        _VILog._e('VIMessenger: leaveConversation: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -586,53 +654,29 @@ class VIMessenger {
   void _eventListener(dynamic event) {
     final Map<dynamic, dynamic> map = event;
     if (map['name'] == 'onEditUser') {
-      if (onEditUser != null) {
-        onEditUser(VIUserEvent._fromMap(map['event']));
-      }
+        onEditUser?.call(VIUserEvent._fromMap(map['event']));
     } else if (map['name'] == 'onSubscribe') {
-      if (onSubscribe != null) {
-        onSubscribe(VISubscriptionEvent._fromMap(map['event']));
-      }
+        onSubscribe?.call(VISubscriptionEvent._fromMap(map['event']));
     } else if (map['name'] == 'onUnsubscribe') {
-      if (onUnsubscribe != null) {
-        onUnsubscribe(VISubscriptionEvent._fromMap(map['event']));
-      }
+        onUnsubscribe?.call(VISubscriptionEvent._fromMap(map['event']));
     } else if (map['name'] == 'onCreateConversation') {
-      if (onCreateConversation != null) {
-        onCreateConversation(VIConversationEvent._fromMap(map['event']));
-      }
+        onCreateConversation?.call(VIConversationEvent._fromMap(map['event']));
     } else if (map['name'] == 'onRemoveConversation') {
-      if (onRemoveConversation != null) {
-        onRemoveConversation(VIConversationEvent._fromMap(map['event']));
-      }
+        onRemoveConversation?.call(VIConversationEvent._fromMap(map['event']));
     } else if (map['name'] == 'onEditConversation') {
-      if (onEditConversation != null) {
-        onEditConversation(VIConversationEvent._fromMap(map['event']));
-      }
+        onEditConversation?.call(VIConversationEvent._fromMap(map['event']));
     } else if (map['name'] == 'onSetStatus') {
-      if (onSetStatus != null) {
-        onSetStatus(VIStatusEvent._fromMap(map['event']));
-      }
+        onSetStatus?.call(VIStatusEvent._fromMap(map['event']));
     } else if (map['name'] == 'onEditMessage') {
-      if (onEditMessage != null) {
-        onEditMessage(VIMessageEvent._fromMap(map['event']));
-      }
+        onEditMessage?.call(VIMessageEvent._fromMap(map['event']));
     } else if (map['name'] == 'onSendMessage') {
-      if (onSendMessage != null) {
-        onSendMessage(VIMessageEvent._fromMap(map['event']));
-      }
+        onSendMessage?.call(VIMessageEvent._fromMap(map['event']));
     } else if (map['name'] == 'onRemoveMessage') {
-      if (onRemoveMessage != null) {
-        onRemoveMessage(VIMessageEvent._fromMap(map['event']));
-      }
+        onRemoveMessage?.call(VIMessageEvent._fromMap(map['event']));
     } else if (map['name'] == 'onTyping') {
-      if (onTyping != null) {
-        onTyping(VIConversationServiceEvent._fromMap(map['event']));
-      }
+        onTyping?.call(VIConversationServiceEvent._fromMap(map['event']));
     } else if (map['name'] == 'isRead') {
-      if (onRead != null) {
-        onRead(VIConversationServiceEvent._fromMap(map['event']));
-      }
+        onRead?.call(VIConversationServiceEvent._fromMap(map['event']));
     }
   }
 }

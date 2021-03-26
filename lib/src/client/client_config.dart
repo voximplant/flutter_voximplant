@@ -39,7 +39,7 @@ class VIClientConfig {
   ///
   /// You need to set this only if you are going to send push notification across
   /// several Android or several iOS apps using a single Voximplant application.
-  String bundleId;
+  String? bundleId;
 
   /// Enables debug logging on Android. False by default.
   bool enableDebugLogging;
@@ -61,13 +61,13 @@ class VIClientConfig {
   /// Specifies log level on iOS.
   VILogLevel logLevel;
 
-  VIClientConfig() {
-    bundleId = null;
-    enableDebugLogging = false;
-    enableLogcatLogging = true;
-    audioFocusMode = VIRequestAudioFocusMode.onCallStart;
-    logLevel = VILogLevel.info;
-  }
+  VIClientConfig({
+    this.bundleId,
+    this.enableDebugLogging = false,
+    this.enableLogcatLogging = true,
+    this.audioFocusMode = VIRequestAudioFocusMode.onCallStart,
+    this.logLevel = VILogLevel.info,
+  });
 }
 
 /// Authentication parameters that may be used for login with access token.
@@ -83,17 +83,24 @@ class VILoginTokens {
 
   /// Refresh token.
   String refreshToken;
+
+  VILoginTokens({
+    required this.accessExpire,
+    required this.accessToken,
+    required this.refreshExpire,
+    required this.refreshToken,
+  });
 }
 
 /// Represents the result of successful login.
 class VIAuthResult {
   /// Display name of the logged in user.
-  String displayName;
+  final String displayName;
 
   /// Authentication parameters that may be used for login with access token.
-  VILoginTokens loginTokens;
+  final VILoginTokens? loginTokens;
 
-  VIAuthResult._(this.displayName, this.loginTokens);
+  VIAuthResult._(this.displayName, [this.loginTokens]);
 }
 
 /// Represents client states.

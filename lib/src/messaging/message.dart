@@ -36,10 +36,12 @@ class VIMessage {
   /// Optional `text` - New text of this message, maximum 5000 characters. If null, message text will not be updated.
   ///
   /// Optional `payload` - New payload of this message. If null, message payload will not be updated.
-  Future<VIMessageEvent> update(
-      {String text, List<Map<String, Object>> payload}) async {
+  Future<VIMessageEvent> update({
+    String? text,
+    List<Map<String, Object>>? payload,
+  }) async {
     try {
-      Map<String, dynamic> data = await _methodChannel.invokeMapMethod(
+      Map<String, dynamic>? data = await _methodChannel.invokeMapMethod(
         'Messaging.updateMessage',
         {
           'conversation': conversation,
@@ -48,6 +50,10 @@ class VIMessage {
           'payload': payload ?? this.payload
         },
       );
+      if (data == null) {
+        _VILog._e('VIMessage: update: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIMessageEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -62,10 +68,14 @@ class VIMessage {
   /// - the [VIConversationParticipant.canRemoveAllMessages] permission to remove other participants' messages
   Future<VIMessageEvent> remove() async {
     try {
-      Map<String, dynamic> data = await _methodChannel.invokeMapMethod(
+      Map<String, dynamic>? data = await _methodChannel.invokeMapMethod(
         'Messaging.removeMessage',
         {'conversation': conversation, 'message': uuid},
       );
+      if (data == null) {
+        _VILog._e('VIMessage: remove: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIMessageEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -73,8 +83,12 @@ class VIMessage {
   }
 
   VIMessage._recreate(
-      this.uuid, this.conversation, this.text, this.payload, this.sequence)
-      : this._methodChannel = Voximplant._channel;
+    this.uuid,
+    this.conversation,
+    this.text,
+    this.payload,
+    this.sequence,
+  ) : this._methodChannel = Voximplant._channel;
 
   VIMessage._fromMap(Map<dynamic, dynamic> map)
       : this.uuid = map['uuid'],
@@ -82,7 +96,7 @@ class VIMessage {
         this.sequence = map['sequence'],
         this.text = map['text'],
         this.payload = (map['payload'] as List<dynamic>)
-            ?.map((e) => (e as Map)?.cast<String, dynamic>())
-            ?.toList(),
+            .map((e) => (e as Map).cast<String, dynamic>())
+            .toList(),
         this._methodChannel = Voximplant._channel;
 }

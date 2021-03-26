@@ -20,7 +20,7 @@ void main() {
 
   setUp(() async {
     instance = Voximplant();
-    client = instance.getClient();
+    client = instance.getClient(null);
     await client.connect();
     await client.login(
         '${_testUsers[0].name}.voximplant.com', _testUsers[0].pass);

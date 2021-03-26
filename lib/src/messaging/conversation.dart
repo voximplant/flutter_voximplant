@@ -11,7 +11,7 @@ class VIConversation {
   ///
   /// Note that changing this property value does not send changes to the cloud.
   /// Use [VIConversation.update] to send all changes at once
-  String title;
+  String? title;
 
   /// A bool value that determines whether the conversation is direct.
   ///
@@ -77,13 +77,18 @@ class VIConversation {
   /// Throws [VIException], if operation failed, otherwise returns [VIConversationEvent] instance.
   /// For all possible errors see [VIMessagingError]
   Future<VIConversationEvent> addParticipants(
-      List<VIConversationParticipant> participants) async {
+    List<VIConversationParticipant> participants,
+  ) async {
     try {
-      Map<String, dynamic> data =
+      Map<String, dynamic>? data =
           await _methodChannel.invokeMapMethod('Messaging.addParticipants', {
         'conversation': uuid,
-        'participants': participants?.map((e) => e._toMap)?.toList()
+        'participants': participants.map((e) => e._toMap).toList(),
       });
+      if (data == null) {
+        _VILog._e('VIConversation: addParticipants: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -104,13 +109,18 @@ class VIConversation {
   /// Throws [VIException], if operation failed, otherwise returns [VIConversationEvent] instance.
   /// For all possible errors see [VIMessagingError]
   Future<VIConversationEvent> editParticipants(
-      List<VIConversationParticipant> participants) async {
+    List<VIConversationParticipant> participants,
+  ) async {
     try {
-      Map<String, dynamic> data =
+      Map<String, dynamic>? data =
           await _methodChannel.invokeMapMethod('Messaging.editParticipants', {
         'conversation': uuid,
-        'participants': participants?.map((e) => e._toMap)?.toList()
+        'participants': participants.map((e) => e._toMap).toList(),
       });
+      if (data == null) {
+        _VILog._e('VIConversation: editParticipants: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -140,13 +150,18 @@ class VIConversation {
   /// Throws [VIException], if operation failed, otherwise returns [VIConversationEvent] instance.
   /// For all possible errors see [VIMessagingError]
   Future<VIConversationEvent> removeParticipants(
-      List<VIConversationParticipant> participants) async {
+    List<VIConversationParticipant> participants,
+  ) async {
     try {
-      Map<String, dynamic> data =
+      Map<String, dynamic>? data =
           await _methodChannel.invokeMapMethod('Messaging.removeParticipants', {
         'conversation': uuid,
-        'participants': participants?.map((e) => e._toMap)?.toList()
+        'participants': participants.map((e) => e._toMap).toList(),
       });
+      if (data == null) {
+        _VILog._e('VIConversation: removeParticipants: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -161,13 +176,17 @@ class VIConversation {
   /// For all possible errors see [VIMessagingError]
   Future<VIConversationEvent> update() async {
     try {
-      Map<String, dynamic> data =
+      Map<String, dynamic>? data =
           await _methodChannel.invokeMapMethod('Messaging.updateConversation', {
         'conversation': uuid,
         'title': title,
         'publicJoin': publicJoin,
-        'customData': customData
+        'customData': customData,
       });
+      if (data == null) {
+        _VILog._e('VIConversation: update: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIConversationEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -193,8 +212,12 @@ class VIConversation {
   /// For all possible errors see [VIMessagingError]
   Future<VIConversationServiceEvent> markAsRead(int sequence) async {
     try {
-      Map<String, dynamic> data = await _methodChannel.invokeMapMethod(
+      Map<String, dynamic>? data = await _methodChannel.invokeMapMethod(
           'Messaging.markAsRead', {'conversation': uuid, 'sequence': sequence});
+      if (data == null) {
+        _VILog._e('VIConversation: markAsRead: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIConversationServiceEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -217,8 +240,12 @@ class VIConversation {
   /// For all possible errors see [VIMessagingError]
   Future<VIConversationServiceEvent> typing() async {
     try {
-      Map<String, dynamic> data = await _methodChannel
+      Map<String, dynamic>? data = await _methodChannel
           .invokeMapMethod('Messaging.typing', {'conversation': uuid});
+      if (data == null) {
+        _VILog._e('VIConversation: typing: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIConversationServiceEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -243,12 +270,18 @@ class VIConversation {
   ///
   /// Throws [VIException], if operation failed, otherwise returns [VIMessageEvent] instance.
   /// For all possible errors see [VIMessagingError]
-  Future<VIMessageEvent> sendMessage(
-      {String text, List<Map<String, Object>> payload}) async {
+  Future<VIMessageEvent> sendMessage({
+    String? text,
+    List<Map<String, Object>>? payload,
+  }) async {
     try {
-      Map<String, dynamic> data = await _methodChannel.invokeMapMethod(
+      Map<String, dynamic>? data = await _methodChannel.invokeMapMethod(
           'Messaging.sendMessage',
           {'conversation': uuid, 'text': text, 'payload': payload});
+      if (data == null) {
+        _VILog._e('VIConversation: sendMessage: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIMessageEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -278,9 +311,13 @@ class VIConversation {
   /// For all possible errors see [VIMessagingError]
   Future<VIRetransmitEvent> retransmitEvents(int from, int to) async {
     try {
-      Map<String, dynamic> data = await _methodChannel.invokeMapMethod(
+      Map<String, dynamic>? data = await _methodChannel.invokeMapMethod(
           'Messaging.retransmitEvents',
           {'conversation': uuid, 'from': from, 'to': to});
+      if (data == null) {
+        _VILog._e('VIConversation: retransmitEvents: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIRetransmitEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -310,9 +347,13 @@ class VIConversation {
   /// For all possible errors see [VIMessagingError]
   Future<VIRetransmitEvent> retransmitEventsFrom(int from, int count) async {
     try {
-      Map<String, dynamic> data = await _methodChannel.invokeMapMethod(
+      Map<String, dynamic>? data = await _methodChannel.invokeMapMethod(
           'Messaging.retransmitEventsFrom',
           {'conversation': uuid, 'from': from, 'count': count});
+      if (data == null) {
+        _VILog._e('VIConversation: retransmitEvents: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIRetransmitEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -342,18 +383,26 @@ class VIConversation {
   /// For all possible errors see [VIMessagingError]
   Future<VIRetransmitEvent> retransmitEventsTo(int to, int count) async {
     try {
-      Map<String, dynamic> data = await _methodChannel.invokeMapMethod(
+      Map<String, dynamic>? data = await _methodChannel.invokeMapMethod(
           'Messaging.retransmitEventsTo',
           {'conversation': uuid, 'to': to, 'count': count});
+      if (data == null) {
+        _VILog._e('VIConversation: retransmitEvents: data was null, skipping');
+        throw VIMessagingError.ERROR_INTERNAL;
+      }
       return VIRetransmitEvent._fromMap(data);
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     }
   }
 
-  VIConversation._recreate(VIConversationConfig config, this.uuid,
-      this.lastSequence, this.lastUpdateTime, this.createdTime)
-      : this.title = config.title,
+  VIConversation._recreate(
+    VIConversationConfig config,
+    this.uuid,
+    this.lastSequence,
+    this.lastUpdateTime,
+    this.createdTime,
+  )   : this.title = config.title,
         this.direct = config.direct,
         this.uber = config.uber,
         this.publicJoin = config.publicJoin,
@@ -368,8 +417,8 @@ class VIConversation {
         this.uber = map['uber'],
         this.publicJoin = map['publicJoin'],
         this.participants = (map['participants'] as List)
-            ?.map((e) => VIConversationParticipant._fromMap(e))
-            ?.toList(),
+            .map((e) => VIConversationParticipant._fromMap(e))
+            .toList(),
         this.createdTime = map['createdTime'],
         this.lastSequence = map['lastSequence'],
         this.lastUpdateTime = map['lastUpdateTime'],
@@ -409,7 +458,7 @@ class VIConversationConfig {
   bool uber;
 
   /// Get the title
-  String title;
+  String? title;
 
   /// Get the custom data
   Map<String, Object> customData;
@@ -417,20 +466,21 @@ class VIConversationConfig {
   /// Get the list of conversation participants
   List<VIConversationParticipant> participants;
 
-  VIConversationConfig(
-      {this.direct,
-      this.publicJoin,
-      this.uber,
-      this.title,
-      this.customData,
-      this.participants});
+  VIConversationConfig({
+    this.direct = false,
+    this.publicJoin = false,
+    this.uber = false,
+    this.title,
+    this.customData = const {},
+    this.participants = const [],
+  });
 
-  Map<String, Object> get _toMap => {
+  Map<String, Object?> get _toMap => {
         'direct': direct,
         'publicJoin': publicJoin,
         'uber': uber,
         'title': title,
         'customData': customData,
-        'participants': participants?.map((e) => e._toMap)?.toList()
+        'participants': participants.map((e) => e._toMap).toList()
       };
 }

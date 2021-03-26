@@ -13,8 +13,8 @@ enum VIVideoStreamType {
 
 /// Represents local or remote video stream within a call.
 class VIVideoStream {
-  String _streamId;
-  VIVideoStreamType _streamType;
+  final String _streamId;
+  final VIVideoStreamType _streamType;
 
   /// The video stream id.
   ///

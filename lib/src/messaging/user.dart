@@ -22,22 +22,22 @@ class VIUser {
   /// The list of UUIDs of the conversations that the user currently belongs to.
   ///
   /// Note that if the method is called not for the current user, the result will be null.
-  final List<String> conversationList;
+  final List<String>? conversationList;
 
   /// The list of UUIDs for the conversations that:
   ///
   /// - the user belonged to, but currently is not participating in
   /// - are not removed
   /// - Note that if the method is called not for the current user, the result will be null.
-  final List<String> leaveConversationList;
+  final List<String>? leaveConversationList;
 
   /// The list of messenger notifications that the current user is subscribed to.
   ///
   /// Note that if the method is called not for the current user, the result will be null
-  final List<VIMessengerNotification> notifications;
+  final List<VIMessengerNotification>? notifications;
 
   /// Private custom data available only to the current user.
-  final Map<String, dynamic> privateCustomData;
+  final Map<String, dynamic>? privateCustomData;
 
   /// The specified user's public custom data available to all users.
   ///
@@ -50,13 +50,13 @@ class VIUser {
         this.name = map['name'],
         this.isDeleted = map['isDeleted'],
         this.conversationList =
-            (map['conversationList'] as List)?.cast<String>(),
+            (map['conversationList'] as List).cast<String>(),
         this.leaveConversationList =
-            (map['leaveConversationList'] as List)?.cast<String>(),
+            (map['leaveConversationList'] as List).cast<String>(),
         this.notifications = (map['notifications'] as List)
-            ?.cast<int>()
-            ?.map((e) => VIMessengerNotification.values[e])
-            ?.toList(),
+            .cast<int>()
+            .map((e) => VIMessengerNotification.values[e])
+            .toList(),
         this.privateCustomData =
             map['privateCustomData']?.cast<String, dynamic>(),
         this.customData = map['customData'].cast<String, dynamic>();

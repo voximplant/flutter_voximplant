@@ -4,7 +4,7 @@ part of voximplant;
 
 class VIException implements Exception {
   final String code;
-  final String message;
+  final String? message;
 
   VIException(this.code, this.message);
 

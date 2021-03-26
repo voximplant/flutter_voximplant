@@ -102,14 +102,14 @@ class VIConversationParticipant {
   /// Optional `canManageParticipants` - determines if the participant can manage other participants in the conversation
   VIConversationParticipant(
     this.imUserId, {
-    this.isOwner,
-    this.canWrite,
-    this.canEditMessages,
-    this.canEditAllMessages,
-    this.canRemoveMessages,
-    this.canRemoveAllMessages,
-    this.canManageParticipants,
-  }) : this.lastReadSequence = null;
+    this.isOwner = false,
+    this.canWrite = false,
+    this.canEditMessages = false,
+    this.canEditAllMessages = false,
+    this.canRemoveMessages = false,
+    this.canRemoveAllMessages = false,
+    this.canManageParticipants = false,
+  }) : this.lastReadSequence = 0;
 
   VIConversationParticipant._fromMap(Map<dynamic, dynamic> map)
       : this.imUserId = map['id'],

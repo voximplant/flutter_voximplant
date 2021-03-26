@@ -33,12 +33,12 @@ class VIRetransmitEvent extends VIMessengerEvent {
 
   VIRetransmitEvent._fromMap(Map<dynamic, dynamic> map)
       : this.events = (map['events'] as List)
-            ?.cast<Map<dynamic, dynamic>>()
-            ?.map((e) => e['conversation'] == null
+            .cast<Map<dynamic, dynamic>>()
+            .map((e) => e['conversation'] == null
                 ? VIMessageEvent._fromMap(e)
                 : VIConversationEvent._fromMap(e))
-            ?.toList()
-            ?.cast<VIMessengerEvent>(),
+            .toList()
+            .cast<VIMessengerEvent>(),
         this.fromSequence = map['fromSequence'],
         this.toSequence = map['toSequence'],
         super._fromMap(map);
@@ -104,7 +104,7 @@ class VISubscriptionEvent extends VIMessengerEvent {
   final List<int> users;
 
   VISubscriptionEvent._fromMap(Map<dynamic, dynamic> map)
-      : this.users = (map['users'] as List)?.cast<int>(),
+      : this.users = (map['users'] as List).cast<int>(),
         super._fromMap(map);
 }
 
@@ -134,6 +134,6 @@ class VIConversationListEvent extends VIMessengerEvent {
 
   VIConversationListEvent._fromMap(Map<dynamic, dynamic> map)
       : this.conversationList =
-            (map['conversationList'] as List)?.cast<String>(),
+            (map['conversationList'] as List).cast<String>(),
         super._fromMap(map);
 }

@@ -37,7 +37,9 @@ enum VIAudioDevice {
 ///
 /// `device` - Audio device to be used
 typedef void VIAudioDeviceChanged(
-    VIAudioDeviceManager audioManager, VIAudioDevice device);
+  VIAudioDeviceManager audioManager,
+  VIAudioDevice device,
+);
 
 /// Signature for callbacks reporting that a new audio device is connected or
 /// a previously connected audio device is disconnected.
@@ -50,7 +52,9 @@ typedef void VIAudioDeviceChanged(
 ///
 /// `deviceList` - List of currently available audio devices.
 typedef void VIAudioDeviceListChanged(
-    VIAudioDeviceManager audioManager, List<VIAudioDevice> deviceList);
+  VIAudioDeviceManager audioManager,
+  List<VIAudioDevice> deviceList,
+);
 
 /// Manages audio devices.
 ///
@@ -72,11 +76,11 @@ class VIAudioDeviceManager {
   final MethodChannel _channel;
 
   /// Callback for getting notified about active audio device changes.
-  VIAudioDeviceChanged onAudioDeviceChanged;
+  VIAudioDeviceChanged? onAudioDeviceChanged;
 
   /// Callback for getting notified about new connected or disconnected audio
   /// devices.
-  VIAudioDeviceListChanged onAudioDeviceListChanged;
+  VIAudioDeviceListChanged? onAudioDeviceListChanged;
 
   VIAudioDeviceManager._(this._channel) {
     EventChannel('plugins.voximplant.com/audio_device_events')
@@ -123,16 +127,25 @@ class VIAudioDeviceManager {
   /// Active audio device can be later changed if a new device is connected.
   /// In this case [onAudioDeviceChanged] will be triggered.
   Future<VIAudioDevice> getActiveDevice() async {
-    int device = await _channel.invokeMethod('AudioDevice.getActiveDevice');
+    int? device = await _channel.invokeMethod<int>('AudioDevice.getActiveDevice');
+    if (device == null) {
+      _VILog._e('AudioDeviceManager: getActiveDevice: data was null, skipping');
+      throw VIClientError.ERROR_INTERNAL;
+    }
     VIAudioDevice audioDevice = VIAudioDevice.values[device];
     return audioDevice;
   }
 
   /// Returns the list of available audio devices.
   Future<List<VIAudioDevice>> getAudioDevices() async {
-    List<int> data =
-        await _channel.invokeListMethod('AudioDevice.getAudioDevices');
-    List<VIAudioDevice> newAudioDevices = List();
+    List<int>? data =
+        await _channel.invokeListMethod<int>('AudioDevice.getAudioDevices');
+    if (data == null) {
+      _VILog._e(
+          'VIAudioDeviceManager: getAudioDevices: devices were null, skipping');
+      throw VIClientError.ERROR_INTERNAL;
+    }
+    List<VIAudioDevice> newAudioDevices = [];
     for (int device in data) {
       newAudioDevices.add(VIAudioDevice.values[device]);
     }
@@ -205,19 +218,15 @@ class VIAudioDeviceManager {
     switch (map['event']) {
       case 'audioDeviceChanged':
         VIAudioDevice device = VIAudioDevice.values[map['audioDevice']];
-        if (onAudioDeviceChanged != null) {
-          onAudioDeviceChanged(this, device);
-        }
+        onAudioDeviceChanged?.call(this, device);
         break;
       case 'audioDeviceListChanged':
         List<int> devices = map['audioDeviceList'].cast<int>();
-        List<VIAudioDevice> newAudioDevices = List();
+        List<VIAudioDevice> newAudioDevices = [];
         for (int device in devices) {
           newAudioDevices.add(VIAudioDevice.values[device]);
         }
-        if (onAudioDeviceListChanged != null) {
-          onAudioDeviceListChanged(this, newAudioDevices);
-        }
+        onAudioDeviceListChanged?.call(this, newAudioDevices);
         break;
     }
   }

@@ -6,7 +6,7 @@ part of voximplant;
 /// via [VIMessenger] callbacks or as a result of method calls.
 abstract class VIMessengerEvent {
   /// The IM id for the user that initiated the event.
-  final int imUserId;
+  final int? imUserId;
 
   /// The action that triggered this event.
   final VIMessengerAction action;

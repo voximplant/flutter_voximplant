@@ -10,10 +10,7 @@ class VIVideoFlags {
   bool sendVideo;
   bool receiveVideo;
 
-  VIVideoFlags({bool receiveVideo = false, bool sendVideo = false}) {
-    this.sendVideo = sendVideo;
-    this.receiveVideo = receiveVideo;
-  }
+  VIVideoFlags({this.sendVideo = false, this.receiveVideo = false});
 }
 
 /// Call settings with additional parameters for a call, such as preferred video
@@ -41,12 +38,12 @@ class VICallSettings {
   /// a large data use
   /// [media_session_access_url](https://voximplant.com/docs/references/httpapi/managing_scenarios#startscenarios)
   /// on your backend.
-  String customData;
+  String? customData;
 
   /// Optional set of headers to be sent to the Voximplant cloud.
   ///
   /// Names must begin with "X-" to be processed by SDK.
-  Map<String, String> extraHeaders;
+  Map<String, String>? extraHeaders;
 }
 
 /// Signature for callbacks reporting that the call is connected.
@@ -56,7 +53,7 @@ class VICallSettings {
 /// `call` - VICall instance initiated the event
 ///
 /// `headers` - Optional SIP headers
-typedef void VICallConnected(VICall call, Map<String, String> headers);
+typedef void VICallConnected(VICall call, Map<String, String>? headers);
 
 /// Signature for callbacks reporting that the call is disconnected.
 ///
@@ -68,7 +65,10 @@ typedef void VICallConnected(VICall call, Map<String, String> headers);
 ///
 /// `answeredElsewhere` - Check if the call was answered on another device
 typedef void VICallDisconnected(
-    VICall call, Map<String, String> headers, bool answeredElsewhere);
+  VICall call,
+  Map<String, String>? headers,
+  bool answeredElsewhere,
+);
 
 /// Signature for callbacks reporting when progress signal is received
 /// from the endpoint.
@@ -78,7 +78,7 @@ typedef void VICallDisconnected(
 /// `call` - VICall instance initiated the event
 ///
 /// `headers` - Optional SIP headers
-typedef void VICallRinging(VICall call, Map<String, String> headers);
+typedef void VICallRinging(VICall call, Map<String, String>? headers);
 
 /// Signature for callbacks reporting that the call was failed.
 ///
@@ -92,7 +92,11 @@ typedef void VICallRinging(VICall call, Map<String, String> headers);
 ///
 /// `headers` - Optional SIP headers
 typedef void VICallFailed(
-    VICall call, int code, String description, Map<String, String> headers);
+  VICall call,
+  int code,
+  String description,
+  Map<String, String>? headers,
+);
 
 /// Signature for callbacks reporting that the endpoint answered the call.
 ///
@@ -113,7 +117,11 @@ typedef void VICallAudioStarted(VICall call);
 ///
 /// `headers` - Optional SIP headers
 typedef void VISIPInfoReceived(
-    VICall call, String type, String content, Map<String, String> headers);
+  VICall call,
+  String type,
+  String content,
+  Map<String, String>? headers,
+);
 
 /// Signature for callbacks reporting that [message] is received within the call.
 ///
@@ -172,60 +180,60 @@ typedef void VILocalVideoStreamRemoved(VICall call, VIVideoStream videoStream);
 /// Represents a call.
 class VICall {
   /// Callback for getting notified when the call is connected.
-  VICallConnected onCallConnected;
+  VICallConnected? onCallConnected;
 
   /// Callback for getting notified when the call is disconnected.
-  VICallDisconnected onCallDisconnected;
+  VICallDisconnected? onCallDisconnected;
 
   /// Callback for getting notified when progress signal is received
   /// from the endpoint.
-  VICallRinging onCallRinging;
+  VICallRinging? onCallRinging;
 
   /// Callback for getting notified when the call is failed.
-  VICallFailed onCallFailed;
+  VICallFailed? onCallFailed;
 
   /// Callback for getting notified when the endpoint answered the call.
-  VICallAudioStarted onCallAudioStarted;
+  VICallAudioStarted? onCallAudioStarted;
 
   /// Callback for getting notified when INFO message in received.
-  VISIPInfoReceived onSIPInfoReceived;
+  VISIPInfoReceived? onSIPInfoReceived;
 
   /// Callback for getting notified when message is received.
-  VIMessageReceived onMessageReceived;
+  VIMessageReceived? onMessageReceived;
 
   /// Callback for getting notified about failure to connect peers.
-  VIICETimeout onICETimeout;
+  VIICETimeout? onICETimeout;
 
   /// Callback for getting notified when ICE connection is completed.
-  VIICECompleted onICECompleted;
+  VIICECompleted? onICECompleted;
 
   /// Callback for getting notified when new endpoint is added to the call.
-  VIEndpointAdded onEndpointAdded;
+  VIEndpointAdded? onEndpointAdded;
 
   /// Callback for getting notified when local video is added to the call.
-  VILocalVideoStreamAdded onLocalVideoStreamAdded;
+  VILocalVideoStreamAdded? onLocalVideoStreamAdded;
 
   /// Callback for getting notified when local video is removed from the call.
-  VILocalVideoStreamRemoved onLocalVideoStreamRemoved;
+  VILocalVideoStreamRemoved? onLocalVideoStreamRemoved;
 
-  String _callId;
-  String _callKitUUID;
-  MethodChannel _channel;
-  StreamSubscription<dynamic> _eventSubscription;
-  List<VIEndpoint> _endpoints;
+  final String _callId;
+  String? _callKitUUID;
+  final MethodChannel _channel;
+  late StreamSubscription<dynamic> _eventSubscription;
+  List<VIEndpoint> _endpoints = [];
 
-  VIVideoStream _localVideoStream;
+  VIVideoStream? _localVideoStream;
 
   VICall._(this._callId, this._channel) {
-    _endpoints = List();
-    _eventSubscription = EventChannel('plugins.voximplant.com/call_$_callId')
-        .receiveBroadcastStream('plugins.voximplant.com/call_$_callId')
-        .listen(_eventListener);
+    _setupEventSubscription();
   }
 
   VICall._withEndpoint(this._callId, this._channel, VIEndpoint endpoint) {
-    _endpoints = List();
     _endpoints.add(endpoint);
+    _setupEventSubscription();
+  }
+
+  void _setupEventSubscription() {
     _eventSubscription = EventChannel('plugins.voximplant.com/call_$_callId')
         .receiveBroadcastStream('plugins.voximplant.com/call_$_callId')
         .listen(_eventListener);
@@ -243,10 +251,10 @@ class VICall {
   ///
   /// For outgoing calls it is recommended to set CXStartCallAction.callUUID
   /// value to this property on handling CXStartCallAction.
-  String get callKitUUID => _callKitUUID;
+  String? get callKitUUID => _callKitUUID;
 
-  set callKitUUID(String uuid) {
-    _callKitUUID = uuid.toUpperCase();
+  set callKitUUID(String? uuid) {
+    _callKitUUID = uuid?.toUpperCase();
     if (Platform.isIOS) {
       _channel.invokeMethod<void>('Call.setCallKitUUID',
           <String, dynamic>{'callId': _callId, 'uuid': _callKitUUID});
@@ -257,14 +265,14 @@ class VICall {
   List<VIEndpoint> get endpoints => _endpoints;
 
   /// The active local video stream.
-  VIVideoStream get localVideoStream => _localVideoStream;
+  VIVideoStream? get localVideoStream => _localVideoStream;
 
   /// Answers the incoming call.
   ///
   /// Additional call parameters are set up via [callSettings]: video direction
   /// for the call, preferred video codec, custom data.
   ///
-  /// Optional `callSettings` - Additional call parameters like video direction
+  /// `settings` - Additional call parameters like video direction
   /// for the call, preferred video codec, custom data.
   ///
   /// Throws [VIException], if an error occurred.
@@ -276,16 +284,15 @@ class VICall {
   ///   video calls - RECORD_AUDIO and CAMERA
   /// * [VICallError.ERROR_INCORRECT_OPERATION] - Android only. If the call is
   ///   already answered.
-  Future<void> answer([VICallSettings callSettings]) async {
+  Future<void> answer({required VICallSettings settings}) async {
     try {
       await _channel.invokeMethod<void>('Call.answerCall', <String, dynamic>{
         'callId': _callId,
-        'sendVideo': callSettings?.videoFlags?.sendVideo ?? false,
-        'receiveVideo': callSettings?.videoFlags?.receiveVideo ?? false,
-        'videoCodec': callSettings?.preferredVideoCodec.toString() ??
-            VIVideoCodec.AUTO.toString(),
-        'customData': callSettings?.customData,
-        'extraHeaders': callSettings?.extraHeaders
+        'sendVideo': settings.videoFlags.sendVideo,
+        'receiveVideo': settings.videoFlags.receiveVideo,
+        'videoCodec': settings.preferredVideoCodec.toString(),
+        'customData': settings.customData,
+        'extraHeaders': settings.extraHeaders
       });
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -307,16 +314,8 @@ class VICall {
   /// Errors:
   /// * [VICallError.ERROR_INCORRECT_OPERATION] - Android only. If the call is
   ///   already answered or ended.
-  Future<void> decline([Map<String, String> headers]) async {
-    try {
-      await _channel.invokeMethod<void>('Call.rejectCall', <String, dynamic>{
-        'callId': _callId,
-        'headers': headers,
-        'rejectMode': 'decline'
-      });
-    } on PlatformException catch (e) {
-      throw VIException(e.code, e.message);
-    }
+  Future<void> decline([Map<String, String>? headers]) async {
+    await _reject('decline', headers);
   }
 
   /// Rejects the incoming call.
@@ -332,12 +331,16 @@ class VICall {
   /// Errors:
   /// * [VICallError.ERROR_INCORRECT_OPERATION] - Android only. If the call is
   ///   already answered or ended.
-  Future<void> reject([Map<String, String> headers]) async {
+  Future<void> reject([Map<String, String>? headers]) async {
+    await _reject('reject', headers);
+  }
+
+  Future<void> _reject(String mode, [Map<String, String>? headers]) async {
     try {
       await _channel.invokeMethod<void>('Call.rejectCall', <String, dynamic>{
         'callId': _callId,
         'headers': headers,
-        'rejectMode': 'reject'
+        'rejectMode': mode
       });
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -347,7 +350,7 @@ class VICall {
   /// Disconnects the call.
   ///
   /// Optional `headers` - Optional SIP headers
-  Future<void> hangup([Map<String, String> headers]) async {
+  Future<void> hangup([Map<String, String>? headers]) async {
     try {
       await _channel.invokeMethod<void>('Call.hangupCall',
           <String, dynamic>{'callId': _callId, 'headers': headers});
@@ -400,14 +403,17 @@ class VICall {
   ///
   /// `headers` - Optional SIP headers
   Future<void> sendInfo(
-      String mimeType, String body, Map<String, String> headers) async {
+    String mimeType,
+    String body,
+    Map<String, String>? headers,
+  ) async {
     try {
-      await _channel.invokeMethod<void>(
-          'Call.sendInfoForCall', <String, dynamic>{
+      await _channel
+          .invokeMethod<void>('Call.sendInfoForCall', <String, dynamic>{
         'callId': _callId,
         'mimetype': mimeType,
         'body': body,
-        'headers': headers
+        'headers': headers,
       });
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -437,7 +443,7 @@ class VICall {
   Future<void> sendTone(String key) async {
     try {
       await _channel.invokeMethod<void>('Call.sendToneForCall',
-          <String, String>{'callId': _callId, 'tone': key});
+          <String, String?>{'callId': _callId, 'tone': key});
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     }
@@ -505,7 +511,7 @@ class VICall {
   }
 
   /// Returns the call duration in milliseconds.
-  Future<int> getCallDuration() async {
+  Future<int?> getCallDuration() async {
     try {
       return await _channel
           .invokeMethod('Call.getCallDuration', <String, String>{
@@ -520,76 +526,63 @@ class VICall {
     final Map<dynamic, dynamic> map = event;
     switch (map['event']) {
       case 'callConnected':
-        Map<String, String> headers = new Map();
+        Map<String, String> headers = {};
         map['headers'].forEach(
-            (key, value) => {headers[key as String] = value as String});
-        if (onCallConnected != null) {
-          onCallConnected(this, headers);
-        }
+          (key, value) => {headers[key as String] = value as String},
+        );
+        onCallConnected?.call(this, headers);
         break;
       case 'callDisconnected':
         _eventSubscription.cancel();
-        Map<String, String> headers = new Map();
+        Map<String, String> headers = {};
         map['headers'].forEach(
-            (key, value) => {headers[key as String] = value as String});
+          (key, value) => {headers[key as String] = value as String},
+        );
         bool answeredElsewhere = map['answeredElsewhere'];
-        if (onCallDisconnected != null) {
-          onCallDisconnected(this, headers, answeredElsewhere);
-        }
+        onCallDisconnected?.call(this, headers, answeredElsewhere);
         break;
       case 'callRinging':
-        Map<String, String> headers = new Map();
+        Map<String, String> headers = {};
         map['headers'].forEach(
-            (key, value) => {headers[key as String] = value as String});
-        if (onCallRinging != null) {
-          onCallRinging(this, headers);
-        }
+          (key, value) => {headers[key as String] = value as String},
+        );
+        onCallRinging?.call(this, headers);
         break;
       case 'callFailed':
         _eventSubscription.cancel();
         int code = map['code'];
         String description = map['description'];
-        Map<String, String> headers = new Map();
+        Map<String, String> headers = {};
         map['headers'].forEach(
-            (key, value) => {headers[key as String] = value as String});
-        if (onCallFailed != null) {
-          onCallFailed(this, code, description, headers);
-        }
+          (key, value) => {headers[key as String] = value as String},
+        );
+        onCallFailed?.call(this, code, description, headers);
         break;
       case 'callAudioStarted':
-        if (onCallAudioStarted != null) {
-          onCallAudioStarted(this);
-        }
+        onCallAudioStarted?.call(this);
         break;
       case 'sipInfoReceived':
         String type = map['type'];
         String content = map['body'];
-        Map<String, String> headers = new Map();
+        Map<String, String> headers = {};
         map['headers'].forEach(
-            (key, value) => {headers[key as String] = value as String});
-        if (onSIPInfoReceived != null) {
-          onSIPInfoReceived(this, type, content, headers);
-        }
+          (key, value) => {headers[key as String] = value as String},
+        );
+        onSIPInfoReceived?.call(this, type, content, headers);
         break;
       case 'messageReceived':
         String message = map['message'];
-        if (onMessageReceived != null) {
-          onMessageReceived(this, message);
-        }
+        onMessageReceived?.call(this, message);
         break;
       case 'iceTimeout':
-        if (onICETimeout != null) {
-          onICETimeout(this);
-        }
+        onICETimeout?.call(this);
         break;
       case 'iceCompleted':
-        if (onICECompleted != null) {
-          onICECompleted(this);
-        }
+        onICECompleted?.call(this);
         break;
       case 'endpointAdded':
         String endpointId = map['endpointId'];
-        VIEndpoint endpoint;
+        VIEndpoint? endpoint;
         for (VIEndpoint callEndpoint in _endpoints) {
           if (callEndpoint.endpointId == endpointId) {
             endpoint = callEndpoint;
@@ -597,21 +590,19 @@ class VICall {
           }
         }
         if (endpoint == null) {
-          String userName = map['userName'];
-          String displayName = map['displayName'];
-          String sipUri = map['sipUri'];
-          int place = map['endpointPlace'];
+          String? userName = map['userName'];
+          String? displayName = map['displayName'];
+          String? sipUri = map['sipUri'];
+          int? place = map['endpointPlace'];
           endpoint =
               VIEndpoint._(endpointId, userName, displayName, sipUri, place);
           _endpoints.add(endpoint);
         }
-        if (onEndpointAdded != null) {
-          onEndpointAdded(this, endpoint);
-        }
+        onEndpointAdded?.call(this, endpoint);
         break;
       case 'endpointInfoUpdated':
         String endpointId = map['endpointId'];
-        VIEndpoint endpoint;
+        VIEndpoint? endpoint;
         for (VIEndpoint callEndpoint in _endpoints) {
           if (callEndpoint.endpointId == endpointId) {
             endpoint = callEndpoint;
@@ -619,17 +610,21 @@ class VICall {
           }
         }
         if (endpoint != null) {
-          String userName = map['endpointUserName'];
-          String displayName = map['endpointDisplayName'];
-          String sipUri = map['endpointSipUri'];
-          int place = map['endpointPlace'];
+          String? userName = map['endpointUserName'];
+          String? displayName = map['endpointDisplayName'];
+          String? sipUri = map['endpointSipUri'];
+          int? place = map['endpointPlace'];
           endpoint._invokeEndpointUpdatedEvent(
-              userName, displayName, sipUri, place);
+            userName,
+            displayName,
+            sipUri,
+            place,
+          );
         }
         break;
       case 'endpointRemoved':
         String endpointId = map['endpointId'];
-        VIEndpoint endpoint;
+        VIEndpoint? endpoint;
         for (VIEndpoint callEndpoint in _endpoints) {
           if (callEndpoint.endpointId == endpointId) {
             endpoint = callEndpoint;
@@ -642,16 +637,15 @@ class VICall {
         String videoStreamId = map['videoStreamId'];
         int type = map['videoStreamType'];
         VIVideoStreamType videoStreamType = VIVideoStreamType.values[type];
-        _localVideoStream = VIVideoStream._(videoStreamId, videoStreamType);
-        if (onLocalVideoStreamAdded != null) {
-          onLocalVideoStreamAdded(this, _localVideoStream);
-        }
+        var videoStream = VIVideoStream._(videoStreamId, videoStreamType);
+        _localVideoStream = videoStream;
+        onLocalVideoStreamAdded?.call(this, videoStream);
         break;
       case 'localVideoStreamRemoved':
         String videoStreamId = map['videoStreamId'];
-        if (_localVideoStream.streamId == videoStreamId &&
-            onLocalVideoStreamRemoved != null) {
-          onLocalVideoStreamRemoved(this, _localVideoStream);
+        var videoStream = _localVideoStream;
+        if (videoStream != null && videoStream.streamId == videoStreamId) {
+          onLocalVideoStreamRemoved?.call(this, videoStream);
           _localVideoStream = null;
         }
         break;
@@ -660,7 +654,7 @@ class VICall {
         String videoStreamId = map['videoStreamId'];
         int type = map['videoStreamType'];
         VIVideoStreamType videoStreamType = VIVideoStreamType.values[type];
-        VIEndpoint endpoint;
+        VIEndpoint? endpoint;
         for (VIEndpoint callEndpoint in _endpoints) {
           if (callEndpoint.endpointId == endpointId) {
             endpoint = callEndpoint;
@@ -675,7 +669,7 @@ class VICall {
       case 'remoteVideoStreamRemoved':
         String endpointId = map['endpointId'];
         String videoStreamId = map['videoStreamId'];
-        VIEndpoint endpoint;
+        VIEndpoint? endpoint;
         for (VIEndpoint callEndpoint in _endpoints) {
           if (callEndpoint.endpointId == endpointId) {
             endpoint = callEndpoint;

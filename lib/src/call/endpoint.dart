@@ -25,7 +25,9 @@ typedef void VIEndpointRemoved(VIEndpoint endpoint);
 ///
 /// `videoStream` - Remote video stream
 typedef void VIRemoteVideoStreamAdded(
-    VIEndpoint endpoint, VIVideoStream videoStream);
+  VIEndpoint endpoint,
+  VIVideoStream videoStream,
+);
 
 /// Signature for callbacks reporting that the endpoint removed the video stream
 /// from the call.
@@ -38,40 +40,42 @@ typedef void VIRemoteVideoStreamAdded(
 ///
 /// `videoStream` - Remote video stream
 typedef void VIRemoteVideoStreamRemoved(
-    VIEndpoint endpoint, VIVideoStream videoStream);
+  VIEndpoint endpoint,
+  VIVideoStream videoStream,
+);
 
 /// Represents a remote call participant.
 class VIEndpoint {
   /// Callback for getting notified when the endpoint information is updated.
-  VIEndpointUpdated onEndpointUpdated;
+  VIEndpointUpdated? onEndpointUpdated;
 
   /// Callback for getting notified when the endpoint is removed from the call.
   /// It is not triggered on call end.
-  VIEndpointRemoved onEndpointRemoved;
+  VIEndpointRemoved? onEndpointRemoved;
 
   /// Callback for getting notified when the endpoint added the video stream to
   /// the call.
-  VIRemoteVideoStreamAdded onRemoteVideoStreamAdded;
+  VIRemoteVideoStreamAdded? onRemoteVideoStreamAdded;
 
   /// Callback for getting notified when the endpoint removed the video stream
   /// from the call.
-  VIRemoteVideoStreamRemoved onRemoteVideoStreamRemoved;
+  VIRemoteVideoStreamRemoved? onRemoteVideoStreamRemoved;
 
-  String _userName;
-  String _displayName;
-  String _sipUri;
-  String _endpointId;
-  int _place;
+  String? _userName;
+  String? _displayName;
+  String? _sipUri;
+  final String _endpointId;
+  int? _place;
   List<VIVideoStream> _remoteVideoStreams = [];
 
   /// This endpoint's user name.
-  String get userName => _userName;
+  String? get userName => _userName;
 
   /// This endpoint's display name.
-  String get displayName => _displayName;
+  String? get displayName => _displayName;
 
   /// This endpoint's SIP URI.
-  String get sipUri => _sipUri;
+  String? get sipUri => _sipUri;
 
   /// The endpoint id.
   String get endpointId => _endpointId;
@@ -82,37 +86,40 @@ class VIEndpoint {
   /// Place of this endpoint in a video conference.
   /// May be used as a position of this endpoint’s video stream
   /// to render in a video conference call.
-  int get place => _place;
+  int? get place => _place;
 
-  VIEndpoint._(this._endpointId, this._userName, this._displayName,
-      this._sipUri, this._place);
+  VIEndpoint._(
+    this._endpointId,
+    this._userName,
+    this._displayName,
+    this._sipUri,
+    this._place,
+  );
 
   _invokeEndpointUpdatedEvent(
-      String username, String displayName, String sipUri, int place) {
+    String? username,
+    String? displayName,
+    String? sipUri,
+    int? place,
+  ) {
     this._displayName = displayName;
     this._userName = username;
     this._sipUri = sipUri;
     this._place = place;
-    if (onEndpointUpdated != null) {
-      onEndpointUpdated(this);
-    }
+    onEndpointUpdated?.call(this);
   }
 
   _invokeEndpointRemovedEvent() {
-    if (onEndpointRemoved != null) {
-      onEndpointRemoved(this);
-    }
+    onEndpointRemoved?.call(this);
   }
 
   _remoteVideoStreamAdded(VIVideoStream videoStream) {
     _remoteVideoStreams.add(videoStream);
-    if (onRemoteVideoStreamAdded != null) {
-      onRemoteVideoStreamAdded(this, videoStream);
-    }
+    onRemoteVideoStreamAdded?.call(this, videoStream);
   }
 
-  _remoteVideoStreamRemoved(String videoStreamId) {
-    VIVideoStream remoteVideoStream;
+  _remoteVideoStreamRemoved(String? videoStreamId) {
+    VIVideoStream? remoteVideoStream;
     for (VIVideoStream videoStream in _remoteVideoStreams) {
       if (videoStream.streamId == videoStreamId) {
         remoteVideoStream = videoStream;
@@ -120,9 +127,7 @@ class VIEndpoint {
       }
     }
     if (remoteVideoStream != null) {
-      if (onRemoteVideoStreamRemoved != null) {
-        onRemoteVideoStreamRemoved(this, remoteVideoStream);
-      }
+      onRemoteVideoStreamRemoved?.call(this, remoteVideoStream);
       _remoteVideoStreams.remove(remoteVideoStream);
     }
   }

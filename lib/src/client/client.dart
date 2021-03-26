@@ -18,7 +18,11 @@ part of voximplant;
 ///
 /// `headers` - Optional SIP headers
 typedef void VIIncomingCall(
-    VIClient client, VICall call, bool video, Map<String, String> headers);
+  VIClient client,
+  VICall call,
+  bool video,
+  Map<String, String>? headers,
+);
 
 /// Signature for callbacks reporting that previously received VoIP push
 /// notification is expired on iOS.
@@ -38,15 +42,15 @@ typedef void VIPushDidExpire(VIClient client, String uuid);
 /// and receive audio and video calls.
 class VIClient {
   /// Callback for getting notified about new incoming call.
-  VIIncomingCall onIncomingCall;
+  VIIncomingCall? onIncomingCall;
 
   /// Callback for getting notified when push notification is expired.
-  VIPushDidExpire onPushDidExpire;
+  VIPushDidExpire? onPushDidExpire;
 
   final MethodChannel _channel;
-  EventChannel _incomingCallEventChannel;
-  StreamSubscription<dynamic> _incomingCallEventSubscription;
-  StreamController<VIClientState> _clientStateStreamController;
+  late EventChannel _incomingCallEventChannel;
+  StreamSubscription<dynamic>? _incomingCallEventSubscription;
+  late StreamController<VIClientState> _clientStateStreamController;
 
   /// Receive [VIClientState] each time the state is changed.
   Stream<VIClientState> get clientStateStream =>
@@ -59,7 +63,7 @@ class VIClient {
         .receiveBroadcastStream('connection_closed')
         .listen(_connectionClosedEventListener);
 
-    Map<String, dynamic> platformConfig = Map();
+    Map<String, dynamic> platformConfig = {};
     if (Platform.isAndroid) {
       platformConfig['bundleId'] = clientConfig.bundleId;
       platformConfig['enableDebugLogging'] = clientConfig.enableDebugLogging;
@@ -77,7 +81,12 @@ class VIClient {
 
   /// Returns the current client state
   Future<VIClientState> getClientState() async {
-    int result = await _channel.invokeMethod('Client.getClientState');
+    int? result = await (_channel.invokeMethod<int>('Client.getClientState'));
+    if (result == null) {
+      _VILog._e(
+          'VIClient: getClientState: result was null, returning disconnected');
+      throw VIClientError.ERROR_INTERNAL;
+    }
     return VIClientState.values[result];
   }
 
@@ -98,8 +107,10 @@ class VIClient {
   /// Errors:
   /// * [VIClientError.ERROR_CONNECTION_FAILED] - If the connection is currently
   ///   establishing or already established, or an error occurred.
-  Future<void> connect(
-      {bool connectivityCheck = false, List<String> servers}) async {
+  Future<void> connect({
+    bool connectivityCheck = false,
+    List<String>? servers,
+  }) async {
     _changeClientState(VIClientState.Connecting);
     try {
       await _channel.invokeMethod<void>('Client.connect', <String, dynamic>{
@@ -150,8 +161,15 @@ class VIClient {
   Future<VIAuthResult> login(String username, String password) async {
     _changeClientState(VIClientState.LoggingIn);
     try {
-      Map<String, dynamic> data = await _channel.invokeMapMethod('Client.login',
-          <String, String>{'username': username, 'password': password});
+      Map<String, dynamic>? data =
+          await _channel.invokeMapMethod<String, dynamic>(
+        'Client.login',
+        <String, String>{'username': username, 'password': password},
+      );
+      if (data == null) {
+        _VILog._e('VIClient: login: data was null, skipping');
+        throw VIClientError.ERROR_INTERNAL;
+      }
       _saveUsername(username);
       return await _processLoginSuccess(data);
     } on PlatformException catch (e) {
@@ -190,11 +208,15 @@ class VIClient {
   Future<VIAuthResult> loginWithOneTimeKey(String username, String hash) async {
     _changeClientState(VIClientState.LoggingIn);
     try {
-      Map<String, dynamic> data = await _channel
+      Map<String, dynamic>? data = await _channel
           .invokeMapMethod('Client.loginWithKey', <String, dynamic>{
         'username': username,
         'hash': hash,
       });
+      if (data == null) {
+        _VILog._e('VIClient: login: data was null, skipping');
+        throw VIClientError.ERROR_INTERNAL;
+      }
       _saveUsername(username);
       return await _processLoginSuccess(data);
     } on PlatformException catch (e) {
@@ -229,12 +251,20 @@ class VIClient {
   /// * [VIClientError.ERROR_TIMEOUT] - If timeout occurred.
   /// * [VIClientError.ERROR_TOKEN_EXPIRED] - If the access token is expired.
   Future<VIAuthResult> loginWithAccessToken(
-      String username, String token) async {
+    String username,
+    String token,
+  ) async {
     _changeClientState(VIClientState.LoggingIn);
     try {
-      Map<String, dynamic> data = await _channel.invokeMapMethod(
-          'Client.loginWithToken',
-          <String, String>{'username': username, 'token': token});
+      Map<String, dynamic>? data =
+          await _channel.invokeMapMethod<String, dynamic>(
+        'Client.loginWithToken',
+        <String, String>{'username': username, 'token': token},
+      );
+      if (data == null) {
+        _VILog._e('VIClient: login: data was null, skipping');
+        throw VIClientError.ERROR_INTERNAL;
+      }
       _saveUsername(username);
       return await _processLoginSuccess(data);
     } on PlatformException catch (e) {
@@ -296,16 +326,22 @@ class VIClient {
   /// * [VIClientError.ERROR_TOKEN_EXPIRED] - If the refresh token is expired.
   Future<VILoginTokens> tokenRefresh(String username, String token) async {
     try {
-      Map<String, dynamic> data = await _channel
-          .invokeMapMethod('Client.tokenRefresh', <String, String>{
+      Map<String, dynamic>? data = await _channel
+          .invokeMapMethod<String, dynamic>(
+              'Client.tokenRefresh', <String, String>{
         'username': username,
         'refreshToken': token,
       });
-      VILoginTokens loginTokens = VILoginTokens();
-      loginTokens.accessExpire = data['accessExpire'];
-      loginTokens.accessToken = data['accessToken'];
-      loginTokens.refreshToken = data['refreshToken'];
-      loginTokens.refreshExpire = data['refreshExpire'];
+      if (data == null) {
+        _VILog._e('VIClient: tokenRefresh: data was null, skipping');
+        throw VIClientError.ERROR_INTERNAL;
+      }
+      VILoginTokens loginTokens = VILoginTokens(
+        accessExpire: data['accessExpire'],
+        accessToken: data['accessToken'],
+        refreshExpire: data['refreshExpire'],
+        refreshToken: data['refreshToken'],
+      );
       return loginTokens;
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -318,7 +354,7 @@ class VIClient {
   /// Voximplant username, phone number or SIP URI. Actual routing is then
   /// performed by a VoxEngine scenario.
   ///
-  /// Optional `callSettings` - Additional call parameters like video direction
+  /// `callSettings` - Additional call parameters like video direction
   /// for the call, preferred video codec, custom data.
   ///
   /// Throws [VIException], if the client is not logged in, otherwise returns
@@ -330,19 +366,25 @@ class VIClient {
   ///   are not granted for the call:
   ///   audio calls - RECORD_AUDIO
   ///   video calls - RECORD_AUDIO and CAMERA
-  Future<VICall> call(String number, [VICallSettings callSettings]) async {
+  Future<VICall> call(
+    String number, {
+    required VICallSettings settings,
+  }) async {
     try {
-      Map<String, dynamic> data =
-          await _channel.invokeMapMethod('Client.call', <String, dynamic>{
+      Map<String, dynamic>? data = await _channel
+          .invokeMapMethod<String, dynamic>('Client.call', <String, dynamic>{
         'number': number,
-        'sendVideo': callSettings?.videoFlags?.sendVideo ?? false,
-        'receiveVideo': callSettings?.videoFlags?.receiveVideo ?? false,
-        'videoCodec': callSettings?.preferredVideoCodec.toString() ??
-            VIVideoCodec.AUTO.toString(),
-        'customData': callSettings?.customData,
-        'extraHeaders': callSettings?.extraHeaders,
-        'conference': false
+        'sendVideo': settings.videoFlags.sendVideo,
+        'receiveVideo': settings.videoFlags.receiveVideo,
+        'videoCodec': settings.preferredVideoCodec.toString(),
+        'customData': settings.customData,
+        'extraHeaders': settings.extraHeaders,
+        'conference': false,
       });
+      if (data == null) {
+        _VILog._e('VIClient: call: data was null, skipping');
+        throw VIClientError.ERROR_INTERNAL;
+      }
       VICall call = VICall._(data['callId'], _channel);
       return call;
     } on PlatformException catch (e) {
@@ -356,7 +398,7 @@ class VIClient {
   /// For SIP compatibility reasons it should be a non-empty string even
   /// if the number itself is not used by a Voximplant cloud scenario.
   ///
-  /// Optional `callSettings` - Additional call parameters like video direction
+  /// `callSettings` - Additional call parameters like video direction
   /// for the call, preferred video codec, custom data.
   ///
   /// Throws [VIException], if the client is not logged in, otherwise returns
@@ -368,20 +410,25 @@ class VIClient {
   ///   are not granted for the call:
   ///   audio calls - RECORD_AUDIO
   ///   video calls - RECORD_AUDIO and CAMERA
-  Future<VICall> conference(String conference,
-      [VICallSettings callSettings]) async {
+  Future<VICall> conference(
+    String conference, {
+    required VICallSettings settings,
+  }) async {
     try {
-      Map<String, dynamic> data =
-          await _channel.invokeMapMethod('Client.call', <String, dynamic>{
+      Map<String, dynamic>? data = await _channel
+          .invokeMapMethod<String, dynamic>('Client.call', <String, dynamic>{
         'number': conference,
-        'sendVideo': callSettings?.videoFlags?.sendVideo ?? false,
-        'receiveVideo': callSettings?.videoFlags?.receiveVideo ?? false,
-        'videoCodec': callSettings?.preferredVideoCodec.toString() ??
-            VIVideoCodec.AUTO.toString(),
-        'customData': callSettings?.customData,
-        'extraHeaders': callSettings?.extraHeaders,
+        'sendVideo': settings.videoFlags.sendVideo,
+        'receiveVideo': settings.videoFlags.receiveVideo,
+        'videoCodec': settings.preferredVideoCodec.toString(),
+        'customData': settings.customData,
+        'extraHeaders': settings.extraHeaders,
         'conference': true
       });
+      if (data == null) {
+        _VILog._e('VIClient: conference: data was null, skipping');
+        throw VIClientError.ERROR_INTERNAL;
+      }
       VICall call = VICall._(data['callId'], _channel);
       return call;
     } on PlatformException catch (e) {
@@ -403,7 +450,9 @@ class VIClient {
   Future<void> registerForPushNotifications(String pushToken) async {
     try {
       await _channel.invokeMethod(
-          'Client.registerForPushNotifications', pushToken);
+        'Client.registerForPushNotifications',
+        pushToken,
+      );
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     }
@@ -420,7 +469,9 @@ class VIClient {
   Future<void> registerIMPushNotificationsTokenIOS(String imToken) async {
     try {
       await _channel.invokeMethod(
-          'Client.registerIMPushNotificationsToken', imToken);
+        'Client.registerIMPushNotificationsToken',
+        imToken,
+      );
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     }
@@ -437,7 +488,9 @@ class VIClient {
   Future<void> unregisterIMPushNotificationsTokenIOS(String imToken) async {
     try {
       await _channel.invokeMethod(
-          'Client.unregisterIMPushNotificationsToken', imToken);
+        'Client.unregisterIMPushNotificationsToken',
+        imToken,
+      );
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     }
@@ -457,7 +510,9 @@ class VIClient {
   Future<void> unregisterFromPushNotifications(String pushToken) async {
     try {
       await _channel.invokeMethod(
-          'Client.unregisterFromPushNotifications', pushToken);
+        'Client.unregisterFromPushNotifications',
+        pushToken,
+      );
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     }
@@ -480,11 +535,15 @@ class VIClient {
         .receiveBroadcastStream('incoming_calls')
         .listen(_incomingCallEventListener);
 
-    VILoginTokens loginTokens = VILoginTokens();
-    loginTokens.accessExpire = data["accessExpire"];
-    loginTokens.accessToken = data["accessToken"];
-    loginTokens.refreshToken = data["refreshToken"];
-    loginTokens.refreshExpire = data["refreshExpire"];
+    VILoginTokens? loginTokens;
+    if (data['accessExpire'] != null && data['refreshExpire'] != null) {
+      loginTokens = VILoginTokens(
+        accessExpire: data['accessExpire'],
+        accessToken: data['accessToken'],
+        refreshExpire: data['refreshExpire'],
+        refreshToken: data['refreshToken'],
+      );
+    }
     VIAuthResult authResult = VIAuthResult._(data["displayName"], loginTokens);
 
     VIClientState state = await getClientState();
@@ -497,11 +556,11 @@ class VIClient {
     final Map<dynamic, dynamic> map = event;
     if (map['event'] == 'incomingCall') {
       String endpointId = map['endpointId'];
-      String userName = map['endpointUserName'];
-      String displayName = map['endpointDisplayName'];
-      String sipUri = map['endpointSipUri'];
-      int place = map['endpointPlace'];
-      String uuid = map['uuid'];
+      String? userName = map['endpointUserName'];
+      String? displayName = map['endpointDisplayName'];
+      String? sipUri = map['endpointSipUri'];
+      int? place = map['endpointPlace'];
+      String? uuid = map['uuid'];
       bool video = map['video'];
       VIEndpoint endpoint =
           VIEndpoint._(endpointId, userName, displayName, sipUri, place);
@@ -509,17 +568,14 @@ class VIClient {
       if (uuid != null) {
         call.callKitUUID = uuid;
       }
-      Map<String, String> headers = new Map();
-      map['headers']
-          .forEach((key, value) => {headers[key as String] = value as String});
-      if (onIncomingCall != null) {
-        onIncomingCall(this, call, video, headers);
-      }
+      Map<String, String> headers = {};
+      map['headers'].forEach(
+        (key, value) => {headers[key as String] = value as String},
+      );
+      onIncomingCall?.call(this, call, video, headers);
     } else if (map['event'] == 'pushDidExpire') {
       String uuid = map['uuid'];
-      if (onPushDidExpire != null) {
-        onPushDidExpire(this, uuid);
-      }
+      onPushDidExpire?.call(this, uuid);
     }
   }
 
@@ -527,10 +583,8 @@ class VIClient {
     final Map<dynamic, dynamic> map = event;
     if (map['event'] == 'connectionClosed') {
       _changeClientState(VIClientState.Disconnected);
-      if (_incomingCallEventSubscription != null) {
-        _incomingCallEventSubscription.cancel();
-        _incomingCallEventSubscription = null;
-      }
+      _incomingCallEventSubscription?.cancel();
+      _incomingCallEventSubscription = null;
       _saveUsername(null);
     }
   }
@@ -539,7 +593,7 @@ class VIClient {
     _clientStateStreamController.add(newState);
   }
 
-  void _saveUsername(String username) {
+  void _saveUsername(String? username) {
     _MessengerShared._saveMe(username);
   }
 }

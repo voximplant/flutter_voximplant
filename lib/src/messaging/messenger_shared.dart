@@ -3,8 +3,8 @@
 part of voximplant;
 
 class _MessengerShared {
-  static String _me;
+  static String? _me;
 
-  static void _saveMe(String me) =>
-      _me = me == null ? null : me.replaceAll(".voximplant.com", "");
+  static void _saveMe(String? me) =>
+      _me = me?.replaceAll(".voximplant.com", "");
 }

@@ -79,14 +79,10 @@ class AuthService {
     prefs.setInt('refreshExpire', loginTokens.refreshExpire);
   }
 
-  VILoginTokens _getAuthDetails(SharedPreferences prefs) {
-    VILoginTokens loginTokens = VILoginTokens();
-    loginTokens.accessToken = prefs.getString('accessToken');
-    loginTokens.accessExpire = prefs.getInt('accessExpire');
-    loginTokens.refreshExpire = prefs.getInt('refreshExpire');
-    loginTokens.refreshToken = prefs.getString('refreshToken');
-
-    return loginTokens;
-  }
-
+  VILoginTokens _getAuthDetails(SharedPreferences prefs) => VILoginTokens(
+        accessToken: prefs.getString('accessToken'),
+        accessExpire: prefs.getInt('accessExpire'),
+        refreshToken: prefs.getString('refreshToken'),
+        refreshExpire: prefs.getInt('refreshExpire'),
+      );
 }

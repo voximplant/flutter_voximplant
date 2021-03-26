@@ -8,7 +8,7 @@ part of voximplant;
 /// For all possible errors see [VIAudioFileError]
 ///
 /// Used in [VIAudioFile].
-typedef void VIAudioFileStopped(String error);
+typedef void VIAudioFileStopped(String? error);
 
 /// Enum representing supported audio file usage modes
 ///
@@ -36,23 +36,23 @@ enum VIAudioFileUsage {
 /// Class may be used to play audio files.
 class VIAudioFile {
   /// HTTP URL of the stream to play
-  final String url;
+  final String? url;
 
   /// Local audio file name
-  final String name;
+  final String? name;
 
   /// Local audio file type/format, for example ".mp3"
-  final String type;
+  final String? type;
 
   /// Indicate if the audio file should be played repeatedly or once
   bool get looped => _looped;
 
   /// Invoked when the audio file playing is stopped.
-  VIAudioFileStopped onStopped;
+  VIAudioFileStopped? onStopped;
 
   static MethodChannel get _methodChannel => Voximplant._channel;
-  StreamSubscription<dynamic> _eventSubscription;
-  String _fileId;
+  late StreamSubscription<dynamic> _eventSubscription;
+  late String _fileId;
   final VIAudioFileUsage _usage;
   final _VIAudioFileDataSource _dataSource;
   bool _looped = false;
@@ -66,9 +66,11 @@ class VIAudioFile {
   /// `usage` - Audio file usage mode. ANDROID ONLY.
   ///
   /// On android, the audio file must be located in resources "raw" folder.
-  VIAudioFile.file(this.name, this.type,
-      {VIAudioFileUsage usage = VIAudioFileUsage.unknown})
-      : _dataSource = _VIAudioFileDataSource.file,
+  VIAudioFile.file(
+    this.name,
+    this.type, {
+    VIAudioFileUsage usage = VIAudioFileUsage.unknown,
+  })  : _dataSource = _VIAudioFileDataSource.file,
         _usage = usage,
         url = null;
 
@@ -77,9 +79,10 @@ class VIAudioFile {
   /// `url` - HTTP URL of the stream to play
   ///
   /// `usage` - Audio file usage mode. ANDROID ONLY.
-  VIAudioFile.network(this.url,
-      {VIAudioFileUsage usage = VIAudioFileUsage.unknown})
-      : _dataSource = _VIAudioFileDataSource.network,
+  VIAudioFile.network(
+    this.url, {
+    VIAudioFileUsage usage = VIAudioFileUsage.unknown,
+  })  : _dataSource = _VIAudioFileDataSource.network,
         _usage = usage,
         name = null,
         type = null;
@@ -89,28 +92,32 @@ class VIAudioFile {
   /// Must be used before any other interactions with the object
   Future<void> initialize() async {
     try {
+      String? fileId;
       if (_dataSource == _VIAudioFileDataSource.file) {
-        _fileId = await _methodChannel.invokeMethod(
-            'AudioFile.initWithFile', <String, dynamic>{
+        fileId = await _methodChannel
+            .invokeMethod('AudioFile.initWithFile', <String, dynamic>{
           'name': name,
           'type': type,
-          'usage': _audioFileUsageToString(_usage)
+          'usage': _audioFileUsageToString(_usage),
         });
       } else if (_dataSource == _VIAudioFileDataSource.network) {
-        _fileId = await Voximplant._channel.invokeMethod(
-            'AudioFile.loadFile', <String, dynamic>{
+        fileId = await Voximplant._channel
+            .invokeMethod('AudioFile.loadFile', <String, dynamic>{
           'url': url,
-          'usage': _audioFileUsageToString(_usage)
+          'usage': _audioFileUsageToString(_usage),
         });
       }
-      this._eventSubscription =
+      if (fileId == null) {
+        _VILog._e('VIAudioFile: initialize: fileid was null, skipping');
+        throw VIAudioFileError.ERROR_INTERNAL;
+      }
+      _fileId = fileId;
+      _eventSubscription =
           EventChannel('plugins.voximplant.com/audio_file_events_$_fileId')
               .receiveBroadcastStream()
               .listen((event) {
         if (event['name'] == 'didStopPlaying') {
-          if (onStopped != null) {
-            onStopped(event['error']);
-          }
+          onStopped?.call(event['error']);
         }
       });
     } on PlatformException catch (e) {

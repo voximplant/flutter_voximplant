@@ -2,28 +2,6 @@
 
 part of voximplant;
 
-class _VIVideoViewValue {
-  int _width;
-  int _height;
-  double _aspectRatio;
-  VIVideoRotation _rotation;
-
-  _VIVideoViewValue._() {
-    _width = 0;
-    _height = 0;
-    _aspectRatio = 1.0;
-    _rotation = VIVideoRotation.Rotation_0;
-  }
-
-  _VIVideoViewValue._copy(
-      this._width, this._height, this._aspectRatio, this._rotation);
-
-  _VIVideoViewValue _copyWith(
-      int width, int height, double aspectRatio, VIVideoRotation rotation) {
-    return _VIVideoViewValue._copy(width, height, aspectRatio, rotation);
-  }
-}
-
 /// Represents supported video rotations.
 enum VIVideoRotation {
   Rotation_0,
@@ -55,13 +33,13 @@ class VIVideoView extends StatefulWidget {
 
 class _VIVideoViewState extends State<VIVideoView> {
   final VIVideoViewController _controller;
-  int _textureId;
+  int? _textureId;
 
   _VIVideoViewState(this._controller) {
     _controller._textureChanged = _textureChanged;
   }
 
-  void _textureChanged(int textureId) {
+  void _textureChanged(int? textureId) {
     setState(() {
       _VILog._i('textureChanged: $textureId');
       _textureId = textureId;
@@ -70,59 +48,67 @@ class _VIVideoViewState extends State<VIVideoView> {
 
   @override
   Widget build(BuildContext context) {
-    return _textureId != null ? Texture(textureId: _textureId) : Container();
+    var id = _textureId;
+    return id != null ? Texture(textureId: id) : Container();
   }
 }
 
-typedef void _TextureChanged(int textureId);
+typedef void _TextureChanged(int? textureId);
 
 /// A controller for a video view.
 class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
-  String _streamId;
-  StreamSubscription<dynamic> _rendererSubscription;
+  String? _streamId;
+  StreamSubscription<dynamic>? _rendererSubscription;
   final MethodChannel _channel = Voximplant._channel;
 
   /// Current video frame width.
   ///
   /// Use [addListener] method to subscribe to the video frame width changes.
-  int get width => value._width;
+  int get width => value.width;
 
   /// Current video frame height.
   ///
   /// Use [addListener] method to subscribe to the video frame height changes.
-  int get height => value._height;
+  int get height => value.height;
 
   /// Current video aspect ratio.
   ///
   /// Use [addListener] method to subscribe to the video frame aspect ratio
   /// changes.
-  double get aspectRatio => value._aspectRatio;
+  double get aspectRatio => value.aspectRatio;
 
   /// Current video rotation.
   ///
   /// Use [addListener] method to subscribe to the video frame rotation changes.
-  VIVideoRotation get rotation => value._rotation;
+  VIVideoRotation get rotation => value.rotation;
 
-  set streamId(String value) => _setStreamId(value);
+  set streamId(String? value) => _setStreamId(value);
 
   /// The id of the [VIVideoStream] to be rendered to the [VIVideoView] this
   /// controller belongs to.
-  String get streamId => _streamId;
-  _TextureChanged _textureChanged;
+  String? get streamId => _streamId;
+  _TextureChanged? _textureChanged;
 
-  VIVideoViewController() : super(_VIVideoViewValue._());
+  VIVideoViewController() : super(_VIVideoViewValue());
 
-  Future<void> _setStreamId(String streamId) async {
-    if (this._streamId != null &&
-        streamId != null &&
-        this._streamId == streamId) {
-      return Future<void>.value();
-    }
+  Future<void> _setStreamId(String? streamId) async {
     if (streamId != null) {
-      Map<String, int> data = await _channel
-          .invokeMapMethod('VideoStream.addVideoRenderer', <String, String>{
-        'streamId': streamId,
-      });
+      if (this._streamId != null && this._streamId == streamId) {
+        return Future<void>.value();
+      }
+
+      Map<String, int>? data = await _channel.invokeMapMethod<String, int>(
+        'VideoStream.addVideoRenderer',
+        <String, String>{
+          'streamId': streamId,
+        }
+      );
+
+      if (data == null) {
+        _VILog._w('VideoView: setStreamId: data was null, skipping');
+        return;
+      }
+
       _VILog._i('VideoView: setStreamId: textureId ${data['textureId']} '
           'is allocated for streamId $streamId');
       EventChannel rendererChannel =
@@ -131,25 +117,19 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
           .receiveBroadcastStream(
               'plugins.voximplant.com/renderer_${data['textureId']}')
           .listen(_onRendererEvent);
-      if (_textureChanged != null) {
-        _textureChanged(data['textureId']);
-      }
+      _textureChanged?.call(data['textureId']);
       _streamId = streamId;
     } else {
       if (this._streamId == null) {
         return Future<void>.value();
       }
       await _channel
-          .invokeMethod('VideoStream.removeVideoRenderer', <String, String>{
+          .invokeMethod('VideoStream.removeVideoRenderer', <String, String?>{
         'streamId': this._streamId,
       });
-      if (_rendererSubscription != null) {
-        _rendererSubscription.cancel();
-        _rendererSubscription = null;
-      }
-      if (_textureChanged != null) {
-        _textureChanged(null);
-      }
+      _rendererSubscription?.cancel();
+      _rendererSubscription = null;
+      _textureChanged?.call(null);
       _streamId = null;
     }
   }
@@ -162,17 +142,54 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
           'aspect ratio: ${map['aspectRatio']}, '
           'rotation: ${map['rotation']}, '
           'textureId: ${map['textureId']}');
-      value = value._copyWith(map['width'], map['height'], map['aspectRatio'],
-          VIVideoRotation.values[map['rotation']]);
+      value = value.copyWith(
+        width: map['width'],
+        height: map['height'],
+        aspectRatio: map['aspectRatio'],
+        rotation: VIVideoRotation.values[map['rotation']],
+      );
     }
   }
 
   @override
   void dispose() {
     super.dispose();
-    if (_rendererSubscription != null) {
-      _rendererSubscription.cancel();
-      _rendererSubscription = null;
-    }
+    _rendererSubscription?.cancel();
+    _rendererSubscription = null;
   }
+}
+
+@immutable
+class _VIVideoViewValue {
+  final int width;
+  final int height;
+  final double aspectRatio;
+  final VIVideoRotation rotation;
+
+  _VIVideoViewValue({
+    this.width = 0,
+    this.height = 0,
+    this.aspectRatio = 1.0,
+    this.rotation = VIVideoRotation.Rotation_0,
+  });
+
+  _VIVideoViewValue.copy(
+    this.width,
+    this.height,
+    this.aspectRatio,
+    this.rotation,
+  );
+
+  _VIVideoViewValue copyWith({
+    int? width,
+    int? height,
+    double? aspectRatio,
+    VIVideoRotation? rotation,
+  }) =>
+      _VIVideoViewValue.copy(
+        width ?? this.width,
+        height ?? this.height,
+        aspectRatio ?? this.aspectRatio,
+        rotation ?? this.rotation,
+      );
 }
