@@ -378,7 +378,7 @@ class VIClient {
   ///   are not granted for the call:
   ///   audio calls - RECORD_AUDIO
   ///   video calls - RECORD_AUDIO and CAMERA
-  Future<VICall> call(String number, {VICallSettings? settings}) async { // TODO(vladimir): docs settings
+  Future<VICall> call(String number, {VICallSettings? settings}) async {
     try {
       if (settings == null) {
         settings = VICallSettings();

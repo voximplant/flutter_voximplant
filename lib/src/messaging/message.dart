@@ -102,7 +102,8 @@ class VIMessage {
         this.sequence = map['sequence'],
         this.text = map['text'],
         this.payload = (map['payload'] as List?)
-            ?.map((e) => (e as Map).cast<String, dynamic>())
-            .toList() ?? [],
+                ?.map((e) => (e as Map).cast<String, dynamic>())
+                .toList() ??
+            [],
         this._methodChannel = Voximplant._channel;
 }

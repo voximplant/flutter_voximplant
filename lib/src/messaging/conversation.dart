@@ -448,8 +448,9 @@ class VIConversation {
         this.uber = map['uber'],
         this.publicJoin = map['publicJoin'],
         this.participants = (map['participants'] as List?)
-            ?.map((e) => VIConversationParticipant._fromMap(e))
-            .toList() ?? [],
+                ?.map((e) => VIConversationParticipant._fromMap(e))
+                .toList() ??
+            [],
         this.createdTime = map['createdTime'],
         this.lastSequence = map['lastSequence'],
         this.lastUpdateTime = map['lastUpdateTime'],
