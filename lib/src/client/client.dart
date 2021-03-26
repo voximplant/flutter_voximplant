@@ -354,7 +354,7 @@ class VIClient {
   /// Voximplant username, phone number or SIP URI. Actual routing is then
   /// performed by a VoxEngine scenario.
   ///
-  /// `callSettings` - Additional call parameters like video direction
+  /// `settings` - Additional call parameters like video direction
   /// for the call, preferred video codec, custom data.
   ///
   /// Throws [VIException], if the client is not logged in, otherwise returns
@@ -366,7 +366,7 @@ class VIClient {
   ///   are not granted for the call:
   ///   audio calls - RECORD_AUDIO
   ///   video calls - RECORD_AUDIO and CAMERA
-  Future<VICall> call(String number, {VICallSettings? settings}) async {
+  Future<VICall> call(String number, {VICallSettings? settings}) async { // TODO(vladimir): docs settings
     try {
       if (settings == null) {
         settings = VICallSettings();

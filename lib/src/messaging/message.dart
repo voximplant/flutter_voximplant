@@ -52,7 +52,7 @@ class VIMessage {
       );
       if (data == null) {
         _VILog._e('VIMessage: update: data was null, skipping');
-        throw VIMessagingError.ERROR_INTERNAL;
+        throw VIMessagingError.ERROR_INTERNAL; //TODO(vladimir): VIException
       }
       return VIMessageEvent._fromMap(data);
     } on PlatformException catch (e) {
@@ -95,8 +95,8 @@ class VIMessage {
         this.conversation = map['conversation'],
         this.sequence = map['sequence'],
         this.text = map['text'],
-        this.payload = (map['payload'] as List<dynamic>)
-            .map((e) => (e as Map).cast<String, dynamic>())
-            .toList(),
+        this.payload = (map['payload'] as List?)
+            ?.map((e) => (e as Map).cast<String, dynamic>())
+            .toList() ?? [],
         this._methodChannel = Voximplant._channel;
 }

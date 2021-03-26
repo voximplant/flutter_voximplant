@@ -222,7 +222,7 @@ class VIAudioDeviceManager {
         onAudioDeviceChanged?.call(this, device);
         break;
       case 'audioDeviceListChanged':
-        List<int> devices = map['audioDeviceList'].cast<int>();
+        List<int> devices = map['audioDeviceList']?.cast<int>() ?? [];
         List<VIAudioDevice> newAudioDevices = [];
         for (int device in devices) {
           newAudioDevices.add(VIAudioDevice.values[device]);

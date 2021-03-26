@@ -417,13 +417,13 @@ class VIConversation {
         this.direct = map['direct'],
         this.uber = map['uber'],
         this.publicJoin = map['publicJoin'],
-        this.participants = (map['participants'] as List)
-            .map((e) => VIConversationParticipant._fromMap(e))
-            .toList(),
+        this.participants = (map['participants'] as List?)
+            ?.map((e) => VIConversationParticipant._fromMap(e))
+            .toList() ?? [],
         this.createdTime = map['createdTime'],
         this.lastSequence = map['lastSequence'],
         this.lastUpdateTime = map['lastUpdateTime'],
-        this.customData = map['customData'].cast<String, dynamic>(),
+        this.customData = map['customData']?.cast<String, dynamic>() ?? {},
         this._methodChannel = Voximplant._channel;
 }
 

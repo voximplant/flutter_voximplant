@@ -50,16 +50,16 @@ class VIUser {
         this.name = map['name'],
         this.isDeleted = map['isDeleted'],
         this.conversationList =
-            (map['conversationList'] as List).cast<String>(),
+            (map['conversationList'] as List?)?.cast<String>(),
         this.leaveConversationList =
-            (map['leaveConversationList'] as List).cast<String>(),
-        this.notifications = (map['notifications'] as List)
-            .cast<int>()
+            (map['leaveConversationList'] as List?)?.cast<String>(),
+        this.notifications = (map['notifications'] as List?)
+            ?.cast<int>()
             .map((e) => VIMessengerNotification.values[e])
             .toList(),
         this.privateCustomData =
             map['privateCustomData']?.cast<String, dynamic>(),
-        this.customData = map['customData'].cast<String, dynamic>();
+        this.customData = map['customData']?.cast<String, dynamic>();
 }
 
 /// Enum that represents events available for push notification subscriptions.
