@@ -80,7 +80,7 @@ They can be triggered by the `VICall` class instance as the class contains all t
      return call;
   }
    
-  _onCallConnected(VICall call, Map<String, String> headers) {
+  _onCallConnected(VICall call, Map<String, String>? headers) {
       print('Call connected');
   }
 ```
@@ -95,7 +95,7 @@ There are three methods for an incoming call: answer, decline and reject. An aud
     _client.onIncomingCall = _onIncomingCall;
   }
 
-  _onIncomingCall(VIClient client, VICall call, bool video, Map<String, String> headers) async {
+  _onIncomingCall(VIClient client, VICall call, bool video, Map<String, String>? headers) async {
     await call.answer();
   }
 ```
