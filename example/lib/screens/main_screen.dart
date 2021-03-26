@@ -107,7 +107,7 @@ class MainScreen extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20),
-              child: FlatButton(
+              child: TextButton(
                 onPressed: () {
                   _makeAudioCall(context, _callToController.text);
                 },

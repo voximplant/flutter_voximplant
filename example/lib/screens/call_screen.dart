@@ -28,7 +28,7 @@ class CallScreenState extends State<CallScreen> {
   VIAudioDeviceManager _audioDeviceManager;
 
   CallScreenState(this._call) {
-    _audioDeviceManager = Voximplant().getAudioDeviceManager();
+    _audioDeviceManager = Voximplant().audioDeviceManager;
     _audioDeviceManager.onAudioDeviceChanged = _onAudioDeviceChange;
     _call.onCallDisconnected = _onCallDisconnected;
     _call.onCallFailed = _onCallFailed;
@@ -151,7 +151,7 @@ class CallScreenState extends State<CallScreen> {
               child: ListView.builder(
                   itemCount: availableAudioDevices.length,
                   itemBuilder: (BuildContext ctxt, int index) {
-                    return FlatButton(
+                    return TextButton(
                       child: Text(
                         availableAudioDevices[index].toString(),
                         style: TextStyle(fontSize: 16),
