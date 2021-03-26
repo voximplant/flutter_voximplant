@@ -159,7 +159,8 @@ class VIConversation {
         'participants': participants.map((e) => e._toMap).toList(),
       });
       if (data == null) {
-        _VILog._e('VIConversation: removeParticipants: data was null, skipping');
+        _VILog._e(
+            'VIConversation: removeParticipants: data was null, skipping');
         throw VIMessagingError.ERROR_INTERNAL;
       }
       return VIConversationEvent._fromMap(data);

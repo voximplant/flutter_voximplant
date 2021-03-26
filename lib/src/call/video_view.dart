@@ -98,11 +98,9 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
       }
 
       Map<String, int>? data = await _channel.invokeMapMethod<String, int>(
-        'VideoStream.addVideoRenderer',
-        <String, String>{
-          'streamId': streamId,
-        }
-      );
+          'VideoStream.addVideoRenderer', <String, String>{
+        'streamId': streamId,
+      });
 
       if (data == null) {
         _VILog._w('VideoView: setStreamId: data was null, skipping');

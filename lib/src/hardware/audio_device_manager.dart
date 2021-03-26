@@ -127,7 +127,8 @@ class VIAudioDeviceManager {
   /// Active audio device can be later changed if a new device is connected.
   /// In this case [onAudioDeviceChanged] will be triggered.
   Future<VIAudioDevice> getActiveDevice() async {
-    int? device = await _channel.invokeMethod<int>('AudioDevice.getActiveDevice');
+    int? device =
+        await _channel.invokeMethod<int>('AudioDevice.getActiveDevice');
     if (device == null) {
       _VILog._e('AudioDeviceManager: getActiveDevice: data was null, skipping');
       throw VIClientError.ERROR_INTERNAL;

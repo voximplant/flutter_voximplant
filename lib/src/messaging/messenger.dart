@@ -340,9 +340,11 @@ class VIMessenger {
     Map<String, Object>? privateCustomData,
   ) async {
     try {
-      Map<String, dynamic>? data = await _methodChannel.invokeMapMethod(
-          'Messaging.editUser',
-          {'customData': customData, 'privateCustomData': privateCustomData,});
+      Map<String, dynamic>? data =
+          await _methodChannel.invokeMapMethod('Messaging.editUser', {
+        'customData': customData,
+        'privateCustomData': privateCustomData,
+      });
       if (data == null) {
         _VILog._e('VIMessenger: editUser: data was null, skipping');
         throw VIMessagingError.ERROR_INTERNAL;
@@ -367,7 +369,8 @@ class VIMessenger {
           'Messaging.managePushNotifications',
           {'notifications': notifications?.map((e) => e.index).toList()});
       if (data == null) {
-        _VILog._e('VIMessenger: managePushNotifications: data was null, skipping');
+        _VILog._e(
+            'VIMessenger: managePushNotifications: data was null, skipping');
         throw VIMessagingError.ERROR_INTERNAL;
       }
       return VIUserEvent._fromMap(data);
@@ -532,8 +535,7 @@ class VIMessenger {
       Map<String, dynamic>? data = await _methodChannel
           .invokeMapMethod('Messaging.getConversation', {'uuid': uuid});
       if (data == null) {
-        _VILog._e(
-            'VIMessenger: getConversation: data was null, skipping');
+        _VILog._e('VIMessenger: getConversation: data was null, skipping');
         throw VIMessagingError.ERROR_INTERNAL;
       }
       return VIConversationEvent._fromMap(data);
@@ -581,7 +583,8 @@ class VIMessenger {
       Map<String, dynamic>? data = await _methodChannel
           .invokeMapMethod('Messaging.getPublicConversations');
       if (data == null) {
-        _VILog._e('VIMessenger: getPublicConversations: data was null, skipping');
+        _VILog._e(
+            'VIMessenger: getPublicConversations: data was null, skipping');
         throw VIMessagingError.ERROR_INTERNAL;
       }
       return VIConversationListEvent._fromMap(data);
@@ -654,29 +657,29 @@ class VIMessenger {
   void _eventListener(dynamic event) {
     final Map<dynamic, dynamic> map = event;
     if (map['name'] == 'onEditUser') {
-        onEditUser?.call(VIUserEvent._fromMap(map['event']));
+      onEditUser?.call(VIUserEvent._fromMap(map['event']));
     } else if (map['name'] == 'onSubscribe') {
-        onSubscribe?.call(VISubscriptionEvent._fromMap(map['event']));
+      onSubscribe?.call(VISubscriptionEvent._fromMap(map['event']));
     } else if (map['name'] == 'onUnsubscribe') {
-        onUnsubscribe?.call(VISubscriptionEvent._fromMap(map['event']));
+      onUnsubscribe?.call(VISubscriptionEvent._fromMap(map['event']));
     } else if (map['name'] == 'onCreateConversation') {
-        onCreateConversation?.call(VIConversationEvent._fromMap(map['event']));
+      onCreateConversation?.call(VIConversationEvent._fromMap(map['event']));
     } else if (map['name'] == 'onRemoveConversation') {
-        onRemoveConversation?.call(VIConversationEvent._fromMap(map['event']));
+      onRemoveConversation?.call(VIConversationEvent._fromMap(map['event']));
     } else if (map['name'] == 'onEditConversation') {
-        onEditConversation?.call(VIConversationEvent._fromMap(map['event']));
+      onEditConversation?.call(VIConversationEvent._fromMap(map['event']));
     } else if (map['name'] == 'onSetStatus') {
-        onSetStatus?.call(VIStatusEvent._fromMap(map['event']));
+      onSetStatus?.call(VIStatusEvent._fromMap(map['event']));
     } else if (map['name'] == 'onEditMessage') {
-        onEditMessage?.call(VIMessageEvent._fromMap(map['event']));
+      onEditMessage?.call(VIMessageEvent._fromMap(map['event']));
     } else if (map['name'] == 'onSendMessage') {
-        onSendMessage?.call(VIMessageEvent._fromMap(map['event']));
+      onSendMessage?.call(VIMessageEvent._fromMap(map['event']));
     } else if (map['name'] == 'onRemoveMessage') {
-        onRemoveMessage?.call(VIMessageEvent._fromMap(map['event']));
+      onRemoveMessage?.call(VIMessageEvent._fromMap(map['event']));
     } else if (map['name'] == 'onTyping') {
-        onTyping?.call(VIConversationServiceEvent._fromMap(map['event']));
+      onTyping?.call(VIConversationServiceEvent._fromMap(map['event']));
     } else if (map['name'] == 'isRead') {
-        onRead?.call(VIConversationServiceEvent._fromMap(map['event']));
+      onRead?.call(VIConversationServiceEvent._fromMap(map['event']));
     }
   }
 }
