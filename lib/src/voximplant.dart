@@ -20,12 +20,12 @@ class Voximplant {
   VIMessenger? _messenger;
 
   /// Get [VIAudioDeviceManager] instance to control audio hardware settings
-  VIAudioDeviceManager get getAudioDeviceManager =>
+  VIAudioDeviceManager get audioDeviceManager =>
       _audioDeviceManager ??= VIAudioDeviceManager._(_channel);
   VIAudioDeviceManager? _audioDeviceManager;
 
   /// Get [VICameraManager] instance to control camera hardware settings
-  VICameraManager get getCameraManager =>
+  VICameraManager get cameraManager =>
       _cameraManager ??= VICameraManager._(_channel);
   VICameraManager? _cameraManager;
 
