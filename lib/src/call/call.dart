@@ -284,8 +284,11 @@ class VICall {
   ///   video calls - RECORD_AUDIO and CAMERA
   /// * [VICallError.ERROR_INCORRECT_OPERATION] - Android only. If the call is
   ///   already answered.
-  Future<void> answer({required VICallSettings settings}) async {
+  Future<void> answer({VICallSettings? settings}) async {
     try {
+      if (settings == null) {
+        settings = VICallSettings();
+      }
       await _channel.invokeMethod<void>('Call.answerCall', <String, dynamic>{
         'callId': _callId,
         'sendVideo': settings.videoFlags.sendVideo,

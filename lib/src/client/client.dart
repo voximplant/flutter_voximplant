@@ -366,11 +366,11 @@ class VIClient {
   ///   are not granted for the call:
   ///   audio calls - RECORD_AUDIO
   ///   video calls - RECORD_AUDIO and CAMERA
-  Future<VICall> call(
-    String number, {
-    required VICallSettings settings,
-  }) async {
+  Future<VICall> call(String number, {VICallSettings? settings}) async {
     try {
+      if (settings == null) {
+        settings = VICallSettings();
+      }
       Map<String, dynamic>? data = await _channel
           .invokeMapMethod<String, dynamic>('Client.call', <String, dynamic>{
         'number': number,
@@ -412,9 +412,12 @@ class VIClient {
   ///   video calls - RECORD_AUDIO and CAMERA
   Future<VICall> conference(
     String conference, {
-    required VICallSettings settings,
+    VICallSettings? settings,
   }) async {
     try {
+      if (settings == null) {
+        settings = VICallSettings();
+      }
       Map<String, dynamic>? data = await _channel
           .invokeMapMethod<String, dynamic>('Client.call', <String, dynamic>{
         'number': conference,
