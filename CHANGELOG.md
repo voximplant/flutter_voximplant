@@ -4,13 +4,13 @@
 * Migrate to null safety
 * Minimum Dart SDK version increased to 2.12.0
 * Minimum Flutter SDK version increased to 1.20.0
-  
+
 API changes:
 * Voximplant.getAudioDeviceManager() -> [Voximplant.audioDeviceManager](/docs/references/fluttersdk/voximplant#audioDeviceManager)
 * Voximplant.getCameraManager() -> [Voximplant.cameraManager](/docs/references/fluttersdk/voximplant/#cameraManager)
 * Voximplant.getMessenger() -> [Voximplant.messenger](/docs/references/fluttersdk/voximplant/#messenger)
-* Added named `settings` argument to [VIClient.call()](/docs/references/fluttersdk/client/viclient#call), [VIClient.conference()](/docs/references/fluttersdk/client/viclient#conference) and [VICall.answer()](/docs/references/fluttersdk/call/vicall#answer) 
-  
+* Added named `settings` argument to [VIClient.call()](/docs/references/fluttersdk/client/viclient#call), [VIClient.conference()](/docs/references/fluttersdk/client/viclient#conference) and [VICall.answer()](/docs/references/fluttersdk/call/vicall#answer)
+
 Other changes:
 * [VIConversation.title](/docs/references/fluttersdk/messaging/viconversation#title) field nullability changed to nullable
 * [VIConversationConfig.title](/docs/references/fluttersdk/messaging/viconversationconfig#title) field nullability changed to nullable
