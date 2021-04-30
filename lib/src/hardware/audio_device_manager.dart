@@ -90,14 +90,15 @@ class VIAudioDeviceManager {
 
   /// Changes selection of the current active audio device.
   ///
-  /// Before a call. This API does nit activate [audioDevice], it just selects
+  /// Before a call. This API does not activate [audioDevice], it just selects
   /// the audio device that will be activated.
   ///
   /// During a call. If the [audioDevice] is available, the API activates
   /// [audioDevice].
   ///
   /// Active audio device can be later changed if a new device is connected.
-  /// In this case [onAudioDeviceChanged] will be triggered.
+  /// In this case [VIAudioDeviceManager.onAudioDeviceChanged]
+  /// will be triggered.
   ///
   /// For iOS.
   /// If the application uses CallKit, you should take into consideration:
@@ -125,7 +126,8 @@ class VIAudioDeviceManager {
   /// used for a call if there is no call at this moment.
   ///
   /// Active audio device can be later changed if a new device is connected.
-  /// In this case [onAudioDeviceChanged] will be triggered.
+  /// In this case [VIAudioDeviceManager.onAudioDeviceChanged]
+  /// will be triggered.
   Future<VIAudioDevice> getActiveDevice() async {
     int? device =
         await _channel.invokeMethod<int>('AudioDevice.getActiveDevice');

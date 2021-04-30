@@ -269,7 +269,7 @@ class VICall {
 
   /// Answers the incoming call.
   ///
-  /// Additional call parameters are set up via [callSettings]: video direction
+  /// Additional call parameters are set up via [settings]: video direction
   /// for the call, preferred video codec, custom data.
   ///
   /// Optional `settings` - Additional call parameters like video direction
