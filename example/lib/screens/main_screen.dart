@@ -21,11 +21,10 @@ class MainScreen extends StatelessWidget {
   final AuthService _authService = AuthService();
   final CallService _callService = CallService();
   final TextEditingController _callToController = TextEditingController();
-  String _displayName;
+  String get _displayName => _authService.displayName;
 
   MainScreen({Key key}) : super(key: key) {
     _authService.onConnectionClosed = _onConnectionClosed;
-    _displayName = _authService.displayName;
   }
 
   void _onConnectionClosed() {
