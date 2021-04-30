@@ -53,7 +53,7 @@ class LoginScreenState extends State<LoginScreen> {
             title: Text('Login error'),
             content: Text(reason),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 child: Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -113,7 +113,7 @@ class LoginScreenState extends State<LoginScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 20),
-                    child: FlatButton(
+                    child: TextButton(
                       onPressed: () {
                         _loginWithPassword(
                             _loginController.text, _passwordController.text);
