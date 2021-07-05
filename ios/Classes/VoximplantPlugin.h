@@ -5,7 +5,7 @@
 #import <Flutter/Flutter.h>
 #import <VoxImplant/VoxImplant.h>
 
-@interface VoximplantPlugin : NSObject<FlutterPlugin>
+@interface VoximplantPlugin : NSObject<FlutterPlugin, FlutterStreamHandler, VILogDelegate>
 @property(nonatomic, strong) NSObject<FlutterPluginRegistrar> *registrar;
 + (NSUUID *)uuidForPushNotification:(NSDictionary *)notification;
 

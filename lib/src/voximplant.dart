@@ -2,10 +2,25 @@
 
 part of voximplant;
 
+/// Signature for callbacks reporting that there is a new log message
+/// from Voximplant SDK
+///
+/// Used in [Voximplant].
+///
+/// `level` - Level of log message
+///
+/// `logMessage` - Log message
+typedef void VILogListener(
+  VILogLevel level,
+  String logMessage,
+);
+
 /// The entry point of the Voximplant Flutter SDK.
 class Voximplant {
   factory Voximplant() => _instance;
   static final Voximplant _instance = Voximplant.private();
+
+  VILogListener? logListener;
 
   /// Get [VIClient] instance to connect and login to the Voximplant Cloud,
   /// make and receive calls
@@ -32,5 +47,23 @@ class Voximplant {
   static const MethodChannel _channel =
       MethodChannel('plugins.voximplant.com/client');
 
-  Voximplant.private();
+  static const EventChannel _logsEventChannel =
+      EventChannel('plugins.voximplant.com/logs');
+
+  Voximplant.private() {
+    _logsEventChannel.receiveBroadcastStream('logs').listen(_logsEventListener);
+  }
+
+  void _logsEventListener(dynamic event) {
+    final Map<dynamic, dynamic> map = event;
+    if (map['event'] == 'onLogMessage') {
+      final logLevelString = map['level'];
+      final logLevel = VILogLevel.values.firstWhere(
+        (logLevel) => logLevel.toString().split('.').last == logLevelString,
+        orElse: () => VILogLevel.verbose,
+      );
+      final logMessage = map['logMessage'];
+      logListener?.call(logLevel, logMessage);
+    }
+  }
 }
