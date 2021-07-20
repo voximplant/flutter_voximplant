@@ -1,6 +1,6 @@
 /*
-* Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
-*/
+ * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+ */
 
 #import "VoximplantPlugin.h"
 #import "VoximplantUtils.h"
@@ -132,12 +132,15 @@
 
 - (void)didReceiveLogMessage:(NSString *)message severity:(VILogSeverity)severity {
     if (self.logsEventSink) {
+        NSString *level = [self formatSeverityToString:severity];
         
-        self.logsEventSink(@{
-            @"event"               : @"onLogMessage",
-            @"level" : [self formatSeverityToString:severity],
-            @"logMessage"          : message,
-                           });
+        if (level) {
+            self.logsEventSink(@{
+                @"event"               : @"onLogMessage",
+                @"level"               : level,
+                @"logMessage"          : message,
+                               });
+        }
     }
     
 }
@@ -161,8 +164,6 @@
         case VILogSeverityVerbose:
             result = @"verbose";
             break;
-        default:
-            [NSException raise:NSGenericException format:@"Unexpected VILogSeverity."];
     }
     
     return result;
