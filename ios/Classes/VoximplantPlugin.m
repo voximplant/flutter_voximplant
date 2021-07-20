@@ -131,18 +131,19 @@
 #pragma mark - VILogDelegate
 
 - (void)didReceiveLogMessage:(NSString *)message severity:(VILogSeverity)severity {
-    if (self.logsEventSink) {
-        NSString *level = [self formatSeverityToString:severity];
-        
-        if (level) {
-            self.logsEventSink(@{
-                @"event"               : @"onLogMessage",
-                @"level"               : level,
-                @"logMessage"          : message,
-                               });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.logsEventSink) {
+            NSString *level = [self formatSeverityToString:severity];
+            
+            if (level) {
+                self.logsEventSink(@{
+                    @"event"               : @"onLogMessage",
+                    @"level"               : level,
+                    @"logMessage"          : message,
+                                   });
+            }
         }
-    }
-    
+    });
 }
 
 - (NSString*)formatSeverityToString:(VILogSeverity)severity {
