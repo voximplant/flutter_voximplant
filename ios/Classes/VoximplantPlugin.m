@@ -1,6 +1,6 @@
 /*
-* Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
-*/
+ * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+ */
 
 #import "VoximplantPlugin.h"
 #import "VoximplantUtils.h"
@@ -14,6 +14,8 @@
 #import "VIAudioFileManager.h"
 
 @interface VoximplantPlugin()
+@property(nonatomic, strong) FlutterEventChannel *logsEventChannel;
+@property(nonatomic, strong) FlutterEventSink logsEventSink;
 @property(nonatomic, strong) VIClientModule *clientModule;
 @property(nonatomic, strong) VIAudioDeviceModule *audioDeviceModule;
 @property(nonatomic, strong) VIAudioFileManager *audioFileManager;
@@ -47,6 +49,10 @@
     self = [super init];
     if (self) {
         self.registrar = registrar;
+        self.logsEventChannel = [FlutterEventChannel eventChannelWithName:@"plugins.voximplant.com/logs"
+                                                          binaryMessenger:registrar.messenger];
+        [self.logsEventChannel setStreamHandler:self];
+        [VIClient setLogDelegate:self];
         self.callManager = [[VoximplantCallManager alloc] init];
         self.clientModule = [[VIClientModule alloc] initWithRegistrar:self.registrar callManager:self.callManager];
         self.audioDeviceModule = [[VIAudioDeviceModule alloc] initWithPlugin:self];
@@ -98,6 +104,70 @@
     } else {
         result(FlutterMethodNotImplemented);
     }
+}
+
+#pragma mark - FlutterStreamHandler
+
+- (FlutterError * _Nullable)onListenWithArguments:(id _Nullable)arguments eventSink:(nonnull FlutterEventSink)events {
+    if ([arguments isKindOfClass:[NSString class]]) {
+        NSString *type = (NSString *)arguments;
+        if ([type isEqual:@"logs"]) {
+            self.logsEventSink = events;
+        }
+    }
+    return nil;
+}
+
+- (FlutterError * _Nullable)onCancelWithArguments:(id _Nullable)arguments {
+    if ([arguments isKindOfClass:[NSString class]]) {
+        NSString *type = (NSString *)arguments;
+        if ([type isEqual:@"logs"]) {
+            self.logsEventSink = nil;
+        }
+    }
+    return nil;
+}
+
+#pragma mark - VILogDelegate
+
+- (void)didReceiveLogMessage:(NSString *)message severity:(VILogSeverity)severity {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.logsEventSink) {
+            NSString *level = [self formatSeverityToString:severity];
+            
+            if (level) {
+                self.logsEventSink(@{
+                    @"event"               : @"onLogMessage",
+                    @"level"               : level,
+                    @"logMessage"          : message,
+                                   });
+            }
+        }
+    });
+}
+
+- (NSString*)formatSeverityToString:(VILogSeverity)severity {
+    NSString *result = nil;
+    
+    switch(severity) {
+        case VILogSeverityError:
+            result = @"error";
+            break;
+        case VILogSeverityWarning:
+            result = @"warning";
+            break;
+        case VILogSeverityInfo:
+            result = @"info";
+            break;
+        case VILogSeverityDebug:
+            result = @"debug";
+            break;
+        case VILogSeverityVerbose:
+            result = @"verbose";
+            break;
+    }
+    
+    return result;
 }
 
 @end
