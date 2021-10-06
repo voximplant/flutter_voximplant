@@ -431,7 +431,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
     public void onMessageReceived(ICall call, String text) {
         Map<String, Object> event = new HashMap<>();
         event.put("event", "messageReceived");
-        event.put("text", text);
+        event.put("message", text);
         sendCallEvent(event);
     }
 
