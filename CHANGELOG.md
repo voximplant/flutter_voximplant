@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.0.1
+* Fix for [#24](https://github.com/voximplant/flutter_voximplant/issues/24)
+
 ## 3.0.0
 * Migrate to null safety
 * Minimum Dart SDK version increased to 2.12.0
