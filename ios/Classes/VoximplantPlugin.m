@@ -59,7 +59,7 @@
         self.audioFileManager = [[VIAudioFileManager alloc] initWithPlugin:self];
         self.cameraModule = [[VICameraModule alloc] init];
         self.messagingModule = [[VIMessagingModule alloc] initWithRegistrar:self.registrar];
-        [VIClient setVersionExtension:@"flutter-3.0.0"];
+        [VIClient setVersionExtension:@"flutter-3.1.0"];
     }
     return self;
 }
@@ -76,31 +76,31 @@
             self.messagingModule.messenger = self.clientModule.client.messenger;
         }
         [self.messagingModule handleMethodCall:[call excludingType] result:result];
-        
+
     } else if ([call isMethodCallOfType:VIMethodTypeClient]) {
         [self.clientModule handleMethodCall:[call excludingType] result:result];
-        
+
     } else if ([call isMethodCallOfType:VIMethodTypeCall]) {
         VICallModule *callModule = [self.callManager checkCallEvent:call.arguments result:result methodName:call.method];
         if (callModule) {
             [callModule handleMethodCall:[call excludingType] result:result];
         }
-        
+
     } else if ([call isMethodCallOfType:VIMethodTypeVideoStream]) {
         VICallModule *callModule = [self.callManager findCallByStreamId:call.arguments result:result methodName:call.method];
         if (callModule) {
             [callModule handleMethodCall:[call excludingType] result:result];
         }
-        
+
     } else if ([call isMethodCallOfType:VIMethodTypeAudioDevice]) {
         [self.audioDeviceModule handleMethodCall:[call excludingType] result:result];
-        
+
     } else if ([call isMethodCallOfType:VIMethodTypeCamera]) {
         [self.cameraModule handleMethodCall:[call excludingType] result:result];
-        
+
     } else if ([call isMethodCallOfType:VIMethodTypeAudioFile]) {
         [self.audioFileManager handleMethodCall:[call excludingType] result:result];
-        
+
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -134,7 +134,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.logsEventSink) {
             NSString *level = [self formatSeverityToString:severity];
-            
+
             if (level) {
                 self.logsEventSink(@{
                     @"event"               : @"onLogMessage",
@@ -148,7 +148,7 @@
 
 - (NSString*)formatSeverityToString:(VILogSeverity)severity {
     NSString *result = nil;
-    
+
     switch(severity) {
         case VILogSeverityError:
             result = @"error";
@@ -166,7 +166,7 @@
             result = @"verbose";
             break;
     }
-    
+
     return result;
 }
 

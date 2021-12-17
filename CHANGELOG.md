@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.28.0
+  and Voximplant iOS SDK 2.45.0
+* Fix for [#24])(https://github.com/voximplant/flutter_voximplant/issues/24)
+* Introduce VILogListener
+
 ## 3.0.0
 * Migrate to null safety
 * Minimum Dart SDK version increased to 2.12.0
