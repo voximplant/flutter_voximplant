@@ -12,8 +12,8 @@
 @property(nonatomic, strong) FlutterEventSink eventSink;
 @property(nonatomic, weak) NSObject<FlutterPluginRegistrar> *registrar;
 @property(nonatomic, weak) VoximplantCallManager *callManager;
-@property(nonatomic, strong) VIVideoStream *localVideoStream;
-@property(nonatomic, strong) NSMutableDictionary<NSString *, VIVideoStream *> *remoteVideoStreams;
+@property(nonatomic, strong) VILocalVideoStream *localVideoStream;
+@property(nonatomic, strong) NSMutableDictionary<NSString *, VIRemoteVideoStream *> *remoteVideoStreams;
 @property(nonatomic, strong) NSMutableDictionary<NSString *, VoximplantRenderer *> *renderers;
 @end
 
@@ -241,7 +241,7 @@
         result(resultParams);
         return;
     }
-    VIVideoStream *videoStream = [self.remoteVideoStreams objectForKey:streamId];
+    VIRemoteVideoStream *videoStream = [self.remoteVideoStreams objectForKey:streamId];
     if (videoStream) {
         VoximplantRenderer *renderer = [[VoximplantRenderer alloc] initWithTextureRegistry:self.registrar.textures
                                                                                  messenger:self.registrar.messenger];
@@ -274,7 +274,7 @@
         result(nil);
         return;
     }
-    VIVideoStream *videoStream = [self.remoteVideoStreams objectForKey:streamId];
+    VIRemoteVideoStream *videoStream = [self.remoteVideoStreams objectForKey:streamId];
     VoximplantRenderer *renderer = [self.renderers objectForKey:streamId];
     if (videoStream && renderer) {
         [videoStream removeRenderer:renderer];
@@ -305,7 +305,7 @@
         }
         self.localVideoStream = nil;
     }
-    [self.remoteVideoStreams enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull streamId, VIVideoStream * _Nonnull videoStream, BOOL * _Nonnull stop) {
+    [self.remoteVideoStreams enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull streamId, VIRemoteVideoStream * _Nonnull videoStream, BOOL * _Nonnull stop) {
         VoximplantRenderer *renderer = [self.renderers objectForKey:streamId];
         if (renderer) {
             [videoStream removeRenderer:renderer];
@@ -409,7 +409,7 @@
     }];
 }
 
-- (void)call:(VICall *)call didAddLocalVideoStream:(VIVideoStream *)videoStream {
+- (void)call:(VICall *)call didAddLocalVideoStream:(VILocalVideoStream *)videoStream {
     if (!self.localVideoStream) {
         self.localVideoStream = videoStream;
         [self sendEvent:@{
@@ -422,7 +422,7 @@
     }
 }
 
-- (void)call:(VICall *)call didRemoveLocalVideoStream:(VIVideoStream *)videoStream {
+- (void)call:(VICall *)call didRemoveLocalVideoStream:(VILocalVideoStream *)videoStream {
     if ([self.localVideoStream.streamId isEqualToString:videoStream.streamId]) {
         [self sendEvent:@{
             @"event"         : @"localVideoStreamRemoved",
@@ -446,7 +446,7 @@
     }];
 }
 
-- (void)endpoint:(VIEndpoint *)endpoint didAddRemoteVideoStream:(VIVideoStream *)videoStream {
+- (void)endpoint:(VIEndpoint *)endpoint didAddRemoteVideoStream:(VIRemoteVideoStream *)videoStream {
     [self.remoteVideoStreams setObject:videoStream forKey:videoStream.streamId];
     [self sendEvent:@{
         @"event"               : @"remoteVideoStreamAdded",
@@ -456,7 +456,7 @@
     }];
 }
 
-- (void)endpoint:(VIEndpoint *)endpoint didRemoveRemoteVideoStream:(VIVideoStream *)videoStream {
+- (void)endpoint:(VIEndpoint *)endpoint didRemoveRemoteVideoStream:(VIRemoteVideoStream *)videoStream {
     [self sendEvent:@{
         @"event"               : @"remoteVideoStreamRemoved",
         @"endpointId"          : endpoint.endpointId,

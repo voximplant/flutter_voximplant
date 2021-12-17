@@ -16,7 +16,8 @@ import com.voximplant.sdk.call.ICallCompletionHandler;
 import com.voximplant.sdk.call.ICallListener;
 import com.voximplant.sdk.call.IEndpoint;
 import com.voximplant.sdk.call.IEndpointListener;
-import com.voximplant.sdk.call.IVideoStream;
+import com.voximplant.sdk.call.ILocalVideoStream;
+import com.voximplant.sdk.call.IRemoteVideoStream;
 import com.voximplant.sdk.call.RejectMode;
 import com.voximplant.sdk.call.RenderScaleType;
 import com.voximplant.sdk.call.VideoFlags;
@@ -40,8 +41,8 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
     private final BinaryMessenger mMessenger;
     private final TextureRegistry mTextures;
 
-    private IVideoStream mLocalVideoStream;
-    private Map<String, IVideoStream> mRemoteVideoStreams = new HashMap<>();
+    private ILocalVideoStream mLocalVideoStream;
+    private Map<String, IRemoteVideoStream> mRemoteVideoStreams = new HashMap<>();
     private Map<String, VoximplantRenderer> mRenderers = new HashMap<>();
 
     CallModule(BinaryMessenger messenger, TextureRegistry textures, CallManager callManager, ICall call) {
@@ -271,7 +272,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
             return;
         }
         if (mRemoteVideoStreams.containsKey(streamId)) {
-            IVideoStream videoStream = mRemoteVideoStreams.get(streamId);
+            IRemoteVideoStream videoStream = mRemoteVideoStreams.get(streamId);
             if (videoStream != null) {
                 VoximplantRenderer renderer = new VoximplantRenderer(mMessenger, mTextures);
                 mRenderers.put(streamId, renderer);
@@ -300,7 +301,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
             }
             mLocalVideoStream = null;
         } else {
-            for (Map.Entry<String, IVideoStream> entry : mRemoteVideoStreams.entrySet()) {
+            for (Map.Entry<String, IRemoteVideoStream> entry : mRemoteVideoStreams.entrySet()) {
                 if (entry.getKey().equals(streamId)) {
                     VoximplantRenderer renderer = mRenderers.remove(streamId);
                     if (renderer != null) {
@@ -326,7 +327,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
                 renderer.release();
             }
         }
-        for (Map.Entry<String, IVideoStream> entry : mRemoteVideoStreams.entrySet()) {
+        for (Map.Entry<String, IRemoteVideoStream> entry : mRemoteVideoStreams.entrySet()) {
             VoximplantRenderer renderer = mRenderers.remove(entry.getKey());
             if (renderer != null) {
                 entry.getValue().removeVideoRenderer(renderer.getRenderer());
@@ -436,7 +437,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
     }
 
     @Override
-    public void onLocalVideoStreamAdded(ICall call, IVideoStream videoStream) {
+    public void onLocalVideoStreamAdded(ICall call, ILocalVideoStream videoStream) {
         if (mLocalVideoStream == null) {
             mLocalVideoStream = videoStream;
             Map<String, Object> event = new HashMap<>();
@@ -451,7 +452,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
     }
 
     @Override
-    public void onLocalVideoStreamRemoved(ICall call, IVideoStream videoStream) {
+    public void onLocalVideoStreamRemoved(ICall call, ILocalVideoStream videoStream) {
         if (mLocalVideoStream.getVideoStreamId().equals(videoStream.getVideoStreamId())) {
             Map<String, Object> event = new HashMap<>();
             event.put("event", "localVideoStreamRemoved");
@@ -498,7 +499,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
     }
 
     @Override
-    public void onRemoteVideoStreamAdded(IEndpoint endpoint, IVideoStream videoStream) {
+    public void onRemoteVideoStreamAdded(IEndpoint endpoint, IRemoteVideoStream videoStream) {
         mRemoteVideoStreams.put(videoStream.getVideoStreamId(), videoStream);
         Map<String, Object> event = new HashMap<>();
         event.put("event", "remoteVideoStreamAdded");
@@ -509,7 +510,7 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
     }
 
     @Override
-    public void onRemoteVideoStreamRemoved(IEndpoint endpoint, IVideoStream videoStream) {
+    public void onRemoteVideoStreamRemoved(IEndpoint endpoint, IRemoteVideoStream videoStream) {
         Map<String, Object> event = new HashMap<>();
         event.put("event", "remoteVideoStreamRemoved");
         event.put("endpointId", endpoint.getEndpointId());
