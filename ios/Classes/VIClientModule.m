@@ -11,8 +11,8 @@
 @property(nonatomic, strong) NSMutableDictionary<NSString *, FlutterResult> *clientMethodCallResults;
 @property(nonatomic, strong) FlutterEventChannel *incomingCallEventChannel;
 @property(nonatomic, strong) FlutterEventSink incomingCallEventSink;
-@property(nonatomic, strong) FlutterEventChannel *connectionClosedEventChannel;
-@property(nonatomic, strong) FlutterEventSink connectionClosedEventSink;
+@property(nonatomic, strong) FlutterEventChannel *connectionEventChannel;
+@property(nonatomic, strong) FlutterEventSink connectionEventSink;
 @property(nonatomic, strong) VoximplantCallManager *callManager;
 @end
 
@@ -27,9 +27,9 @@
         self.incomingCallEventChannel = [FlutterEventChannel eventChannelWithName:@"plugins.voximplant.com/incoming_calls"
                                                                   binaryMessenger:registrar.messenger];
         [self.incomingCallEventChannel setStreamHandler:self];
-        self.connectionClosedEventChannel = [FlutterEventChannel eventChannelWithName:@"plugins.voximplant.com/connection_closed"
+        self.connectionEventChannel = [FlutterEventChannel eventChannelWithName:@"plugins.voximplant.com/connection_events"
                                                                       binaryMessenger:registrar.messenger];
-        [self.connectionClosedEventChannel setStreamHandler:self];
+        [self.connectionEventChannel setStreamHandler:self];
     }
     return self;
 }
@@ -349,9 +349,25 @@
         [self.clientMethodCallResults removeObjectForKey:@"disconnect"];
         result(nil);
     }
-    if (self.connectionClosedEventSink) {
-        self.connectionClosedEventSink(@{
+    if (self.connectionEventSink) {
+        self.connectionEventSink(@{
             @"event" : @"connectionClosed"
+        });
+    }
+}
+
+-(void)clientSessionDidStartReconnecting:(VIClient *)client {
+    if (self.connectionEventSink) {
+        self.connectionEventSink(@{
+            @"event" : @"reconnecting"
+        });
+    }
+}
+
+-(void)clientSessionDidReconnect:(VIClient *)client {
+    if (self.connectionEventSink) {
+        self.connectionEventSink(@{
+            @"event" : @"reconnected"
         });
     }
 }
@@ -391,8 +407,8 @@
 - (FlutterError * _Nullable)onCancelWithArguments:(id _Nullable)arguments {
     if ([arguments isKindOfClass:[NSString class]]) {
         NSString *type = (NSString *)arguments;
-        if ([type isEqual:@"connection_closed"]) {
-            self.connectionClosedEventSink = nil;
+        if ([type isEqual:@"connection_events"]) {
+            self.connectionEventSink = nil;
         }
         if ([type isEqual:@"incoming_calls"]) {
             self.incomingCallEventSink = nil;
@@ -404,8 +420,8 @@
 - (FlutterError * _Nullable)onListenWithArguments:(id _Nullable)arguments eventSink:(nonnull FlutterEventSink)events {
     if ([arguments isKindOfClass:[NSString class]]) {
         NSString *type = (NSString *)arguments;
-        if ([type isEqual:@"connection_closed"]) {
-            self.connectionClosedEventSink = events;
+        if ([type isEqual:@"connection_events"]) {
+            self.connectionEventSink = events;
         }
         if ([type isEqual:@"incoming_calls"]) {
             self.incomingCallEventSink = events;

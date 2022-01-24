@@ -499,6 +499,20 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
     }
 
     @Override
+    public void onCallReconnecting(ICall call) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "callReconnecting");
+        sendCallEvent(event);
+    }
+
+    @Override
+    public void onCallReconnected(ICall call) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "callReconnected");
+        sendCallEvent(event);
+    }
+
+    @Override
     public void onRemoteVideoStreamAdded(IEndpoint endpoint, IRemoteVideoStream videoStream) {
         mRemoteVideoStreams.put(videoStream.getVideoStreamId(), videoStream);
         Map<String, Object> event = new HashMap<>();

@@ -345,6 +345,18 @@
     
 }
 
+- (void)callDidStartReconnecting:(VICall *)call {
+    [self sendEvent:@{
+        @"event" : @"callReconnecting",
+    }];
+}
+
+- (void)callDidReconnect:(VICall *)call {
+    [self sendEvent:@{
+        @"event" : @"callReconnected",
+    }];
+}
+
 - (void)call:(VICall *)call didConnectWithHeaders:(NSDictionary *)headers {
     [self sendEvent:@{
         @"event"   : @"callConnected",

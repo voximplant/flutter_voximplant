@@ -35,6 +35,8 @@ class CallScreenState extends State<CallScreen> {
     _call.onCallConnected = _onCallConnected;
     _call.onCallRinging = _onCallRinging;
     _call.onEndpointAdded = _onEndpointAdded;
+    _call.onCallReconnecting = _onReconnecting;
+    _call.onCallReconnected = _onReconnected;
     if (_call.endpoints.isNotEmpty) {
       _endpointName = _call.endpoints.first?.userName ?? 'Unknown';
     }
@@ -84,6 +86,20 @@ class CallScreenState extends State<CallScreen> {
       if (_call.endpoints.isNotEmpty) {
         _endpointName = _call.endpoints.first?.userName ?? 'Unknown';
       }
+    });
+  }
+
+  _onReconnecting(VICall call) {
+    print('CallScreen: onCallReconnecting');
+    setState(() {
+      _callStatus = 'Reconnecting...';
+    });
+  }
+
+  _onReconnected(VICall call) {
+    print('CallScreen: onCallReconnected');
+    setState(() {
+      _callStatus = 'Call in progress';
     });
   }
 

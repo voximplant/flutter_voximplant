@@ -15,6 +15,6 @@ Voximplant plugin for embedding voice and video communication into Flutter appli
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'VoxImplantSDK', '2.45.0'
+  s.dependency 'VoxImplantSDK', '2.46.1'
   s.ios.deployment_target = '9.0'
 end

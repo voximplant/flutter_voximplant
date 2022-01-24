@@ -123,6 +123,26 @@ typedef void VISIPInfoReceived(
   Map<String, String>? headers,
 );
 
+/// Signature for callbacks reporting that the call is currently reconnecting.
+///
+/// Until [VICallReconnected] callback is invoked, the following API calls will throw [VIException] with [VICallError.ERROR_RECONNECTING] error:
+///
+/// * [VICall.sendVideo]
+/// * [VICall.receiveVideo]
+/// * [VICall.hold]
+///
+/// Used in [VICall].
+///
+/// `call` - VICall instance initiated the event
+typedef void VICallReconnecting(VICall call);
+
+/// Signature for callbacks reporting that the call is reconnected.
+///
+/// Used in [VICall].
+///
+/// `call` - VICall instance initiated the event
+typedef void VICallReconnected(VICall call);
+
 /// Signature for callbacks reporting that [message] is received within the call.
 ///
 /// Implemented atop SIP INFO for communication between call endpoint and the
@@ -194,6 +214,12 @@ class VICall {
 
   /// Callback for getting notified when the endpoint answered the call.
   VICallAudioStarted? onCallAudioStarted;
+
+  /// Callback for getting notified when the call is currently reconnecting.
+  VICallReconnecting? onCallReconnecting;
+
+  /// Callback for getting notified when the call is reconnected.
+  VICallReconnected? onCallReconnected;
 
   /// Callback for getting notified when INFO message in received.
   VISIPInfoReceived? onSIPInfoReceived;
@@ -375,6 +401,7 @@ class VICall {
   /// * [VICallError.ERROR_INCORRECT_OPERATION] - If the call is not connected.
   /// * [VICallError.ERROR_INTERNAL] - If an internal error occurred.
   /// * [VICallError.ERROR_TIMEOUT] - If the operation is not completed in time.
+  /// * [VICallError.ERROR_RECONNECTING] - If the call is currently reconnecting.
   Future<void> hold(bool enable) async {
     try {
       await _channel.invokeMethod<void>('Call.holdCall',
@@ -475,6 +502,7 @@ class VICall {
   ///   permission is not granted.
   /// * [VICallError.ERROR_MEDIA_IS_ON_HOLD] - If the call is currently on hold.
   ///   Put the call off hold and repeat the operation.
+  /// * [VICallError.ERROR_RECONNECTING] - If the call is currently reconnecting.
   Future<void> sendVideo(bool enable) async {
     try {
       await _channel.invokeMethod('Call.sendVideoForCall', <String, dynamic>{
@@ -503,6 +531,7 @@ class VICall {
   ///   permission is not granted.
   /// * [VICallError.ERROR_MEDIA_IS_ON_HOLD] - If the call is currently on hold.
   ///   Put the call off hold and repeat the operation.
+  /// * [VICallError.ERROR_RECONNECTING] - If the call is currently reconnecting.
   Future<void> receiveVideo() async {
     try {
       await _channel.invokeMethod('Call.receiveVideoForCall', <String, String>{
@@ -682,6 +711,12 @@ class VICall {
         if (endpoint != null) {
           endpoint._remoteVideoStreamRemoved(videoStreamId);
         }
+        break;
+      case 'callReconnecting':
+        onCallReconnecting?.call(this);
+        break;
+      case 'callReconnected':
+        onCallReconnected?.call(this);
         break;
     }
   }

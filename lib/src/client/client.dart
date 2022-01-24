@@ -59,9 +59,9 @@ class VIClient {
   VIClient._(this._channel, VIClientConfig clientConfig) {
     _incomingCallEventChannel =
         EventChannel('plugins.voximplant.com/incoming_calls');
-    EventChannel('plugins.voximplant.com/connection_closed')
-        .receiveBroadcastStream('connection_closed')
-        .listen(_connectionClosedEventListener);
+    EventChannel('plugins.voximplant.com/connection_events')
+        .receiveBroadcastStream('connection_events')
+        .listen(_connectionEventListener);
 
     Map<String, dynamic> platformConfig = {};
     if (Platform.isAndroid) {
@@ -600,13 +600,19 @@ class VIClient {
     }
   }
 
-  void _connectionClosedEventListener(dynamic event) {
+  void _connectionEventListener(dynamic event) {
     final Map<dynamic, dynamic> map = event;
     if (map['event'] == 'connectionClosed') {
       _changeClientState(VIClientState.Disconnected);
       _incomingCallEventSubscription?.cancel();
       _incomingCallEventSubscription = null;
       _saveUsername(null);
+    }
+    if (map['event'] == 'reconnecting') {
+      _changeClientState(VIClientState.Reconnecting);
+    }
+    if (map['event'] == 'reconnected') {
+      _changeClientState(VIClientState.LoggedIn);
     }
   }
 

@@ -37,6 +37,7 @@ class VICallError {
   static const String ERROR_INTERNAL = 'ERROR_INTERNAL';
   static const String ERROR_MISSING_PERMISSION = 'ERROR_MISSING_PERMISSION';
   static const String ERROR_INVALID_ARGUMENTS = 'ERROR_INVALID_ARGUMENTS';
+  static const String ERROR_RECONNECTING = 'ERROR_RECONNECTING';
 }
 
 class VIAudioFileError {

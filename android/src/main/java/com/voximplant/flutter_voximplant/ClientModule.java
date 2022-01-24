@@ -49,8 +49,8 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
 
     private EventChannel mIncomingCallEventChannel;
     private EventChannel.EventSink mIncomingCallEventSink;
-    private EventChannel mConnectionClosedEventChannel;
-    private EventChannel.EventSink mConnectionClosedEventSink;
+    private EventChannel mConnectionEventChannel;
+    private EventChannel.EventSink mConnectionEventSink;
 
     private HashMap<String, MethodChannel.Result> mClientMethodCallResults = new HashMap<>();
 
@@ -66,8 +66,8 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
 
         mIncomingCallEventChannel = new EventChannel(messenger, "plugins.voximplant.com/incoming_calls");
         mIncomingCallEventChannel.setStreamHandler(this);
-        mConnectionClosedEventChannel = new EventChannel(messenger, "plugins.voximplant.com/connection_closed");
-        mConnectionClosedEventChannel.setStreamHandler(this);
+        mConnectionEventChannel = new EventChannel(messenger, "plugins.voximplant.com/connection_events");
+        mConnectionEventChannel.setStreamHandler(this);
     }
 
     void handleMethodCall(MethodCall call, MethodChannel.Result result) {
@@ -349,10 +349,10 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
             Log.e(TAG_NAME, "VoximplantPlugin: onConnectionClosed: result is null");
             mHandler.post(() -> result.success(null));
         }
-        if (mConnectionClosedEventSink != null) {
+        if (mConnectionEventSink != null) {
             Map<String, String> params = new HashMap<>();
             params.put("event", "connectionClosed");
-            mHandler.post(() -> mConnectionClosedEventSink.success(params));
+            mHandler.post(() -> mConnectionEventSink.success(params));
         }
     }
 
@@ -456,14 +456,32 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
         }
     }
 
+    @Override
+    public void onReconnecting() {
+        if (mConnectionEventSink != null) {
+            Map<String, String> params = new HashMap<>();
+            params.put("event", "reconnecting");
+            mHandler.post(() -> mConnectionEventSink.success(params));
+        }
+    }
+
+    @Override
+    public void onReconnected() {
+        if (mConnectionEventSink != null) {
+            Map<String, String> params = new HashMap<>();
+            params.put("event", "reconnected");
+            mHandler.post(() -> mConnectionEventSink.success(params));
+        }
+    }
+
     //endregion
 
     @Override
     public void onListen(Object arguments, EventChannel.EventSink eventSink) {
         if (arguments instanceof String) {
             String type = (String) arguments;
-            if (type.equals("connection_closed")) {
-                mConnectionClosedEventSink = eventSink;
+            if (type.equals("connection_events")) {
+                mConnectionEventSink = eventSink;
             }
             if (type.equals("incoming_calls")) {
                 mIncomingCallEventSink = eventSink;
@@ -475,8 +493,8 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
     public void onCancel(Object arguments) {
         if (arguments instanceof String) {
             String type = (String) arguments;
-            if (type.equals("connection_closed")) {
-                mConnectionClosedEventSink = null;
+            if (type.equals("connection_events")) {
+                mConnectionEventSink = null;
             }
             if (type.equals("incoming_calls")) {
                 mIncomingCallEventSink = null;

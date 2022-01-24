@@ -119,4 +119,7 @@ enum VIClientState {
 
   /// The client is currently logged in.
   LoggedIn,
+
+  /// The client is currently reconnecting.
+  Reconnecting,
 }
