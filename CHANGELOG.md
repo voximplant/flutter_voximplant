@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.2.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.29.1
+  and Voximplant iOS SDK 2.46.1
+* Introduce new APIs to restore the connection to the Voximplant Cloud if it was closed due to network issues during a call:
+  * VIClientState.Reconnecting - client state representing that the client is reconnecting to the Voximplant Cloud
+  * VICall.onCallReconnecting - notifies that the SDK is reconnecting to the Voximplant Cloud and 
+    media streams may not be active
+  * VICall.onCallReconnected - notifies that the SDK is successfully reconnected to the Voximplant Cloud and
+    media streams are restored
+  * VICallError.ERROR_RECONNECTING - call error that informs that a call operation cannot be completed 
+    while a call is reconnecting
+
 ## 3.1.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.28.0
   and Voximplant iOS SDK 2.45.0
