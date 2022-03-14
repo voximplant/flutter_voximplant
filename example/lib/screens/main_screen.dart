@@ -40,13 +40,11 @@ class MainScreen extends StatelessWidget {
 
   Future<void> _makeAudioCall(BuildContext context, String number) async {
     if (Platform.isAndroid) {
-      PermissionStatus permission = await PermissionHandler()
-          .checkPermissionStatus(PermissionGroup.microphone);
+      PermissionStatus permission = await Permission.microphone.status;
       if (permission != PermissionStatus.granted) {
-        Map<PermissionGroup, PermissionStatus> result =
-            await PermissionHandler()
-                .requestPermissions([PermissionGroup.microphone]);
-        if (result[PermissionGroup.microphone] != PermissionStatus.granted) {
+        Map<Permission, PermissionStatus> result =
+            await ([Permission.microphone]).request();
+        if (result[Permission.microphone] != PermissionStatus.granted) {
           return;
         }
       }
