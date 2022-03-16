@@ -24,6 +24,7 @@ class LoginScreenState extends State<LoginScreen> {
     _authService.getUsername().then((value) {
       _loginController.text = value;
     });
+    _loginWithToken();
   }
 
   @override
@@ -31,6 +32,17 @@ class LoginScreenState extends State<LoginScreen> {
     _loginController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loginWithToken() async {
+    print('LoginScreen: login with accessToken');
+    try {
+      String displayName = await _authService.loginWithAccessToken();
+      print('LoginScreen: login with accessToken: displayName: $displayName');
+      Navigator.pushReplacementNamed(context, MainScreen.routeName);
+    } catch (e) {
+      _showAlertDialog(e.message);
+    }
   }
 
   Future<void> _loginWithPassword(String user, String password) async {

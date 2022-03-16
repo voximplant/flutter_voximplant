@@ -29,13 +29,8 @@ class AuthService {
 
   Future<String> loginWithPassword(String username, String password) async {
     print('AuthService: loginWithPassword');
-    VIClientState clientState = await _client.getClientState();
-    if (clientState == VIClientState.LoggedIn) {
-      return _displayName;
-    }
-    if (clientState == VIClientState.Disconnected) {
-      await _client.connect();
-    }
+    await _client.disconnect();
+    await _client.connect();
     VIAuthResult authResult = await _client.login(username, password);
     await _saveAuthDetails(username, authResult.loginTokens);
     _displayName = authResult.displayName;
@@ -44,13 +39,8 @@ class AuthService {
 
   Future<String> loginWithAccessToken([String username]) async {
     print('AuthService: loginWithAccessToken');
-    VIClientState clientState = await _client.getClientState();
-    if (clientState == VIClientState.LoggedIn) {
-      return _displayName;
-    }
-    if (clientState == VIClientState.Disconnected) {
-      await _client.connect();
-    }
+    await _client.disconnect();
+    await _client.connect();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     VILoginTokens loginTokens = _getAuthDetails(prefs);
     String user = username ?? prefs.getString('username');
