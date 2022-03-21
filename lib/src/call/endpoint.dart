@@ -44,6 +44,20 @@ typedef void VIRemoteVideoStreamRemoved(
   VIVideoStream videoStream,
 );
 
+/// Signature for callbacks reporting when a voice activity of the endpoint is
+/// detected in a conference call.
+///
+/// Used in [VIEndpoint].
+/// `endpoint` - VIEndpoint instance initiated the event
+typedef void VIVoiceActivityStarted(VIEndpoint endpoint);
+
+/// Signature for callbacks reporting when a voice activity of the endpoint is
+/// stopped in a conference call.
+///
+/// Used in [VIEndpoint].
+/// `endpoint` - VIEndpoint instance initiated the event
+typedef void VIVoiceActivityStopped(VIEndpoint endpoint);
+
 /// Represents a remote call participant.
 class VIEndpoint {
   /// Callback for getting notified when the endpoint information is updated.
@@ -60,6 +74,14 @@ class VIEndpoint {
   /// Callback for getting notified when the endpoint removed the video stream
   /// from the call.
   VIRemoteVideoStreamRemoved? onRemoteVideoStreamRemoved;
+
+  /// Callback for getting notified when a voice activity is detected
+  /// in a conference call.
+  VIVoiceActivityStarted? onVoiceActivityStarted;
+
+  /// Callback for getting notified when a voice activity is stopped
+  /// in a conference call.
+  VIVoiceActivityStopped? onVoiceActivityStopped;
 
   String? _userName;
   String? _displayName;
@@ -130,5 +152,13 @@ class VIEndpoint {
       onRemoteVideoStreamRemoved?.call(this, remoteVideoStream);
       _remoteVideoStreams.remove(remoteVideoStream);
     }
+  }
+
+  _voiceActivityStarted() {
+    onVoiceActivityStarted?.call(this);
+  }
+
+  _voiceActivityStopped() {
+    onVoiceActivityStopped?.call(this);
   }
 }

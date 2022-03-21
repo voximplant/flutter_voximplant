@@ -90,12 +90,12 @@
     NSDictionary *headers = [arguments objectForKey:@"extraHeaders"] != [NSNull null] ? [arguments objectForKey:@"extraHeaders"] : nil;
     NSNumber *sendVideo = [arguments objectForKey:@"sendVideo"] != [NSNull null] ? [arguments objectForKey:@"sendVideo"] : @(NO);
     NSNumber *receiveVideo = [arguments objectForKey:@"receiveVideo"] != [NSNull null] ? [arguments objectForKey:@"receiveVideo"] : @(NO);
-    //TODO(yulia): add preferrable codec
+    NSString *videoCodec = [arguments objectForKey:@"videoCodec"] != [NSNull null] ? [arguments objectForKey:@"videoCodec"] : nil;
     VICallSettings *callSettings = [[VICallSettings alloc] init];
     callSettings.customData = customData;
     callSettings.extraHeaders = headers;
     callSettings.videoFlags = [VIVideoFlags videoFlagsWithReceiveVideo:receiveVideo.boolValue sendVideo:sendVideo.boolValue];
-    
+    callSettings.preferredVideoCodec = [VoximplantUtils convertCodecFromString:videoCodec];
     [self.call answerWithSettings:callSettings];
     result(nil);
 }
@@ -481,6 +481,20 @@
     [self sendEvent:@{
         @"event"      : @"endpointRemoved",
         @"endpointId" : endpoint.endpointId,
+    }];
+}
+
+- (void)didDetectVoiceActivityStart:(VIEndpoint *)endpoint {
+    [self sendEvent:@{
+        @"event"               : @"endpointVoiceActivityStarted",
+        @"endpointId"          : endpoint.endpointId
+    }];
+}
+
+- (void)didDetectVoiceActivityStop:(VIEndpoint *)endpoint {
+    [self sendEvent:@{
+        @"event"               : @"endpointVoiceActivityStopped",
+        @"endpointId"          : endpoint.endpointId
     }];
 }
 

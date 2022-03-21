@@ -3,7 +3,16 @@
 part of voximplant;
 
 /// Represents supported video codecs.
-enum VIVideoCodec { AUTO, H264, VP8 }
+enum VIVideoCodec {
+  /// VP8 video codec
+  VP8,
+
+  /// H264 video codec
+  H264,
+
+  /// Video codec for call will be chosen automatically
+  AUTO,
+}
 
 /// Specifies video direction for a call.
 class VIVideoFlags {
@@ -44,6 +53,9 @@ class VICallSettings {
   ///
   /// Names must begin with "X-" to be processed by SDK.
   Map<String, String>? extraHeaders;
+
+  /// Specify if simulcast feature should be enabled in the conference call.
+  bool? enableSimulcast;
 }
 
 /// Signature for callbacks reporting that the call is connected.
@@ -717,6 +729,28 @@ class VICall {
         break;
       case 'callReconnected':
         onCallReconnected?.call(this);
+        break;
+      case 'endpointVoiceActivityStarted':
+        String endpointId = map['endpointId'];
+        VIEndpoint? endpoint;
+        for (VIEndpoint callEndpoint in _endpoints) {
+          if (callEndpoint.endpointId == endpointId) {
+            endpoint = callEndpoint;
+            break;
+          }
+        }
+        endpoint?._voiceActivityStarted();
+        break;
+      case 'endpointVoiceActivityStopped':
+        String endpointId = map['endpointId'];
+        VIEndpoint? endpoint;
+        for (VIEndpoint callEndpoint in _endpoints) {
+          if (callEndpoint.endpointId == endpointId) {
+            endpoint = callEndpoint;
+            break;
+          }
+        }
+        endpoint?._voiceActivityStopped();
         break;
     }
   }

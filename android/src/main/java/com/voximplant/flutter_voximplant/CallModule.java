@@ -553,6 +553,21 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         sendCallEvent(event);
     }
 
+    @Override
+    public void onVoiceActivityStarted(IEndpoint endpoint) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "endpointVoiceActivityStarted");
+        event.put("endpointId", endpoint.getEndpointId());
+        sendCallEvent(event);
+    }
+
+    @Override
+    public void onVoiceActivityStopped(IEndpoint endpoint) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "endpointVoiceActivityStopped");
+        event.put("endpointId", endpoint.getEndpointId());
+        sendCallEvent(event);
+    }
 
     private void sendCallEvent(Map<String, Object> event) {
         if (mEventSink != null) {
