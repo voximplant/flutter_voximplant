@@ -68,6 +68,12 @@
         [self removeVideoRenderer:call.arguments result:result];
     } else if ([@"getCallDuration" isEqualToString:call.method]) {
         [self getCallDuration:call.arguments result:result];
+    } else if ([@"startReceivingRemoteVideoStream" isEqualToString:call.method]) {
+        [self startReceiving:call.arguments result:result];
+    } else if ([@"stopReceivingRemoteVideoStream" isEqualToString:call.method]) {
+        [self stopReceiving:call.arguments result:result];
+    } else if ([@"requestVideoSizeRemoteVideoStream" isEqualToString:call.method]) {
+        [self requestVideoSize:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -319,6 +325,53 @@
         endpoint.delegate = nil;
     }
     [self.call removeDelegate:self];
+}
+
+- (void)startReceiving:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSString *streamId = [arguments objectForKey:@"streamId"];
+    VIRemoteVideoStream *videoStream = [self.remoteVideoStreams objectForKey:streamId];
+    if (videoStream) {
+        [videoStream startReceivingWithCompletion:^(NSError * _Nullable error) {
+            if (error) {
+                result([FlutterError errorWithCode:[VoximplantUtils convertCallErrorToString:error.code]
+                                           message:[error.userInfo objectForKey:@"reason"]
+                                           details:nil]);
+            } else {
+                result(nil);
+            }
+        }];
+    }
+}
+
+- (void)stopReceiving:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSString *streamId = [arguments objectForKey:@"streamId"];
+    VIRemoteVideoStream *videoStream = [self.remoteVideoStreams objectForKey:streamId];
+    if (videoStream) {
+        [videoStream stopReceivingWithCompletion:^(NSError * _Nullable error) {
+            if (error) {
+                result([FlutterError errorWithCode:[VoximplantUtils convertCallErrorToString:error.code]
+                                           message:[error.userInfo objectForKey:@"reason"]
+                                           details:nil]);
+            } else {
+                result(nil);
+            }
+        }];
+    }
+}
+
+- (void)requestVideoSize:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSString *streamId = [arguments objectForKey:@"streamId"];
+    NSUInteger integerWidth = [[arguments objectForKey:@"width"] unsignedIntegerValue];
+    NSUInteger integerHeight = [[arguments objectForKey:@"height"] unsignedIntegerValue];
+    VIRemoteVideoStream *videoStream = [self.remoteVideoStreams objectForKey:streamId];
+    if (videoStream) {
+        [videoStream requestVideoSizeWithWidth:integerWidth height:integerHeight];
+        result(nil);
+    } else {
+        result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
+                                   message:@"Failed to find remote video stream by provided video stream id"
+                                   details:nil]);
+    }
 }
 
 #pragma mark - VICallDelegate

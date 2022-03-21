@@ -89,6 +89,7 @@ class VIEndpoint {
   final String _endpointId;
   int? _place;
   List<VIVideoStream> _remoteVideoStreams = [];
+  late MethodChannel _channel;
 
   /// This endpoint's user name.
   String? get userName => _userName;
@@ -117,6 +118,87 @@ class VIEndpoint {
     this._sipUri,
     this._place,
   );
+
+  /// Starts receiving video on the video stream.
+  ///
+  /// Valid only for conferences.
+  ///
+  /// `streamId` - Remote video stream id
+  ///
+  /// Throws [VIException], if an error occurred.
+  ///
+  /// Errors:
+  /// * [VICallError.ERROR_REJECTED] - If the operation is rejected.
+  /// * [VICallError.ERROR_TIMEOUT] - If the operation is not completed in time.
+  /// * [VICallError.ERROR_MEDIA_IS_ON_HOLD] - If the call is currently on hold.
+  /// * [VICallError.ERROR_ALREADY_IN_THIS_STATE] - If the call is already in
+  ///   the requested state.
+  /// * [VICallError.ERROR_INCORRECT_OPERATION] - If the call is not connected.
+  /// * [VICallError.ERROR_INTERNAL] - If an internal error occurred.
+  Future<void> startReceiving(String streamId) async {
+    try {
+      await _channel.invokeMethod<void>('Call.startReceivingRemoteVideoStream',
+          <String, dynamic>{'streamId': streamId});
+    } on PlatformException catch (e) {
+      throw VIException(e.code, e.message);
+    }
+  }
+
+  /// Stops receiving video on the video stream.
+  ///
+  /// Valid only for conferences.
+  ///
+  /// `streamId` - Remote video stream id
+  ///
+  /// Throws [VIException], if an error occurred.
+  ///
+  /// Errors:
+  /// * [VICallError.ERROR_REJECTED] - If the operation is rejected.
+  /// * [VICallError.ERROR_TIMEOUT] - If the operation is not completed in time.
+  /// * [VICallError.ERROR_MEDIA_IS_ON_HOLD] - If the call is currently on hold.
+  /// * [VICallError.ERROR_ALREADY_IN_THIS_STATE] - If the call is already in
+  ///   the requested state.
+  /// * [VICallError.ERROR_INCORRECT_OPERATION] - If the call is not connected.
+  /// * [VICallError.ERROR_INTERNAL] - If an internal error occurred.
+  Future<void> stopReceiving(String streamId) async {
+    try {
+      await _channel.invokeMethod<void>('Call.stopReceivingRemoteVideoStream',
+          <String, dynamic>{'streamId': streamId});
+    } on PlatformException catch (e) {
+      throw VIException(e.code, e.message);
+    }
+  }
+
+  /// Requests the specified video size for the video stream.
+  ///
+  /// The stream resolution may be changed to the closest
+  /// to the specified width and height.
+  ///
+  /// Valid only for conferences.
+  ///
+  /// `streamId` - Remote video stream id
+  ///
+  /// `width` - Requested width of the video stream
+  ///
+  /// `height` - Requested height of the video stream
+  ///
+  /// Throws [VIException], if an error occurred.
+  ///
+  /// Errors:
+  /// * [VICallError.ERROR_INVALID_ARGUMENTS] - If failed to find remote video
+  /// stream by provided video stream id
+  Future<void> requestVideoSize(String streamId, int width, int height) async {
+    try {
+      await _channel.invokeMethod<void>(
+          'Call.requestVideoSizeRemoteVideoStream', <String, dynamic>{
+        'streamId': streamId,
+        'width': width,
+        'height': height
+      });
+    } on PlatformException catch (e) {
+      throw VIException(e.code, e.message);
+    }
+  }
 
   _invokeEndpointUpdatedEvent(
     String? username,

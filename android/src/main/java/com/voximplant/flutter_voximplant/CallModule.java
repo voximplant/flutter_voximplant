@@ -95,6 +95,15 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
             case "getCallDuration":
                 getCallDuration(call, result);
                 break;
+            case "startReceivingRemoteVideoStream":
+                startReceiving(call, result);
+                break;
+            case "stopReceivingRemoteVideoStream":
+                stopReceiving(call, result);
+                break;
+            case "requestVideoSizeRemoteVideoStream":
+                requestVideoSize(call, result);
+                break;
             default:
                 result.notImplemented();
                 break;
@@ -333,6 +342,55 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
                 entry.getValue().removeVideoRenderer(renderer.getRenderer());
                 renderer.release();
             }
+        }
+    }
+
+    private void startReceiving(MethodCall call, MethodChannel.Result result) {
+        String streamId = call.argument("streamId");
+        IRemoteVideoStream videoStream = mRemoteVideoStreams.get(streamId);
+        if (videoStream != null) {
+            videoStream.startReceiving(new ICallCompletionHandler() {
+                @Override
+                public void onComplete() {
+                    mHandler.post(() -> result.success(null));
+                }
+
+                @Override
+                public void onFailure(CallException exception) {
+                    mHandler.post(() -> result.error(exception.getErrorCode().toString(), exception.getMessage(), null));
+                }
+            });
+        }
+    }
+
+    private void stopReceiving(MethodCall call, MethodChannel.Result result) {
+        String streamId = call.argument("streamId");
+        IRemoteVideoStream videoStream = mRemoteVideoStreams.get(streamId);
+        if (videoStream != null) {
+            videoStream.stopReceiving(new ICallCompletionHandler() {
+                @Override
+                public void onComplete() {
+                    mHandler.post(() -> result.success(null));
+                }
+
+                @Override
+                public void onFailure(CallException exception) {
+                    mHandler.post(() -> result.error(exception.getErrorCode().toString(), exception.getMessage(), null));
+                }
+            });
+        }
+    }
+
+    private void requestVideoSize(MethodCall call, MethodChannel.Result result) {
+        String streamId = call.argument("streamId");
+        Integer width = call.argument("width");
+        Integer height = call.argument("height");
+        IRemoteVideoStream videoStream = mRemoteVideoStreams.get(streamId);
+        if (videoStream != null) {
+           videoStream.requestVideoSize(width, height);
+            mHandler.post(() -> result.success(null));
+        } else {
+            mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS, "Failed to find remote video stream by provided video stream id", null));
         }
     }
 

@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.3.0
+* Update native Android and iOS modules to use Voximplant Android SDK 2.31.0 and Voximplant iOS SDK 2.46.3
+* Introduce simulcast feature support for video conference. Simulcast is currently disabled by default, 
+  but can be enabled via [VICallSettings.enableSimulcast](link)parameter.
+* Introduce new APIs to control remote video streams in a video conference call:
+  * [VIEndpoint.startReceiving](link) - Starts receiving video on the video stream.
+  * [VIEndpoint.stopReceiving](link) - Stops receiving video on the video stream.
+  * [VIEndpoint.requestVideoSize](link) - Requests the specified video size for the video stream.
+    The stream resolution may be changed to the closest to the specified width and height.
+* Introduced [VIEndpoint.onVoiceActivityStarted](link) and [VIEndpoint.onVoiceActivityStopped](link) API to handle voice activity of an endpoint in a conference call.
+
 ## 3.2.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.29.1
   and Voximplant iOS SDK 2.46.1
