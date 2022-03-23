@@ -89,7 +89,7 @@ class VIEndpoint {
   final String _endpointId;
   int? _place;
   List<VIVideoStream> _remoteVideoStreams = [];
-  late MethodChannel _channel;
+  final MethodChannel _channel = Voximplant._channel;
 
   /// This endpoint's user name.
   String? get userName => _userName;
@@ -128,16 +128,15 @@ class VIEndpoint {
   /// Throws [VIException], if an error occurred.
   ///
   /// Errors:
-  /// * [VICallError.ERROR_REJECTED] - If the operation is rejected.
   /// * [VICallError.ERROR_TIMEOUT] - If the operation is not completed in time.
-  /// * [VICallError.ERROR_MEDIA_IS_ON_HOLD] - If the call is currently on hold.
   /// * [VICallError.ERROR_ALREADY_IN_THIS_STATE] - If the call is already in
   ///   the requested state.
   /// * [VICallError.ERROR_INCORRECT_OPERATION] - If the call is not connected.
   /// * [VICallError.ERROR_INTERNAL] - If an internal error occurred.
   Future<void> startReceiving(String streamId) async {
     try {
-      await _channel.invokeMethod<void>('Call.startReceivingRemoteVideoStream',
+      await _channel.invokeMethod<void>(
+          'VideoStream.startReceivingRemoteVideoStream',
           <String, dynamic>{'streamId': streamId});
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -153,16 +152,15 @@ class VIEndpoint {
   /// Throws [VIException], if an error occurred.
   ///
   /// Errors:
-  /// * [VICallError.ERROR_REJECTED] - If the operation is rejected.
   /// * [VICallError.ERROR_TIMEOUT] - If the operation is not completed in time.
-  /// * [VICallError.ERROR_MEDIA_IS_ON_HOLD] - If the call is currently on hold.
   /// * [VICallError.ERROR_ALREADY_IN_THIS_STATE] - If the call is already in
   ///   the requested state.
   /// * [VICallError.ERROR_INCORRECT_OPERATION] - If the call is not connected.
   /// * [VICallError.ERROR_INTERNAL] - If an internal error occurred.
   Future<void> stopReceiving(String streamId) async {
     try {
-      await _channel.invokeMethod<void>('Call.stopReceivingRemoteVideoStream',
+      await _channel.invokeMethod<void>(
+          'VideoStream.stopReceivingRemoteVideoStream',
           <String, dynamic>{'streamId': streamId});
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
@@ -190,7 +188,7 @@ class VIEndpoint {
   Future<void> requestVideoSize(String streamId, int width, int height) async {
     try {
       await _channel.invokeMethod<void>(
-          'Call.requestVideoSizeRemoteVideoStream', <String, dynamic>{
+          'VideoStream.requestVideoSizeRemoteVideoStream', <String, dynamic>{
         'streamId': streamId,
         'width': width,
         'height': height
