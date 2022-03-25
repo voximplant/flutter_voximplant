@@ -441,7 +441,8 @@ class VIClient {
         'videoCodec': settings.preferredVideoCodec.toString(),
         'customData': settings.customData,
         'extraHeaders': settings.extraHeaders,
-        'conference': true
+        'conference': true,
+        'enableSimulcast': settings.enableSimulcast,
       });
       if (data == null) {
         _VILog._e('VIClient: conference: data was null, skipping');

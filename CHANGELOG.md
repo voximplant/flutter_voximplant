@@ -1,16 +1,23 @@
 # Changelog
 
 ## 3.2.0
-* Update Android and iOS platform code to use Voximplant Android SDK 2.29.1
-  and Voximplant iOS SDK 2.46.1
+* Update Android and iOS platform code to use Voximplant Android SDK 2.32.1 and Voximplant iOS SDK 2.46.4
 * Introduce new APIs to restore the connection to the Voximplant Cloud if it was closed due to network issues during a call:
-  * VIClientState.Reconnecting - client state representing that the client is reconnecting to the Voximplant Cloud
-  * VICall.onCallReconnecting - notifies that the SDK is reconnecting to the Voximplant Cloud and 
+  * [VIClientState.Reconnecting](/docs/references/fluttersdk/client/viclientstate#reconnecting) - client state representing that the client is reconnecting to the Voximplant Cloud
+  * [VICall.onCallReconnecting](/docs/references/fluttersdk/call/vicallreconnecting#vicallreconnecting) - notifies that the SDK is reconnecting to the Voximplant Cloud and 
     media streams may not be active
-  * VICall.onCallReconnected - notifies that the SDK is successfully reconnected to the Voximplant Cloud and
+  * [VICall.onCallReconnected](/docs/references/fluttersdk/call/vicallreconnected#vicallreconnected) - notifies that the SDK is successfully reconnected to the Voximplant Cloud and
     media streams are restored
-  * VICallError.ERROR_RECONNECTING - call error that informs that a call operation cannot be completed 
+  * [VICallError.ERROR_RECONNECTING](/docs/references/fluttersdk/vicallerror#error_reconnecting) - call error that informs that a call operation cannot be completed 
     while a call is reconnecting
+* Introduce simulcast feature support for video conference. Simulcast is currently disabled by default, 
+  but can be enabled via [VICallSettings.enableSimulcast](link) parameter.
+* Introduce new APIs to control remote video streams in a video conference call:
+  * [VIEndpoint.startReceiving](link) - Starts receiving video on the video stream.
+  * [VIEndpoint.stopReceiving](link) - Stops receiving video on the video stream.
+  * [VIEndpoint.requestVideoSize](link) - Requests the specified video size for the video stream.
+    The stream resolution may be changed to the closest to the specified width and height.
+* Introduced [VIEndpoint.onVoiceActivityStarted](link) and [VIEndpoint.onVoiceActivityStopped](link) API to handle voice activity of an endpoint in a conference call.
 
 ## 3.1.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.28.0

@@ -44,6 +44,20 @@ typedef void VIRemoteVideoStreamRemoved(
   VIVideoStream videoStream,
 );
 
+/// Signature for callbacks reporting when a voice activity of the endpoint is
+/// detected in a conference call.
+///
+/// Used in [VIEndpoint].
+/// `endpoint` - VIEndpoint instance initiated the event
+typedef void VIVoiceActivityStarted(VIEndpoint endpoint);
+
+/// Signature for callbacks reporting when a voice activity of the endpoint is
+/// stopped in a conference call.
+///
+/// Used in [VIEndpoint].
+/// `endpoint` - VIEndpoint instance initiated the event
+typedef void VIVoiceActivityStopped(VIEndpoint endpoint);
+
 /// Represents a remote call participant.
 class VIEndpoint {
   /// Callback for getting notified when the endpoint information is updated.
@@ -61,12 +75,21 @@ class VIEndpoint {
   /// from the call.
   VIRemoteVideoStreamRemoved? onRemoteVideoStreamRemoved;
 
+  /// Callback for getting notified when a voice activity is detected
+  /// in a conference call.
+  VIVoiceActivityStarted? onVoiceActivityStarted;
+
+  /// Callback for getting notified when a voice activity is stopped
+  /// in a conference call.
+  VIVoiceActivityStopped? onVoiceActivityStopped;
+
   String? _userName;
   String? _displayName;
   String? _sipUri;
   final String _endpointId;
   int? _place;
   List<VIVideoStream> _remoteVideoStreams = [];
+  final MethodChannel _channel = Voximplant._channel;
 
   /// This endpoint's user name.
   String? get userName => _userName;
@@ -95,6 +118,85 @@ class VIEndpoint {
     this._sipUri,
     this._place,
   );
+
+  /// Starts receiving video on the video stream.
+  ///
+  /// Valid only for conferences.
+  ///
+  /// `streamId` - Remote video stream id
+  ///
+  /// Throws [VIException], if an error occurred.
+  ///
+  /// Errors:
+  /// * [VICallError.ERROR_TIMEOUT] - If the operation is not completed in time.
+  /// * [VICallError.ERROR_ALREADY_IN_THIS_STATE] - If the call is already in
+  ///   the requested state.
+  /// * [VICallError.ERROR_INCORRECT_OPERATION] - If the call is not connected.
+  /// * [VICallError.ERROR_INTERNAL] - If an internal error occurred.
+  Future<void> startReceiving(String streamId) async {
+    try {
+      await _channel.invokeMethod<void>(
+          'VideoStream.startReceivingRemoteVideoStream',
+          <String, dynamic>{'streamId': streamId});
+    } on PlatformException catch (e) {
+      throw VIException(e.code, e.message);
+    }
+  }
+
+  /// Stops receiving video on the video stream.
+  ///
+  /// Valid only for conferences.
+  ///
+  /// `streamId` - Remote video stream id
+  ///
+  /// Throws [VIException], if an error occurred.
+  ///
+  /// Errors:
+  /// * [VICallError.ERROR_TIMEOUT] - If the operation is not completed in time.
+  /// * [VICallError.ERROR_ALREADY_IN_THIS_STATE] - If the call is already in
+  ///   the requested state.
+  /// * [VICallError.ERROR_INCORRECT_OPERATION] - If the call is not connected.
+  /// * [VICallError.ERROR_INTERNAL] - If an internal error occurred.
+  Future<void> stopReceiving(String streamId) async {
+    try {
+      await _channel.invokeMethod<void>(
+          'VideoStream.stopReceivingRemoteVideoStream',
+          <String, dynamic>{'streamId': streamId});
+    } on PlatformException catch (e) {
+      throw VIException(e.code, e.message);
+    }
+  }
+
+  /// Requests the specified video size for the video stream.
+  ///
+  /// The stream resolution may be changed to the closest
+  /// to the specified width and height.
+  ///
+  /// Valid only for conferences.
+  ///
+  /// `streamId` - Remote video stream id
+  ///
+  /// `width` - Requested width of the video stream
+  ///
+  /// `height` - Requested height of the video stream
+  ///
+  /// Throws [VIException], if an error occurred.
+  ///
+  /// Errors:
+  /// * [VICallError.ERROR_INVALID_ARGUMENTS] - If failed to find remote video
+  /// stream by provided video stream id
+  Future<void> requestVideoSize(String streamId, int width, int height) async {
+    try {
+      await _channel.invokeMethod<void>(
+          'VideoStream.requestVideoSizeRemoteVideoStream', <String, dynamic>{
+        'streamId': streamId,
+        'width': width,
+        'height': height
+      });
+    } on PlatformException catch (e) {
+      throw VIException(e.code, e.message);
+    }
+  }
 
   _invokeEndpointUpdatedEvent(
     String? username,
@@ -130,5 +232,13 @@ class VIEndpoint {
       onRemoteVideoStreamRemoved?.call(this, remoteVideoStream);
       _remoteVideoStreams.remove(remoteVideoStream);
     }
+  }
+
+  _voiceActivityStarted() {
+    onVoiceActivityStarted?.call(this);
+  }
+
+  _voiceActivityStopped() {
+    onVoiceActivityStopped?.call(this);
   }
 }

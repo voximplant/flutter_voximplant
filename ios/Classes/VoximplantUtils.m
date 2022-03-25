@@ -234,6 +234,16 @@
     return [cameraType intValue] == 0;
 }
 
++ (VIVideoCodec)convertCodecFromString:(NSString *)codec {
+    if ([codec isEqualToString:@"VP8"]) {
+        return VIVideoCodecVP8;
+    } else if ([codec isEqualToString:@"H264"]) {
+        return VIVideoCodecH264;
+    } else {
+        return VIVideoCodecAuto;
+    }
+}
+
 @end
 
 
