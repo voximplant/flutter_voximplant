@@ -1,10 +1,7 @@
 # Changelog
 
-## 3.3.1
-* Update native Android and iOS modules to use Voximplant Android SDK 2.32.1 and Voximplant iOS SDK 2.46.4
-
 ## 3.3.0
-* Update native Android and iOS modules to use Voximplant Android SDK 2.31.0 and Voximplant iOS SDK 2.46.3
+* Update native Android and iOS modules to use Voximplant Android SDK 2.32.1 and Voximplant iOS SDK 2.46.4
 * Introduce simulcast feature support for video conference. Simulcast is currently disabled by default, 
   but can be enabled via [VICallSettings.enableSimulcast](link)parameter.
 * Introduce new APIs to control remote video streams in a video conference call:
