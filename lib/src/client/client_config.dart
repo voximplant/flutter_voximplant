@@ -62,7 +62,7 @@ class VIClientConfig {
   VILogLevel logLevel;
 
   /// Force traffic to go through TURN servers
-  bool? forceRelayTraffic;
+  bool forceRelayTraffic;
 
   VIClientConfig({
     this.bundleId,
