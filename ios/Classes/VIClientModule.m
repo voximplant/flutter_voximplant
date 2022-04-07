@@ -99,7 +99,9 @@
 
     NSString *bundleId = [arguments objectForKey:@"bundleId"];
     if (bundleId == (id)[NSNull null]) bundleId = nil;
+    BOOL forceRelayTraffic = [arguments objectForKey:@"forceRelayTraffic"];
     self.client = [[VIClient alloc] initWithDelegateQueue:dispatch_get_main_queue() bundleId:bundleId];
+    self.client.enableForceRelayTraffic = forceRelayTraffic;
     self.client.sessionDelegate = self;
     self.client.callManagerDelegate = self;
 }

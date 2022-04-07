@@ -61,12 +61,16 @@ class VIClientConfig {
   /// Specifies log level on iOS.
   VILogLevel logLevel;
 
+  /// Force traffic to go through TURN servers
+  bool? forceRelayTraffic;
+
   VIClientConfig({
     this.bundleId,
     this.enableDebugLogging = false,
     this.enableLogcatLogging = true,
     this.audioFocusMode = VIRequestAudioFocusMode.onCallStart,
     this.logLevel = VILogLevel.info,
+    this.forceRelayTraffic = false,
   });
 }
 

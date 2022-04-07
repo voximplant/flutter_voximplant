@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.32.3 and Voximplant iOS SDK 2.46.7
+* Introduce force traffic to go through TURN servers feature. Property is currently disabled by default.
+
 ## 3.2.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.32.1 and Voximplant iOS SDK 2.46.4
 * Introduce new APIs to restore the connection to the Voximplant Cloud if it was closed due to network issues during a call:

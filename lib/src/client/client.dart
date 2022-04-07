@@ -69,10 +69,12 @@ class VIClient {
       platformConfig['enableDebugLogging'] = clientConfig.enableDebugLogging;
       platformConfig['enableLogcatLogging'] = clientConfig.enableLogcatLogging;
       platformConfig['audioFocusMode'] = clientConfig.audioFocusMode.index;
+      platformConfig['forceRelayTraffic'] = clientConfig.forceRelayTraffic;
     }
     if (Platform.isIOS) {
       platformConfig['bundleId'] = clientConfig.bundleId;
       platformConfig['logLevel'] = clientConfig.logLevel.index;
+      platformConfig['forceRelayTraffic'] = clientConfig.forceRelayTraffic;
     }
     _channel.invokeMethod("Client.initClient", platformConfig);
 
