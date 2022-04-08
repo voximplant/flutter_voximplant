@@ -146,6 +146,10 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
                 clientConfig.requestAudioFocusMode = (value == 0 ? RequestAudioFocusMode.REQUEST_ON_CALL_START : RequestAudioFocusMode.REQUEST_ON_CALL_CONNECTED);
             }
         }
+        if (call.hasArgument("forceRelayTraffic")) {
+            Boolean value = call.argument("forceRelayTraffic");
+            clientConfig.forceRelayTraffic = value;
+        }
         mClient = Voximplant.getClientInstance(Executors.newSingleThreadExecutor(), mContext, clientConfig);
         mClient.setClientSessionListener(this);
         mClient.setClientLoginListener(this);
