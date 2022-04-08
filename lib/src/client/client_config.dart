@@ -61,7 +61,7 @@ class VIClientConfig {
   /// Specifies log level on iOS.
   VILogLevel logLevel;
 
-  /// Force traffic to go through TURN servers
+  /// Force traffic to go through TURN servers. False by default.
   bool forceRelayTraffic;
 
   VIClientConfig({
