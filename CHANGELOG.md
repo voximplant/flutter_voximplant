@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.4.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.32.4 and Voximplant iOS SDK 2.46.8
+
 ## 3.3.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.32.3 and Voximplant iOS SDK 2.46.7
 * Introduce [VIClientConfig.forceRelayTraffic](/docs/references/fluttersdk/client/viclientconfig#forcerelaytraffic) API to force the media to go through TURN servers.
