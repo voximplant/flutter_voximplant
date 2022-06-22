@@ -566,6 +566,10 @@ class VICall {
     }
   }
 
+  VIQualityIssue subscribeToQualityIssues() {
+    return VIQualityIssue._(this._callId);
+  }
+
   void _eventListener(dynamic event) {
     final Map<dynamic, dynamic> map = event;
     switch (map['event']) {

@@ -15,6 +15,7 @@ part 'src/call/call.dart';
 part 'src/call/endpoint.dart';
 part 'src/call/video_stream.dart';
 part 'src/call/video_view.dart';
+part 'src/call/quality_issue.dart';
 part 'src/hardware/audio_device_manager.dart';
 part 'src/hardware/camera_manager.dart';
 part 'src/error_codes.dart';
