@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 @class VoximplantCallManager;
 
-@interface VICallModule : NSObject <FlutterStreamHandler, VICallDelegate, VIEndpointDelegate, VIEndpointDelegate>
+@interface VICallModule : NSObject <FlutterStreamHandler, VICallDelegate, VIEndpointDelegate, VIQualityIssueDelegate>
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar
                       callManager:(VoximplantCallManager *)callManager

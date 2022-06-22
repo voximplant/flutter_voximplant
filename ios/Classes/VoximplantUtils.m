@@ -213,6 +213,21 @@
     }
 }
 
++ (int)convertQualityIssueLevelToInt:(VIQualityIssueLevel)level {
+    switch(level) {
+        case VIQualityIssueLevelNone:
+            return 0;
+        case VIQualityIssueLevelMinor:
+            return 1;
+        case VIQualityIssueLevelMajor:
+            return 2;
+        case VIQualityIssueLevelCritical:
+            return 3;
+        default:
+            return 0;
+    }
+}
+
 + (int)convertVideoRotationToInt:(RTCVideoRotation)rotation {
     switch (rotation) {
         case RTCVideoRotation_90:

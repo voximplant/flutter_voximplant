@@ -34,6 +34,7 @@
         NSString *channelName = [@"plugins.voximplant.com/call_" stringByAppendingString:self.call.callId];
         self.eventChannel = [FlutterEventChannel eventChannelWithName:channelName binaryMessenger:registrar.messenger];
         [self.eventChannel setStreamHandler:self];
+        [self.call setQualityIssueDelegate:self];
     }
     
     return self;
@@ -548,6 +549,86 @@
     [self sendEvent:@{
         @"event"               : @"endpointVoiceActivityStopped",
         @"endpointId"          : endpoint.endpointId
+    }];
+}
+
+#pragma mark - VIQualityIssueDelegate
+
+- (void)call:(VICall *)call didDetectPacketLoss:(double)packetLoss issueLevel:(VIQualityIssueLevel)level {
+    [self sendEvent:@{
+        @"event": @"VIQualityIssueTypePacketLoss",
+        @"packetLoss": @(packetLoss),
+        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+    }];
+}
+
+- (void)call:(VICall *)call didDetectCodecMismatch:(nullable NSString *)codec issueLevel:(VIQualityIssueLevel)level {
+    [self sendEvent:@{
+        @"event": @"VIQualityIssueTypeCodecMismatch",
+        @"codec": codec ? codec : [NSNull null],
+        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+    }];
+}
+
+- (void)call:(VICall *)call didDetectLocalVideoDegradation:(CGSize)actualSize targetSize:(CGSize)targetSize issueLevel:(VIQualityIssueLevel)level {
+    [self sendEvent:@{
+        @"event": @"VIQualityIssueTypeLocalVideoDegradation",
+        @"actualSize": @(actualSize),
+        @"targetSize": @(targetSize),
+        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+    }];
+}
+
+- (void)call:(VICall *)call didDetectIceDisconnected:(VIQualityIssueLevel)level {
+    [self sendEvent:@{
+        @"event": @"VIQualityIssueTypeIceDisconnected",
+        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+    }];
+}
+
+- (void)call:(VICall *)call didDetectHighMediaLatency:(NSTimeInterval)latency issueLevel:(VIQualityIssueLevel)level {
+    [self sendEvent:@{
+        @"event": @"VIQualityIssueTypeHighMediaLatency",
+        @"latency": @([[NSNumber fromTimeInterval:latency] integerValue]),
+        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+    }];
+}
+
+- (void)call:(VICall *)call didDetectLowBandwidth:(double)actualBitrate targetBitrate:(double)targetBitrate issueLevel:(VIQualityIssueLevel)level {
+    [self sendEvent:@{
+        @"event": @"VIQualityIssueTypeLowBandwidth",
+        @"actualBitrate": @(actualBitrate),
+        @"targetBitrate": @(targetBitrate),
+        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+    }];
+}
+
+- (void)call:(VICall *)call didDetectNoAudioSignal:(VIQualityIssueLevel)level {
+    [self sendEvent:@{
+        @"event": @"VIQualityIssueTypeNoAudioSignal",
+        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+    }];
+}
+
+- (void)                   call:(VICall *)call
+didDetectNoAudioReceiveOnStream:(VIRemoteAudioStream *)audioStream
+                   fromEndpoint:(VIEndpoint *)endpoint
+                     issueLevel:(VIQualityIssueLevel)level {
+    [self sendEvent:@{
+        @"event": @"VIQualityIssueTypeNoAudioReceive",
+        @"endpointId": endpoint.endpointId,
+        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+    }];
+}
+
+- (void)                   call:(VICall *)call
+didDetectNoVideoReceiveOnStream:(VIRemoteVideoStream *)videoStream
+                   fromEndpoint:(VIEndpoint *)endpoint
+                     issueLevel:(VIQualityIssueLevel)level {
+    [self sendEvent:@{
+        @"event": @"VIQualityIssueTypeNoVideoReceive",
+        @"endpointId": endpoint.endpointId,
+        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
     }];
 }
 

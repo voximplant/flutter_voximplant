@@ -18,7 +18,7 @@
 + (int)convertVideoRotationToInt:(RTCVideoRotation)rotation;
 + (BOOL)isBackCameraByCameraType:(NSNumber *)cameraType;
 + (VIVideoCodec)convertCodecFromString:(NSString *)codec;
-
++ (int)convertQualityIssueLevelToInt:(VIQualityIssueLevel)level;
 @end
 
 
