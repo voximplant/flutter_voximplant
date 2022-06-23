@@ -5,6 +5,7 @@
 package com.voximplant.flutter_voximplant;
 
 import com.voximplant.sdk.call.CallError;
+import com.voximplant.sdk.call.QualityIssueLevel;
 import com.voximplant.sdk.call.VideoCodec;
 import com.voximplant.sdk.call.VideoStreamType;
 import com.voximplant.sdk.client.LoginError;
@@ -258,6 +259,20 @@ class Utils {
             case "unknown":
             default:
                 return AudioFileUsage.UNKNOWN;
+        }
+    }
+
+    static Integer convertQualityIssueLevelToInt(QualityIssueLevel level) {
+        switch (level) {
+            case MINOR:
+                return 1;
+            case MAJOR:
+                return 2;
+            case CRITICAL:
+                return 3;
+            case NONE:
+            default:
+                return 0;
         }
     }
 }

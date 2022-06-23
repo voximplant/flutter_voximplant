@@ -8,6 +8,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.voximplant.sdk.call.CallException;
 import com.voximplant.sdk.call.CallSettings;
 import com.voximplant.sdk.call.CallStats;
@@ -17,7 +20,10 @@ import com.voximplant.sdk.call.ICallListener;
 import com.voximplant.sdk.call.IEndpoint;
 import com.voximplant.sdk.call.IEndpointListener;
 import com.voximplant.sdk.call.ILocalVideoStream;
+import com.voximplant.sdk.call.IQualityIssueListener;
+import com.voximplant.sdk.call.IRemoteAudioStream;
 import com.voximplant.sdk.call.IRemoteVideoStream;
+import com.voximplant.sdk.call.QualityIssueLevel;
 import com.voximplant.sdk.call.RejectMode;
 import com.voximplant.sdk.call.RenderScaleType;
 import com.voximplant.sdk.call.VideoFlags;
@@ -31,12 +37,14 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.view.TextureRegistry;
 
-public class CallModule implements ICallListener, IEndpointListener, EventChannel.StreamHandler {
+public class CallModule implements ICallListener, IEndpointListener, EventChannel.StreamHandler, IQualityIssueListener {
     private final String TAG_NAME = "VOXFLUTTER";
     private final CallManager mCallManager;
     private final ICall mCall;
     private EventChannel mEventChannel;
+    private EventChannel mQualityIssuesEventChannel;
     private EventChannel.EventSink mEventSink;
+    private EventChannel.EventSink mIssuesEventSink;
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private final BinaryMessenger mMessenger;
     private final TextureRegistry mTextures;
@@ -51,7 +59,9 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         mMessenger = messenger;
         mCall = call;
         mEventChannel = new EventChannel(messenger, "plugins.voximplant.com/call_" + mCall.getCallId());
+        mQualityIssuesEventChannel = new EventChannel(messenger, "plugins.voximplant.com/call_quality_issues");
         mEventChannel.setStreamHandler(this);
+        mQualityIssuesEventChannel.setStreamHandler(this);
     }
 
     void handleMethodCall(MethodCall call, MethodChannel.Result result) {
@@ -406,6 +416,10 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
                 endpoint.setEndpointListener(this);
 
             }
+            if (type.equals("plugins.voximplant.com/call_quality_issues")) {
+                mCall.setQualityIssueListener(this);
+                mIssuesEventSink = eventSink;
+            }
         }
     }
 
@@ -415,6 +429,9 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
             String type = (String) arguments;
             if (type.equals("plugins.voximplant.com/call_" + mCall.getCallId())) {
                 mEventSink = null;
+            }
+            if (type.equals("plugins.voximplant.com/call_quality_issues")) {
+                mIssuesEventSink = null;
             }
         }
     }
@@ -627,9 +644,97 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         sendCallEvent(event);
     }
 
+    @Override
+    public void onPacketLoss(@NonNull ICall call, @NonNull QualityIssueLevel level, double packetLoss) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "VIQualityIssueTypePacketLoss");
+        event.put("packetLoss", packetLoss);
+        event.put("issueLevel", Utils.convertQualityIssueLevelToInt(level));
+        sendQualityIssueEvent(event);
+    }
+
+    @Override
+    public void onCodecMismatch(@NonNull ICall call, @NonNull QualityIssueLevel level, @Nullable String sendCodec) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "VIQualityIssueTypeCodecMismatch");
+        event.put("codec", sendCodec);
+        event.put("issueLevel", Utils.convertQualityIssueLevelToInt(level));
+        sendQualityIssueEvent(event);
+    }
+
+    @Override
+    public void onLocalVideoDegradation(@NonNull ICall call, @NonNull QualityIssueLevel level, int targetWidth, int targetHeight, int actualWidth, int actualHeight) {
+        Map<String, Object> event = new HashMap<>();
+
+        Map<String, Object> actualSizeStruct = new HashMap<>();
+        actualSizeStruct.put("width", actualWidth);
+        actualSizeStruct.put("height", actualHeight);
+
+        Map<String, Object> targetSizeStruct = new HashMap<>();
+        actualSizeStruct.put("width", targetWidth);
+        actualSizeStruct.put("height", targetHeight);
+
+        event.put("event", "VIQualityIssueTypeLocalVideoDegradation");
+        event.put("actualSizeStruct", actualSizeStruct);
+        event.put("targetSizeStruct", targetSizeStruct);
+        event.put("issueLevel", Utils.convertQualityIssueLevelToInt(level));
+        sendQualityIssueEvent(event);
+    }
+
+    @Override
+    public void onIceDisconnected(@NonNull ICall call, @NonNull QualityIssueLevel level) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "VIQualityIssueTypeIceDisconnected");
+        event.put("issueLevel", Utils.convertQualityIssueLevelToInt(level));
+        sendQualityIssueEvent(event);
+    }
+
+    @Override
+    public void onHighMediaLatency(@NonNull ICall call, @NonNull QualityIssueLevel level, double latency) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "VIQualityIssueTypeHighMediaLatency");
+        event.put("latency", latency);
+        event.put("issueLevel", Utils.convertQualityIssueLevelToInt(level));
+        sendQualityIssueEvent(event);
+    }
+
+    @Override
+    public void onNoAudioSignal(@NonNull ICall call, @NonNull QualityIssueLevel level) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "VIQualityIssueTypeNoAudioSignal");
+        event.put("issueLevel", Utils.convertQualityIssueLevelToInt(level));
+        sendQualityIssueEvent(event);
+    }
+
+    @Override
+    public void onNoAudioReceive(@NonNull ICall call, @NonNull QualityIssueLevel level, @NonNull IRemoteAudioStream audioStream, @NonNull IEndpoint endpoint) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "VIQualityIssueTypeNoAudioReceive");
+        event.put("audiostreamId", audioStream.getAudioStreamId());
+        event.put("endpointId", endpoint.getEndpointId());
+        event.put("issueLevel", Utils.convertQualityIssueLevelToInt(level));
+        sendQualityIssueEvent(event);
+    }
+
+    @Override
+    public void onNoVideoReceive(@NonNull ICall call, @NonNull QualityIssueLevel level, @NonNull IRemoteVideoStream videoStream, @NonNull IEndpoint endpoint) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "VIQualityIssueTypeNoVideoReceive");
+        event.put("videostreamId", videoStream.getVideoStreamId());
+        event.put("endpointId", endpoint.getEndpointId());
+        event.put("issueLevel", Utils.convertQualityIssueLevelToInt(level));
+        sendQualityIssueEvent(event);
+    }
+
     private void sendCallEvent(Map<String, Object> event) {
         if (mEventSink != null) {
             mHandler.post(() -> mEventSink.success(event));
+        }
+    }
+
+    private void sendQualityIssueEvent(Map<String, Object> event) {
+        if (mIssuesEventSink != null) {
+            mHandler.post(() -> mIssuesEventSink.success(event));
         }
     }
 
