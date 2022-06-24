@@ -1,11 +1,23 @@
 part of voximplant;
 
-/// Represents quality issue types.
+/// Represents quality issue levels.
 enum VIQualityIssueLevel {
   VIQualityIssueLevelNone,
   VIQualityIssueLevelMinor,
   VIQualityIssueLevelMajor,
   VIQualityIssueLevelCritical,
+}
+
+/// Represents quality issue types.
+enum VIQualityIssueType {
+  VIQualityIssueTypeCodecMismatch,
+  VIQualityIssueTypeLocalVideoDegradation,
+  VIQualityIssueTypeHighMediaLatency,
+  VIQualityIssueTypeIceDisconnected,
+  VIQualityIssueTypeNoAudioSignal,
+  VIQualityIssueTypePacketLoss,
+  VIQualityIssueTypeNoAudioReceive,
+  VIQualityIssueTypeNoVideoReceive,
 }
 
 /// Represents send or captured frame size.

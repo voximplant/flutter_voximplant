@@ -23,12 +23,14 @@ import com.voximplant.sdk.call.ILocalVideoStream;
 import com.voximplant.sdk.call.IQualityIssueListener;
 import com.voximplant.sdk.call.IRemoteAudioStream;
 import com.voximplant.sdk.call.IRemoteVideoStream;
+import com.voximplant.sdk.call.QualityIssue;
 import com.voximplant.sdk.call.QualityIssueLevel;
 import com.voximplant.sdk.call.RejectMode;
 import com.voximplant.sdk.call.RenderScaleType;
 import com.voximplant.sdk.call.VideoFlags;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.flutter.plugin.common.BinaryMessenger;
@@ -37,7 +39,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.view.TextureRegistry;
 
-public class CallModule implements ICallListener, IEndpointListener, EventChannel.StreamHandler, IQualityIssueListener {
+public class CallModule implements ICallListener, IEndpointListener, IQualityIssueListener, EventChannel.StreamHandler {
     private final String TAG_NAME = "VOXFLUTTER";
     private final CallManager mCallManager;
     private final ICall mCall;
@@ -113,6 +115,9 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
                 break;
             case "requestVideoSizeRemoteVideoStream":
                 requestVideoSize(call, result);
+                break;
+            case "getCurrentQualityIssues":
+                getCurrentQualityIssues(call, result);
                 break;
             default:
                 result.notImplemented();
@@ -404,6 +409,11 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
         }
     }
 
+    private void getCurrentQualityIssues(MethodCall call, MethodChannel.Result result) {
+        Map<QualityIssue, QualityIssueLevel> issues = mCall.getCurrentQualityIssues();
+        mHandler.post(() -> result.success(Utils.convertQualityIssuesMapToHashMap(issues)));
+    }
+
     @Override
     public void onListen(Object arguments, EventChannel.EventSink eventSink) {
         if (arguments instanceof String) {
@@ -411,10 +421,11 @@ public class CallModule implements ICallListener, IEndpointListener, EventChanne
             if (type.equals("plugins.voximplant.com/call_" + mCall.getCallId())) {
                 mCall.addCallListener(this);
                 mEventSink = eventSink;
-            }
-            for (IEndpoint endpoint : mCall.getEndpoints()) {
-                endpoint.setEndpointListener(this);
 
+                for (IEndpoint endpoint : mCall.getEndpoints()) {
+                    endpoint.setEndpointListener(this);
+
+                }
             }
             if (type.equals("plugins.voximplant.com/call_quality_issues")) {
                 mCall.setQualityIssueListener(this);

@@ -5,6 +5,7 @@
 package com.voximplant.flutter_voximplant;
 
 import com.voximplant.sdk.call.CallError;
+import com.voximplant.sdk.call.QualityIssue;
 import com.voximplant.sdk.call.QualityIssueLevel;
 import com.voximplant.sdk.call.VideoCodec;
 import com.voximplant.sdk.call.VideoStreamType;
@@ -49,6 +50,9 @@ import static com.voximplant.flutter_voximplant.VoximplantErrors.Messaging.ERROR
 import static com.voximplant.flutter_voximplant.VoximplantErrors.Messaging.ERROR_USER_NOT_FOUND;
 import static com.voximplant.flutter_voximplant.VoximplantErrors.Messaging.ERROR_USER_VALIDATION;
 import static com.voximplant.flutter_voximplant.VoximplantErrors.Messaging.ERROR_WRONG_SEQUENCE_ARGUMENT;
+
+import java.util.HashMap;
+import java.util.Map;
 
 class Utils {
     static String convertLoginErrorToString(LoginError error) {
@@ -274,5 +278,35 @@ class Utils {
             default:
                 return 0;
         }
+    }
+
+    static int convertQualityIssueToInt(QualityIssue issue) {
+        switch (issue) {
+            case CODEC_MISMATCH:
+                return 0;
+            case LOCAL_VIDEO_DEGRADATION:
+                return  1;
+            case HIGH_MEDIA_LATENCY:
+                return 2;
+            case NO_AUDIO_SIGNAL:
+                return 4;
+            case PACKET_LOSS:
+                return 5;
+            case NO_AUDIO_RECEIVE:
+                return 6;
+            case NO_VIDEO_RECEIVE:
+                return 7;
+            case ICE_DISCONNECTED:
+            default:
+                return 3;
+        }
+    }
+
+    static Map<Integer, Integer> convertQualityIssuesMapToHashMap(Map<QualityIssue, QualityIssueLevel> issues) {
+        Map<Integer, Integer> parsedIssues = new HashMap<>();
+        for(Map.Entry<QualityIssue, QualityIssueLevel> pair : issues.entrySet()) {
+            parsedIssues.put(convertQualityIssueToInt(pair.getKey()), convertQualityIssueLevelToInt(pair.getValue()));
+        }
+        return parsedIssues;
     }
 }

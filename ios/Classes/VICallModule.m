@@ -79,6 +79,8 @@
         [self stopReceiving:call.arguments result:result];
     } else if ([@"requestVideoSizeRemoteVideoStream" isEqualToString:call.method]) {
         [self requestVideoSize:call.arguments result:result];
+    } else if ([@"getCurrentQualityIssues" isEqualToString:call.method]) {
+        [self getCurrentQualityIssues:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -379,6 +381,16 @@
     }
 }
 
+- (void)getCurrentQualityIssues:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSArray *issues = [self.call qualityIssues];
+    NSMutableDictionary *dictionary = [NSMutableDictionary new];
+    for (VIQualityIssueType type in issues) {
+        NSNumber *issueLevelForType = [VoximplantUtils convertQualityIssueLevelToInt:[self.call issueLevelForType:type]];
+        [dictionary setObject:issueLevelForType forKey:[VoximplantUtils convertQualityIssueTypeToInt:type]];
+    }
+    result(dictionary);
+}
+
 #pragma mark - VICallDelegate
 
 - (void)callDidStartAudio:(VICall *)call {
@@ -562,7 +574,7 @@
     [self sendQualityIssueEvent:@{
         @"event": @"VIQualityIssueTypePacketLoss",
         @"packetLoss": @(packetLoss),
-        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
     }];
 }
 
@@ -570,7 +582,7 @@
     [self sendQualityIssueEvent:@{
         @"event": @"VIQualityIssueTypeCodecMismatch",
         @"codec": codec ? codec : [NSNull null],
-        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
     }];
 }
 
@@ -587,14 +599,14 @@
         @"event": @"VIQualityIssueTypeLocalVideoDegradation",
         @"actualSizeStruct": actualSizeStruct,
         @"targetSizeStruct": targetSizeStruct,
-        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
     }];
 }
 
 - (void)call:(VICall *)call didDetectIceDisconnected:(VIQualityIssueLevel)level {
     [self sendQualityIssueEvent:@{
         @"event": @"VIQualityIssueTypeIceDisconnected",
-        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
     }];
 }
 
@@ -602,14 +614,14 @@
     [self sendQualityIssueEvent:@{
         @"event": @"VIQualityIssueTypeHighMediaLatency",
         @"latency": @([[NSNumber fromTimeInterval:latency] doubleValue]),
-        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
     }];
 }
 
 - (void)call:(VICall *)call didDetectNoAudioSignal:(VIQualityIssueLevel)level {
     [self sendQualityIssueEvent:@{
         @"event": @"VIQualityIssueTypeNoAudioSignal",
-        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
     }];
 }
 
@@ -621,7 +633,7 @@ didDetectNoAudioReceiveOnStream:(VIRemoteAudioStream *)audioStream
         @"event": @"VIQualityIssueTypeNoAudioReceive",
         @"audiostreamId": audioStream.streamId,
         @"endpointId": endpoint.endpointId,
-        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
     }];
 }
 
@@ -633,7 +645,7 @@ didDetectNoVideoReceiveOnStream:(VIRemoteVideoStream *)videoStream
         @"event": @"VIQualityIssueTypeNoVideoReceive",
         @"videostreamId": videoStream.streamId,
         @"endpointId": endpoint.endpointId,
-        @"issueLevel": @([VoximplantUtils convertQualityIssueLevelToInt:level])
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
     }];
 }
 

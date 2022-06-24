@@ -213,18 +213,18 @@
     }
 }
 
-+ (int)convertQualityIssueLevelToInt:(VIQualityIssueLevel)level {
++ (NSNumber *)convertQualityIssueLevelToInt:(VIQualityIssueLevel)level {
     switch(level) {
         case VIQualityIssueLevelNone:
-            return 0;
+            return @(0);
         case VIQualityIssueLevelMinor:
-            return 1;
+            return @(1);
         case VIQualityIssueLevelMajor:
-            return 2;
+            return @(2);
         case VIQualityIssueLevelCritical:
-            return 3;
+            return @(3);
         default:
-            return 0;
+            return @(0);
     }
 }
 
@@ -256,6 +256,28 @@
         return VIVideoCodecH264;
     } else {
         return VIVideoCodecAuto;
+    }
+}
+
++ (NSNumber *)convertQualityIssueTypeToInt:(VIQualityIssueType)type {
+    if ([type isEqual:VIQualityIssueTypeCodecMismatch]) {
+        return @(0);
+    } else if ([type isEqual:VIQualityIssueTypeLocalVideoDegradation]) {
+        return @(1);
+    } else if ([type isEqual:VIQualityIssueTypeHighMediaLatency]) {
+        return @(2);
+    } else if ([type isEqual:VIQualityIssueTypeIceDisconnected]) {
+        return @(3);
+    } else if ([type isEqual:VIQualityIssueTypeNoAudioSignal]) {
+        return @(4);
+    } else if ([type isEqual:VIQualityIssueTypePacketLoss]) {
+        return @(5);
+    } else if ([type isEqual:VIQualityIssueTypeNoAudioReceive]) {
+        return @(6);
+    } else if ([type isEqual:VIQualityIssueTypeNoVideoReceive]) {
+        return @(7);
+    } else {
+        return @(3);
     }
 }
 

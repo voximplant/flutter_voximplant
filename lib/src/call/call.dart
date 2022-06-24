@@ -569,6 +569,26 @@ class VICall {
     }
   }
 
+  Future<Map<VIQualityIssueType, VIQualityIssueLevel>>
+      getCurrentQualityIssues() async {
+    try {
+      Map<dynamic, dynamic> issues = await _channel.invokeMethod(
+        'Call.getCurrentQualityIssues',
+        <String, dynamic>{
+          'callId': callId,
+        },
+      );
+      Map<VIQualityIssueType, VIQualityIssueLevel> resultIssues = {};
+      issues.forEach((key, value) {
+        resultIssues[VIQualityIssueType.values[key]] =
+            VIQualityIssueLevel.values[value];
+      });
+      return resultIssues;
+    } on PlatformException catch (e) {
+      throw VIException(e.code, e.message);
+    }
+  }
+
   void _eventListener(dynamic event) {
     final Map<dynamic, dynamic> map = event;
     switch (map['event']) {
