@@ -569,6 +569,7 @@ class VICall {
     }
   }
 
+  /// Returns current status for all quality issues.
   Future<Map<VIQualityIssueType, VIQualityIssueLevel>>
       getCurrentQualityIssues() async {
     try {

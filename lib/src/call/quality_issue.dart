@@ -2,25 +2,81 @@ part of voximplant;
 
 /// Represents quality issue levels.
 enum VIQualityIssueLevel {
+  /// The quality issue level to indicate that an issue is not detected or
+  /// is resolved.
   VIQualityIssueLevelNone,
+
+  /// The quality issue level to indicate that an issue may have minor
+  /// impact on the call quality.
+  ///
+  /// For audio calls it may result in temporary audio artifacts.
+  ///
+  /// For video calls it may result in video artifacts in case of a
+  /// dynamically changing video stream.
   VIQualityIssueLevelMinor,
+
+  /// The quality issue level to indicate that a detected issue may have a major
+  /// impact on the call quality.
+  ///
+  /// For audio calls it may result in a corrupted stream (discord or
+  /// robotic voice) for call participants, audio delays and glitches.
+  ///
+  /// For video calls it may result in significant video artifacts (pixelating,
+  /// blurring, color bleeding, flickering, noise), one-way/no video stream
+  /// between the call participants
   VIQualityIssueLevelMajor,
+
+  /// The quality issue level to indicate that a detected issue has a critical
+  /// impact on the call quality.
+  ///
+  /// In most cases it results in lost media stream between call participants
+  /// or broken functionality.
   VIQualityIssueLevelCritical,
 }
 
 /// Represents quality issue types.
 enum VIQualityIssueType {
+  /// Indicates that local video is encoded by a codec different from the
+  /// specified one.
   VIQualityIssueTypeCodecMismatch,
+
+  /// Indicates that the video resolution sent to the endpoint is lower than a
+  /// captured video resolution.
   VIQualityIssueTypeLocalVideoDegradation,
+
+  /// Indicates that network-based media latency is detected in the call.
   VIQualityIssueTypeHighMediaLatency,
+
+  /// Indicates that ICE connection is switched to the "disconnected" state
+  /// during the call.
   VIQualityIssueTypeIceDisconnected,
+
+  /// Indicates that no audio is captured by the microphone.
   VIQualityIssueTypeNoAudioSignal,
+
+  /// Indicates packet loss for last 2.5 seconds.
   VIQualityIssueTypePacketLoss,
+
+  /// Indicates that no audio is received on a remote audio stream.
+  ///
+  /// The issue level obtained may be:
+  /// * [VIQualityIssueLevel.VIQualityIssueLevelNone] - that indicates that
+  /// audio is receiving on all remote audio streams
+  /// * [VIQualityIssueLevel.VIQualityIssueLevelCritical] - that indicates a
+  /// problem with audio receive on at least one remote audio stream
   VIQualityIssueTypeNoAudioReceive,
+
+  /// Indicates that no video is received on a remote video stream.
+  ///
+  /// The issue level obtained may be:
+  /// * [VIQualityIssueLevel.VIQualityIssueLevelNone] - that indicates that
+  /// video is receiving on all remote video streams according to their configuration
+  /// * [VIQualityIssueLevel.VIQualityIssueLevelCritical] - that indicates a
+  /// problem with video receive on at least one remote video stream
   VIQualityIssueTypeNoVideoReceive,
 }
 
-/// Represents send or captured frame size.
+/// Represents send or captured a frame size.
 class FrameSize {
   double width;
   double height;
@@ -28,33 +84,31 @@ class FrameSize {
   FrameSize({required this.width, required this.height});
 }
 
-/// Signature for base event that detected quality issues.
+/// Represents issues that affect call quality during a call.
 abstract class QualityIssueEvent {}
 
-/// Signature for events reporting that local video is encoded by a codec
-/// different from specified in [VICallSettings]
-///
-/// `codec` - Codec that is currently used or null if the video is not sent.
-///
-/// `level` - Issue level
+/// Represents class reporting that local video is encoded by a codec
+/// different from specified in [VICallSettings.preferredVideoCodec]
 class CodecMismatch implements QualityIssueEvent {
+  // Codec that is currently used or null if the video is not sent
   final String? codec;
+
+  /// Issue level
   final VIQualityIssueLevel level;
 
   CodecMismatch({required this.level, required this.codec});
 }
 
-/// Signature for events reporting that video resolution sent to the endpoint
+/// Represents class reporting that video resolution sent to the endpoint
 /// is lower than a captured video resolution.
-///
-/// `actualSize` - Sent frame size.
-///
-/// `targetSize` - Captured frame size.
-///
-/// `level` - Issue level
 class LocalVideoDegradation implements QualityIssueEvent {
+  /// Sent frame size.
   final FrameSize actualSize;
+
+  /// Captured frame size.
   final FrameSize targetSize;
+
+  ///Issue level
   final VIQualityIssueLevel level;
 
   LocalVideoDegradation({
@@ -64,34 +118,31 @@ class LocalVideoDegradation implements QualityIssueEvent {
   });
 }
 
-/// Signature for events reporting that network-based media latency
+/// Represents class reporting that network-based media latency
 /// is detected in the call.
-///
-/// `latency` - Network-based latency measured in milliseconds at the moment
-/// the issue triggered.
-///
-/// `level` - Issue level
 class HighMediaLatency implements QualityIssueEvent {
+  /// Network-based latency measured in milliseconds at the moment
+  /// the issue triggered.
   final double latency;
+
+  /// Issue level
   final VIQualityIssueLevel level;
 
   HighMediaLatency({required this.latency, required this.level});
 }
 
-/// Signature for events reporting that ICE connection is switched to the
+/// Represents class reporting that ICE connection is switched to the
 /// "disconnected" state during the call
-///
-/// `level` - Issue level
 class IceDisconnected implements QualityIssueEvent {
+  /// Issue level
   final VIQualityIssueLevel level;
 
   IceDisconnected({required this.level});
 }
 
-/// Signature for events reporting that no audio is captured by the microphone.
-///
-/// `level` - Issue level
+/// Represents class reporting that no audio is captured by the microphone.
 class NoAudioSignal implements QualityIssueEvent {
+  /// Issue level
   final VIQualityIssueLevel level;
 
   NoAudioSignal({
@@ -99,13 +150,12 @@ class NoAudioSignal implements QualityIssueEvent {
   });
 }
 
-/// Signature for events reporting that packet loss detection.
-///
-/// `packetLoss` - Average packet loss for 2.5 seconds.
-///
-/// `level` - Issue level
+/// Represents class reporting that packet loss detection.
 class PacketLoss implements QualityIssueEvent {
+  /// Average packet loss for 2.5 seconds.
   final double packetLoss;
+
+  /// Issue level
   final VIQualityIssueLevel level;
 
   PacketLoss({
@@ -114,17 +164,16 @@ class PacketLoss implements QualityIssueEvent {
   });
 }
 
-/// Signature for events reporting that no audio is received on the
+/// Represents class reporting that no audio is received on the
 /// remote audio stream.
-///
-/// `audiostreamId` - Id remote audio stream the issue occured on.
-///
-/// `endpointId` - Id endpoint the issue belongs to.
-///
-/// `level` - Issue level
 class NoAudioReceive implements QualityIssueEvent {
+  /// Id remote audio stream the issue occured on.
   final String audiostreamId;
+
+  /// Id endpoint the issue belongs to.
   final String endpointId;
+
+  /// Issue level
   final VIQualityIssueLevel level;
 
   NoAudioReceive({
@@ -134,17 +183,16 @@ class NoAudioReceive implements QualityIssueEvent {
   });
 }
 
-/// Signature for events reporting that no video is received on the
+/// Represents class reporting that no video is received on the
 /// remote video stream.
-///
-/// `videostreamId` - Id remote video stream the issue occured on.
-///
-/// `endpointId` - Id endpoint the issue belongs to.
-///
-/// `level` - Issue level
 class NoVideoReceive implements QualityIssueEvent {
+  /// Id remote video stream the issue occured on.
   final String videostreamId;
+
+  /// Id endpoint the issue belongs to.
   final String endpointId;
+
+  /// Issue level
   final VIQualityIssueLevel level;
 
   NoVideoReceive({
@@ -154,6 +202,7 @@ class NoVideoReceive implements QualityIssueEvent {
   });
 }
 
+/// Represents a quality issue.
 class VIQualityIssue {
   StreamController<QualityIssueEvent> _qualityStreamController =
       StreamController.broadcast();
