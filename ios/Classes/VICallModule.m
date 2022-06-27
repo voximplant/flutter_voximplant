@@ -652,8 +652,17 @@ didDetectNoVideoReceiveOnStream:(VIRemoteVideoStream *)videoStream
 #pragma mark - FlutterStreamHandler
 
 - (FlutterError * _Nullable)onCancelWithArguments:(id _Nullable)arguments {
-    self.eventSink = nil;
-    self.eventSinkQualityIssues = nil;
+    if ([arguments isKindOfClass:[NSString class]]) {
+        NSString *type = (NSString *)arguments;
+        NSString *channelName = [@"plugins.voximplant.com/call_" stringByAppendingString:self.call.callId];
+        NSString *channelNameQuality = @"plugins.voximplant.com/call_quality_issues";
+        if ([type isEqual:channelName]) {
+            self.eventSink = nil;
+        }
+        if ([type isEqual:channelNameQuality]) {
+            self.eventSinkQualityIssues = nil;
+        }
+    }
     return nil;
 }
 
