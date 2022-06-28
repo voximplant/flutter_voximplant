@@ -660,9 +660,9 @@ class VICall {
           }
         }
         if (endpoint == null) {
-          String? userName = map['userName'];
-          String? displayName = map['displayName'];
-          String? sipUri = map['sipUri'];
+          String? userName = map['endpointUserName'];
+          String? displayName = map['endpointDisplayName'];
+          String? sipUri = map['endpointSipUri'];
           int? place = map['endpointPlace'];
           endpoint =
               VIEndpoint._(endpointId, userName, displayName, sipUri, place);

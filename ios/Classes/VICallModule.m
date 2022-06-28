@@ -404,9 +404,9 @@
     [self sendEvent:@{
         @"event"         : @"endpointAdded",
         @"endpointId"    : endpoint.endpointId,
-        @"userName"      : endpoint.user ? endpoint.user : [NSNull null],
-        @"displayName"   : endpoint.userDisplayName ? endpoint.userDisplayName : [NSNull null],
-        @"sipUri"        : endpoint.sipURI ? endpoint.sipURI : [NSNull null],
+        @"endpointUserName"      : endpoint.user ? endpoint.user : [NSNull null],
+        @"endpointDisplayName"   : endpoint.userDisplayName ? endpoint.userDisplayName : [NSNull null],
+        @"endpointSipUri"        : endpoint.sipURI ? endpoint.sipURI : [NSNull null],
         @"endpointPlace" : endpoint.place ? endpoint.place : [NSNumber numberWithInt:0]
     }];
 }
