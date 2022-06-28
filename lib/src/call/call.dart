@@ -259,7 +259,7 @@ class VICall {
   final MethodChannel _channel;
   late StreamSubscription<dynamic> _eventSubscription;
   List<VIEndpoint> _endpoints = [];
-  Stream? qualityIssuesStream;
+  late Stream qualityIssuesStream;
 
   VIVideoStream? _localVideoStream;
 
