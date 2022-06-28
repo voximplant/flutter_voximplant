@@ -61,7 +61,7 @@ public class CallModule implements ICallListener, IEndpointListener, IQualityIss
         mMessenger = messenger;
         mCall = call;
         mEventChannel = new EventChannel(messenger, "plugins.voximplant.com/call_" + mCall.getCallId());
-        mQualityIssuesEventChannel = new EventChannel(messenger, "plugins.voximplant.com/call_quality_issues");
+        mQualityIssuesEventChannel = new EventChannel(messenger, "plugins.voximplant.com/quality_issues_call_" + mCall.getCallId());
         mEventChannel.setStreamHandler(this);
         mQualityIssuesEventChannel.setStreamHandler(this);
     }
@@ -427,7 +427,7 @@ public class CallModule implements ICallListener, IEndpointListener, IQualityIss
 
                 }
             }
-            if (type.equals("plugins.voximplant.com/call_quality_issues")) {
+            if (type.equals("plugins.voximplant.com/quality_issues_call_" + mCall.getCallId())) {
                 mCall.setQualityIssueListener(this);
                 mIssuesEventSink = eventSink;
             }
@@ -441,7 +441,7 @@ public class CallModule implements ICallListener, IEndpointListener, IQualityIss
             if (type.equals("plugins.voximplant.com/call_" + mCall.getCallId())) {
                 mEventSink = null;
             }
-            if (type.equals("plugins.voximplant.com/call_quality_issues")) {
+            if (type.equals("plugins.voximplant.com/quality_issues_call_" + mCall.getCallId())) {
                 mIssuesEventSink = null;
             }
         }

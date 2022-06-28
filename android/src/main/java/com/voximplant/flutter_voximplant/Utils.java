@@ -285,7 +285,7 @@ class Utils {
             case CODEC_MISMATCH:
                 return 0;
             case LOCAL_VIDEO_DEGRADATION:
-                return  1;
+                return 1;
             case HIGH_MEDIA_LATENCY:
                 return 2;
             case NO_AUDIO_SIGNAL:

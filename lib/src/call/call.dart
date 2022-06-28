@@ -265,13 +265,15 @@ class VICall {
 
   VICall._(this._callId, this._channel) {
     _setupEventSubscription();
-    qualityIssuesStream = _VIQualityIssue._()._qualityStreamController.stream;
+    qualityIssuesStream =
+        _VIQualityIssue._(this._callId)._qualityStreamController.stream;
   }
 
   VICall._withEndpoint(this._callId, this._channel, VIEndpoint endpoint) {
     _endpoints.add(endpoint);
     _setupEventSubscription();
-    qualityIssuesStream = _VIQualityIssue._()._qualityStreamController.stream;
+    qualityIssuesStream =
+        _VIQualityIssue._(this._callId)._qualityStreamController.stream;
   }
 
   void _setupEventSubscription() {

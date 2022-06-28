@@ -298,16 +298,19 @@ class NoVideoReceive extends QualityIssue {
 
 /// Represents a quality issue.
 class _VIQualityIssue {
+  String _callId;
+
   StreamController<QualityIssue> _qualityStreamController =
       StreamController.broadcast();
 
-  _VIQualityIssue._() {
+  _VIQualityIssue._(this._callId) {
     subscribeToIssues();
   }
 
   void subscribeToIssues() {
-    EventChannel('plugins.voximplant.com/call_quality_issues')
-        .receiveBroadcastStream('plugins.voximplant.com/call_quality_issues')
+    EventChannel('plugins.voximplant.com/quality_issues_call_$_callId')
+        .receiveBroadcastStream(
+            'plugins.voximplant.com/quality_issues_call_$_callId')
         .listen(_listener);
   }
 

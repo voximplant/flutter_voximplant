@@ -34,7 +34,7 @@
         self.remoteVideoStreams = [NSMutableDictionary new];
         self.renderers = [NSMutableDictionary new];
         NSString *channelName = [@"plugins.voximplant.com/call_" stringByAppendingString:self.call.callId];
-        NSString *channelNameQuality = @"plugins.voximplant.com/call_quality_issues";
+        NSString *channelNameQuality = [@"plugins.voximplant.com/quality_issues_call_" stringByAppendingString:self.call.callId];
         self.eventChannel = [FlutterEventChannel eventChannelWithName:channelName binaryMessenger:registrar.messenger];
         self.eventChannelQualityIssues = [FlutterEventChannel eventChannelWithName:channelNameQuality binaryMessenger:registrar.messenger];
         [self.eventChannel setStreamHandler:self];
@@ -655,7 +655,7 @@ didDetectNoVideoReceiveOnStream:(VIRemoteVideoStream *)videoStream
     if ([arguments isKindOfClass:[NSString class]]) {
         NSString *type = (NSString *)arguments;
         NSString *channelName = [@"plugins.voximplant.com/call_" stringByAppendingString:self.call.callId];
-        NSString *channelNameQuality = @"plugins.voximplant.com/call_quality_issues";
+        NSString *channelNameQuality = [@"plugins.voximplant.com/quality_issues_call_" stringByAppendingString:self.call.callId];
         if ([type isEqual:channelName]) {
             self.eventSink = nil;
         }
@@ -670,7 +670,7 @@ didDetectNoVideoReceiveOnStream:(VIRemoteVideoStream *)videoStream
     if ([arguments isKindOfClass:[NSString class]]) {
         NSString *type = (NSString *)arguments;
         NSString *channelName = [@"plugins.voximplant.com/call_" stringByAppendingString:self.call.callId];
-        NSString *channelNameQuality = @"plugins.voximplant.com/call_quality_issues";
+        NSString *channelNameQuality = [@"plugins.voximplant.com/quality_issues_call_" stringByAppendingString:self.call.callId];
         if ([type isEqual:channelName]) {
             self.eventSink = events;
             [self.call addDelegate:self];
