@@ -259,21 +259,21 @@ class VICall {
   final MethodChannel _channel;
   late StreamSubscription<dynamic> _eventSubscription;
   List<VIEndpoint> _endpoints = [];
-  late Stream qualityIssuesStream;
+  late Stream<VIQualityIssue> qualityIssuesStream;
 
   VIVideoStream? _localVideoStream;
 
   VICall._(this._callId, this._channel) {
     _setupEventSubscription();
     qualityIssuesStream =
-        _VIQualityIssue._(this._callId)._qualityStreamController.stream;
+        _VICallQualityIssue._(this._callId)._qualityStreamController.stream;
   }
 
   VICall._withEndpoint(this._callId, this._channel, VIEndpoint endpoint) {
     _endpoints.add(endpoint);
     _setupEventSubscription();
     qualityIssuesStream =
-        _VIQualityIssue._(this._callId)._qualityStreamController.stream;
+        _VICallQualityIssue._(this._callId)._qualityStreamController.stream;
   }
 
   void _setupEventSubscription() {

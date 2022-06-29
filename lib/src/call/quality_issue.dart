@@ -77,19 +77,20 @@ enum VIQualityIssueType {
 }
 
 /// Represents send or captured a frame size.
-class FrameSize {
+class VIFrameSize {
   final double width;
   final double height;
 
-  FrameSize({required this.width, required this.height});
+  VIFrameSize({required this.width, required this.height});
 }
 
 /// Represents issues that affect call quality during a call.
-abstract class QualityIssue {
+abstract class VIQualityIssue {
   /// Issue level
   final VIQualityIssueLevel level;
 
-  QualityIssue._fromMap(Map<dynamic, dynamic> map) : this.level = map['level'];
+  VIQualityIssue._fromMap(Map<dynamic, dynamic> map)
+      : this.level = map['level'];
 }
 
 /// Represents class reporting that local video is encoded by a codec
@@ -103,11 +104,11 @@ abstract class QualityIssue {
 /// Possible reasons:
 /// * The video is not sent for some reasons. In this case codec will be null
 /// * Different codecs are specified in the call endpoints
-class CodecMismatch extends QualityIssue {
+class VICodecMismatch extends VIQualityIssue {
   // Codec that is currently used or null if the video is not sent
   final String? codec;
 
-  CodecMismatch._fromMap(Map<dynamic, dynamic> map)
+  VICodecMismatch._fromMap(Map<dynamic, dynamic> map)
       : this.codec = map['codec'],
         super._fromMap(map);
 }
@@ -123,18 +124,18 @@ class CodecMismatch extends QualityIssue {
 ///
 /// * High CPU load during the video call
 /// * Network issues such as poor internet connection or low bandwidth
-class LocalVideoDegradation extends QualityIssue {
+class VILocalVideoDegradation extends VIQualityIssue {
   /// Sent frame size.
-  final FrameSize actualSize;
+  final VIFrameSize actualSize;
 
   /// Captured frame size.
-  final FrameSize targetSize;
+  final VIFrameSize targetSize;
 
-  LocalVideoDegradation._fromMap(Map<dynamic, dynamic> map)
-      : this.actualSize = FrameSize(
+  VILocalVideoDegradation._fromMap(Map<dynamic, dynamic> map)
+      : this.actualSize = VIFrameSize(
             width: map['actualSize']['width'],
             height: map['actualSize']['height']),
-        this.targetSize = FrameSize(
+        this.targetSize = VIFrameSize(
             width: map['targetSize']['width'],
             height: map['targetSize']['height']),
         super._fromMap(map);
@@ -153,12 +154,12 @@ class LocalVideoDegradation extends QualityIssue {
 ///
 /// * Network congestion/delays
 /// * Lack of bandwidth
-class HighMediaLatency extends QualityIssue {
+class VIHighMediaLatency extends VIQualityIssue {
   /// Network-based latency measured in milliseconds at the moment
   /// the issue triggered.
   final double latency;
 
-  HighMediaLatency._fromMap(Map<dynamic, dynamic> map)
+  VIHighMediaLatency._fromMap(Map<dynamic, dynamic> map)
       : this.latency = map['latency'],
         super._fromMap(map);
 }
@@ -175,8 +176,8 @@ class HighMediaLatency extends QualityIssue {
 /// Possible reasons:
 ///
 /// * Network issues
-class IceDisconnected extends QualityIssue {
-  IceDisconnected._fromMap(Map<dynamic, dynamic> map) : super._fromMap(map);
+class VIIceDisconnected extends VIQualityIssue {
+  VIIceDisconnected._fromMap(Map<dynamic, dynamic> map) : super._fromMap(map);
 }
 
 /// Represents class reporting that no audio is captured by the microphone.
@@ -189,8 +190,8 @@ class IceDisconnected extends QualityIssue {
 ///
 /// * Access to microphone is denied
 /// * Category of AVAudioSession is not AVAudioSessionCategoryPlayAndRecord
-class NoAudioSignal extends QualityIssue {
-  NoAudioSignal._fromMap(Map<dynamic, dynamic> map) : super._fromMap(map);
+class VINoAudioSignal extends VIQualityIssue {
+  VINoAudioSignal._fromMap(Map<dynamic, dynamic> map) : super._fromMap(map);
 }
 
 /// Represents class reporting that packet loss detection. Packet loss can lead
@@ -203,11 +204,11 @@ class NoAudioSignal extends QualityIssue {
 ///
 /// * Network congestion
 /// * Bad hardware (parts of the network infrastructure)
-class PacketLoss extends QualityIssue {
+class VIPacketLoss extends VIQualityIssue {
   /// Average packet loss for 2.5 seconds.
   final double packetLoss;
 
-  PacketLoss._fromMap(Map<dynamic, dynamic> map)
+  VIPacketLoss._fromMap(Map<dynamic, dynamic> map)
       : this.packetLoss = map['packetLoss'],
         super._fromMap(map);
 }
@@ -238,14 +239,14 @@ class PacketLoss extends QualityIssue {
 ///
 /// * Poor internet connection on the client or the endpoint
 /// * Connection lost on the endpoint
-class NoAudioReceive extends QualityIssue {
+class VINoAudioReceive extends VIQualityIssue {
   /// Id remote audio stream the issue occured on.
   final String audiostreamId;
 
   /// Id endpoint the issue belongs to.
   final String endpointId;
 
-  NoAudioReceive._fromMap(Map<dynamic, dynamic> map)
+  VINoAudioReceive._fromMap(Map<dynamic, dynamic> map)
       : this.audiostreamId = map['audiostreamId'],
         this.endpointId = map['endpointId'],
         super._fromMap(map);
@@ -283,31 +284,31 @@ class NoAudioReceive extends QualityIssue {
 /// * Connection lost on the endpoint
 /// * The endpoint's application has been moved to the background state on an
 /// iOS device (camera usage is prohibited while in the background on iOS)
-class NoVideoReceive extends QualityIssue {
+class VINoVideoReceive extends VIQualityIssue {
   /// Id remote video stream the issue occured on.
   final String videostreamId;
 
   /// Id endpoint the issue belongs to.
   final String endpointId;
 
-  NoVideoReceive._fromMap(Map<dynamic, dynamic> map)
+  VINoVideoReceive._fromMap(Map<dynamic, dynamic> map)
       : this.videostreamId = map['videostreamId'],
         this.endpointId = map['endpointId'],
         super._fromMap(map);
 }
 
 /// Represents a quality issue.
-class _VIQualityIssue {
+class _VICallQualityIssue {
   String _callId;
 
-  StreamController<QualityIssue> _qualityStreamController =
+  StreamController<VIQualityIssue> _qualityStreamController =
       StreamController.broadcast();
 
-  _VIQualityIssue._(this._callId) {
-    subscribeToIssues();
+  _VICallQualityIssue._(this._callId) {
+    _subscribeToIssues();
   }
 
-  void subscribeToIssues() {
+  void _subscribeToIssues() {
     EventChannel('plugins.voximplant.com/quality_issues_call_$_callId')
         .receiveBroadcastStream(
             'plugins.voximplant.com/quality_issues_call_$_callId')
@@ -318,28 +319,28 @@ class _VIQualityIssue {
     final Map<dynamic, dynamic> map = event;
     switch (map['event']) {
       case 'VIQualityIssueTypePacketLoss':
-        _qualityStreamController.add(PacketLoss._fromMap(map));
+        _qualityStreamController.add(VIPacketLoss._fromMap(map));
         break;
       case 'VIQualityIssueTypeCodecMismatch':
-        _qualityStreamController.add(CodecMismatch._fromMap(map));
+        _qualityStreamController.add(VICodecMismatch._fromMap(map));
         break;
       case 'VIQualityIssueTypeLocalVideoDegradation':
-        _qualityStreamController.add(LocalVideoDegradation._fromMap(map));
+        _qualityStreamController.add(VILocalVideoDegradation._fromMap(map));
         break;
       case 'VIQualityIssueTypeIceDisconnected':
-        _qualityStreamController.add(IceDisconnected._fromMap(map));
+        _qualityStreamController.add(VIIceDisconnected._fromMap(map));
         break;
       case 'VIQualityIssueTypeHighMediaLatency':
-        _qualityStreamController.add(HighMediaLatency._fromMap(map));
+        _qualityStreamController.add(VIHighMediaLatency._fromMap(map));
         break;
       case 'VIQualityIssueTypeNoAudioSignal':
-        _qualityStreamController.add(NoAudioSignal._fromMap(map));
+        _qualityStreamController.add(VINoAudioSignal._fromMap(map));
         break;
       case 'VIQualityIssueTypeNoAudioReceive':
-        _qualityStreamController.add(NoAudioReceive._fromMap(map));
+        _qualityStreamController.add(VINoAudioReceive._fromMap(map));
         break;
       case 'VIQualityIssueTypeNoVideoReceive':
-        _qualityStreamController.add(NoVideoReceive._fromMap(map));
+        _qualityStreamController.add(VINoVideoReceive._fromMap(map));
         break;
     }
   }
