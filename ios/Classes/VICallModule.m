@@ -9,7 +9,9 @@
 @interface VICallModule()
 @property(nonatomic, strong) VICall *call;
 @property(nonatomic, strong) FlutterEventChannel *eventChannel;
+@property(nonatomic, strong) FlutterEventChannel *eventChannelQualityIssues;
 @property(nonatomic, strong) FlutterEventSink eventSink;
+@property(nonatomic, strong) FlutterEventSink eventSinkQualityIssues;
 @property(nonatomic, weak) NSObject<FlutterPluginRegistrar> *registrar;
 @property(nonatomic, weak) VoximplantCallManager *callManager;
 @property(nonatomic, strong) VILocalVideoStream *localVideoStream;
@@ -32,8 +34,11 @@
         self.remoteVideoStreams = [NSMutableDictionary new];
         self.renderers = [NSMutableDictionary new];
         NSString *channelName = [@"plugins.voximplant.com/call_" stringByAppendingString:self.call.callId];
+        NSString *channelNameQuality = [@"plugins.voximplant.com/quality_issues_call_" stringByAppendingString:self.call.callId];
         self.eventChannel = [FlutterEventChannel eventChannelWithName:channelName binaryMessenger:registrar.messenger];
+        self.eventChannelQualityIssues = [FlutterEventChannel eventChannelWithName:channelNameQuality binaryMessenger:registrar.messenger];
         [self.eventChannel setStreamHandler:self];
+        [self.eventChannelQualityIssues setStreamHandler:self];
     }
     
     return self;
@@ -74,6 +79,8 @@
         [self stopReceiving:call.arguments result:result];
     } else if ([@"requestVideoSizeRemoteVideoStream" isEqualToString:call.method]) {
         [self requestVideoSize:call.arguments result:result];
+    } else if ([@"getCurrentQualityIssues" isEqualToString:call.method]) {
+        [self getCurrentQualityIssues:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -374,6 +381,16 @@
     }
 }
 
+- (void)getCurrentQualityIssues:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSArray *issues = [self.call qualityIssues];
+    NSMutableDictionary *dictionary = [NSMutableDictionary new];
+    for (VIQualityIssueType type in issues) {
+        NSNumber *issueLevelForType = [VoximplantUtils convertQualityIssueLevelToInt:[self.call issueLevelForType:type]];
+        [dictionary setObject:issueLevelForType forKey:[VoximplantUtils convertQualityIssueTypeToInt:type]];
+    }
+    result(dictionary);
+}
+
 #pragma mark - VICallDelegate
 
 - (void)callDidStartAudio:(VICall *)call {
@@ -551,10 +568,101 @@
     }];
 }
 
+#pragma mark - VIQualityIssueDelegate
+
+- (void)call:(VICall *)call didDetectPacketLoss:(double)packetLoss issueLevel:(VIQualityIssueLevel)level {
+    [self sendQualityIssueEvent:@{
+        @"event": @"VIQualityIssueTypePacketLoss",
+        @"packetLoss": @(packetLoss),
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
+    }];
+}
+
+- (void)call:(VICall *)call didDetectCodecMismatch:(nullable NSString *)codec issueLevel:(VIQualityIssueLevel)level {
+    [self sendQualityIssueEvent:@{
+        @"event": @"VIQualityIssueTypeCodecMismatch",
+        @"codec": codec ? codec : [NSNull null],
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
+    }];
+}
+
+- (void)call:(VICall *)call didDetectLocalVideoDegradation:(CGSize)actualSize targetSize:(CGSize)targetSize issueLevel:(VIQualityIssueLevel)level {
+    NSDictionary *actualSizeStruct = @{
+        @"width": @(actualSize.width),
+        @"height": @(actualSize.height)
+    };
+    NSDictionary *targetSizeStruct = @{
+        @"width": @(targetSize.width),
+        @"height": @(targetSize.height)
+    };
+    [self sendQualityIssueEvent:@{
+        @"event": @"VIQualityIssueTypeLocalVideoDegradation",
+        @"actualSizeStruct": actualSizeStruct,
+        @"targetSizeStruct": targetSizeStruct,
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
+    }];
+}
+
+- (void)call:(VICall *)call didDetectIceDisconnected:(VIQualityIssueLevel)level {
+    [self sendQualityIssueEvent:@{
+        @"event": @"VIQualityIssueTypeIceDisconnected",
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
+    }];
+}
+
+- (void)call:(VICall *)call didDetectHighMediaLatency:(NSTimeInterval)latency issueLevel:(VIQualityIssueLevel)level {
+    [self sendQualityIssueEvent:@{
+        @"event": @"VIQualityIssueTypeHighMediaLatency",
+        @"latency": @([[NSNumber fromTimeInterval:latency] doubleValue]),
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
+    }];
+}
+
+- (void)call:(VICall *)call didDetectNoAudioSignal:(VIQualityIssueLevel)level {
+    [self sendQualityIssueEvent:@{
+        @"event": @"VIQualityIssueTypeNoAudioSignal",
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
+    }];
+}
+
+- (void)                   call:(VICall *)call
+didDetectNoAudioReceiveOnStream:(VIRemoteAudioStream *)audioStream
+                   fromEndpoint:(VIEndpoint *)endpoint
+                     issueLevel:(VIQualityIssueLevel)level {
+    [self sendQualityIssueEvent:@{
+        @"event": @"VIQualityIssueTypeNoAudioReceive",
+        @"audiostreamId": audioStream.streamId,
+        @"endpointId": endpoint.endpointId,
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
+    }];
+}
+
+- (void)                   call:(VICall *)call
+didDetectNoVideoReceiveOnStream:(VIRemoteVideoStream *)videoStream
+                   fromEndpoint:(VIEndpoint *)endpoint
+                     issueLevel:(VIQualityIssueLevel)level {
+    [self sendQualityIssueEvent:@{
+        @"event": @"VIQualityIssueTypeNoVideoReceive",
+        @"videostreamId": videoStream.streamId,
+        @"endpointId": endpoint.endpointId,
+        @"issueLevel": [VoximplantUtils convertQualityIssueLevelToInt:level]
+    }];
+}
+
 #pragma mark - FlutterStreamHandler
 
 - (FlutterError * _Nullable)onCancelWithArguments:(id _Nullable)arguments {
-    self.eventSink = nil;
+    if ([arguments isKindOfClass:[NSString class]]) {
+        NSString *type = (NSString *)arguments;
+        NSString *channelName = [@"plugins.voximplant.com/call_" stringByAppendingString:self.call.callId];
+        NSString *channelNameQuality = [@"plugins.voximplant.com/quality_issues_call_" stringByAppendingString:self.call.callId];
+        if ([type isEqual:channelName]) {
+            self.eventSink = nil;
+        }
+        if ([type isEqual:channelNameQuality]) {
+            self.eventSinkQualityIssues = nil;
+        }
+    }
     return nil;
 }
 
@@ -562,6 +670,7 @@
     if ([arguments isKindOfClass:[NSString class]]) {
         NSString *type = (NSString *)arguments;
         NSString *channelName = [@"plugins.voximplant.com/call_" stringByAppendingString:self.call.callId];
+        NSString *channelNameQuality = [@"plugins.voximplant.com/quality_issues_call_" stringByAppendingString:self.call.callId];
         if ([type isEqual:channelName]) {
             self.eventSink = events;
             [self.call addDelegate:self];
@@ -570,8 +679,11 @@
                 endpoint.delegate = self;
             }
         }
+        if ([type isEqual:channelNameQuality]) {
+            self.eventSinkQualityIssues = events;
+            [self.call setQualityIssueDelegate:self];
+        }
     }
-    self.eventSink = events;
     return nil;
 }
 
@@ -580,6 +692,12 @@
 - (void)sendEvent:(NSDictionary *)event {
     if (self.eventSink) {
         self.eventSink(event);
+    }
+}
+
+- (void)sendQualityIssueEvent:(NSDictionary *)event {
+    if (self.eventSinkQualityIssues) {
+        self.eventSinkQualityIssues(event);
     }
 }
 

@@ -259,16 +259,21 @@ class VICall {
   final MethodChannel _channel;
   late StreamSubscription<dynamic> _eventSubscription;
   List<VIEndpoint> _endpoints = [];
+  late Stream<VIQualityIssue> qualityIssuesStream;
 
   VIVideoStream? _localVideoStream;
 
   VICall._(this._callId, this._channel) {
     _setupEventSubscription();
+    qualityIssuesStream =
+        _VICallQualityIssue._(this._callId)._qualityStreamController.stream;
   }
 
   VICall._withEndpoint(this._callId, this._channel, VIEndpoint endpoint) {
     _endpoints.add(endpoint);
     _setupEventSubscription();
+    qualityIssuesStream =
+        _VICallQualityIssue._(this._callId)._qualityStreamController.stream;
   }
 
   void _setupEventSubscription() {
@@ -561,6 +566,27 @@ class VICall {
           .invokeMethod('Call.getCallDuration', <String, String>{
         'callId': callId,
       });
+    } on PlatformException catch (e) {
+      throw VIException(e.code, e.message);
+    }
+  }
+
+  /// Returns current status for all quality issues.
+  Future<Map<VIQualityIssueType, VIQualityIssueLevel>>
+      getCurrentQualityIssues() async {
+    try {
+      Map<dynamic, dynamic> issues = await _channel.invokeMethod(
+        'Call.getCurrentQualityIssues',
+        <String, dynamic>{
+          'callId': callId,
+        },
+      );
+      Map<VIQualityIssueType, VIQualityIssueLevel> resultIssues = {};
+      issues.forEach((key, value) {
+        resultIssues[VIQualityIssueType.values[key]] =
+            VIQualityIssueLevel.values[value];
+      });
+      return resultIssues;
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     }
