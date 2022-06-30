@@ -579,7 +579,7 @@ class VICall {
 
   /// Returns current status for all quality issues.
   Future<Map<VIQualityIssueType, VIQualityIssueLevel>>
-      getCurrentQualityIssues() async {
+      currentQualityIssues() async {
     try {
       Map<dynamic, dynamic> issues = await _channel.invokeMethod(
         'Call.getCurrentQualityIssues',
