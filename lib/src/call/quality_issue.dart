@@ -85,6 +85,7 @@ class VIFrameSize {
 }
 
 /// Represents the superclass of all quality issues during a call.
+///
 /// Quality issues that are detected during a call:
 ///
 /// * [VICodecMismatch]
