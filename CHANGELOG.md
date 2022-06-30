@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.5.0
+* Introduce new APIs to monitor issues that affect call quality [#35](https://github.com/voximplant/flutter_voximplant/issues/35):
+  * [VICall.qualityIssuesStream](/docs/references/fluttersdk/call/vicall#qualityissuesstream) - stream to handle quality issues.
+  * [VICall.currentQualityIssues](/docs/references/fluttersdk/call/vicall#currentqualityissues) - get current status for all quality issues.
+
+* Fix for [#37](https://github.com/voximplant/flutter_voximplant/issues/37)
+
 ## 3.4.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.32.4 and Voximplant iOS SDK 2.46.8
 

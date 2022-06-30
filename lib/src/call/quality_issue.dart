@@ -76,7 +76,7 @@ enum VIQualityIssueType {
   NoVideoReceive,
 }
 
-/// Represents send or captured a frame size.
+/// Represents a captured or sent frame size.
 class VIFrameSize {
   final double width;
   final double height;
@@ -84,7 +84,18 @@ class VIFrameSize {
   VIFrameSize({required this.width, required this.height});
 }
 
-/// Represents issues that affect call quality during a call.
+/// Represents the superclass of all quality issues during a call.
+///
+/// Quality issues that are detected during a call:
+///
+/// * [VICodecMismatch]
+/// * [VILocalVideoDegradation]
+/// * [VIHighMediaLatency]
+/// * [VIIceDisconnected]
+/// * [VINoAudioSignal]
+/// * [VIPacketLoss]
+/// * [VINoAudioReceive]
+/// * [VINoVideoReceive]
 abstract class VIQualityIssue {
   /// Issue level
   final VIQualityIssueLevel level;
@@ -93,19 +104,21 @@ abstract class VIQualityIssue {
       : this.level = map['level'];
 }
 
-/// Represents class reporting that local video is encoded by a codec
-/// different from specified in `VICallSettings.preferredVideoCodec`.
+/// Represents a quality issue reporting that the local video is encoded by a
+/// codec different from specified one in [VICallSettings.preferredVideoCodec].
 ///
-/// Issue level is `VIQualityIssueLevel.Critical` if video
-/// is not sent, `VIQualityIssueLevel.Major` in case of
-/// codec mismatch or `VIQualityIssueLevel.None` if the issue
+/// Issue level is [VIQualityIssueLevel.Critical] if video
+/// is not sent, [VIQualityIssueLevel.Major] in case of
+/// codec mismatch or [VIQualityIssueLevel.None] if the issue
 /// is not detected.
 ///
 /// Possible reasons:
 /// * The video is not sent for some reasons. In this case codec will be null
 /// * Different codecs are specified in the call endpoints
+///
+/// A subclass of [VIQualityIssue]
 class VICodecMismatch extends VIQualityIssue {
-  // Codec that is currently used or null if the video is not sent
+  /// Codec that is currently used or null if the video is not sent
   final String? codec;
 
   VICodecMismatch._fromMap(Map<dynamic, dynamic> map)
@@ -113,10 +126,10 @@ class VICodecMismatch extends VIQualityIssue {
         super._fromMap(map);
 }
 
-/// Represents class reporting that video resolution sent to the endpoint
-/// is lower than a captured video resolution. As a result it affects remote
-/// video quality on the remote participant side, but do not affect the quality
-/// of local video preview on the android application.
+/// Represents a quality issue reporting that the video resolution sent to the
+/// endpoint is lower than a captured video resolution. As a result it affects
+/// remote video quality on the remote participant side, but do not affect the
+/// quality of local video preview on the android application.
 ///
 /// The issue level may vary during the call.
 ///
@@ -124,6 +137,8 @@ class VICodecMismatch extends VIQualityIssue {
 ///
 /// * High CPU load during the video call
 /// * Network issues such as poor internet connection or low bandwidth
+///
+/// A subclass of [VIQualityIssue]
 class VILocalVideoDegradation extends VIQualityIssue {
   /// Sent frame size.
   final VIFrameSize actualSize;
@@ -141,7 +156,7 @@ class VILocalVideoDegradation extends VIQualityIssue {
         super._fromMap(map);
 }
 
-/// Represents class reporting that network-based media latency
+/// Represents a quality issue reporting that the network-based media latency
 /// is detected in the call.
 /// Network-based media latency is calculated based on rtt (round trip time)
 /// and jitter buffer. Latency refers to the time it takes a voice/video packet
@@ -154,6 +169,8 @@ class VILocalVideoDegradation extends VIQualityIssue {
 ///
 /// * Network congestion/delays
 /// * Lack of bandwidth
+///
+/// A subclass of [VIQualityIssue]
 class VIHighMediaLatency extends VIQualityIssue {
   /// Network-based latency measured in milliseconds at the moment
   /// the issue triggered.
@@ -164,10 +181,10 @@ class VIHighMediaLatency extends VIQualityIssue {
         super._fromMap(map);
 }
 
-/// Represents class reporting that ICE connection is switched to the
-/// "disconnected" state during the call
+/// Represents a quality issue reporting that the ICE connection is switched to
+/// the "disconnected" state during the call
 ///
-/// Issue level is always `VIQualityIssueLevel.Critical`,
+/// Issue level is always [VIQualityIssueLevel.Critical],
 /// because there is no media in the call until the issue is resolved.
 ///
 /// Event may be triggered intermittently and be resolved just as spontaneously
@@ -176,27 +193,32 @@ class VIHighMediaLatency extends VIQualityIssue {
 /// Possible reasons:
 ///
 /// * Network issues
+///
+/// A subclass of [VIQualityIssue]
 class VIIceDisconnected extends VIQualityIssue {
   VIIceDisconnected._fromMap(Map<dynamic, dynamic> map) : super._fromMap(map);
 }
 
-/// Represents class reporting that no audio is captured by the microphone.
+/// Represents a quality issue reporting that no audio is captured by the
+/// microphone.
 ///
-/// Issue level can be only `VIQualityIssueLevel.Critical`
-/// if the issue is detected or `VIQualityIssueLevel.None` if the issue is not
+/// Issue level can be only [VIQualityIssueLevel.Critical]
+/// if the issue is detected or [VIQualityIssueLevel.None] if the issue is not
 /// detected or resolved.
 ///
 /// Possible reasons:
 ///
 /// * Access to microphone is denied
 /// * Category of AVAudioSession is not AVAudioSessionCategoryPlayAndRecord
+///
+/// A subclass of [VIQualityIssue]
 class VINoAudioSignal extends VIQualityIssue {
   VINoAudioSignal._fromMap(Map<dynamic, dynamic> map) : super._fromMap(map);
 }
 
-/// Represents class reporting that packet loss detection. Packet loss can lead
-/// to missing of entire sentences, awkward pauses in the middle of a
-/// conversation or robotic voice during the call.
+/// Represents a quality issue reporting that packet loss detection.
+/// Packet loss can lead to missing of entire sentences, awkward pauses in the
+/// middle of a conversation or robotic voice during the call.
 ///
 /// Issue level may vary during the call.
 ///
@@ -204,6 +226,8 @@ class VINoAudioSignal extends VIQualityIssue {
 ///
 /// * Network congestion
 /// * Bad hardware (parts of the network infrastructure)
+///
+/// A subclass of [VIQualityIssue]
 class VIPacketLoss extends VIQualityIssue {
   /// Average packet loss for 2.5 seconds.
   final double packetLoss;
@@ -213,18 +237,18 @@ class VIPacketLoss extends VIQualityIssue {
         super._fromMap(map);
 }
 
-/// Represents class reporting that no audio is received on the
+/// Represents a quality issue reporting that no audio is received on the
 /// remote audio stream.
 ///
-/// Issue level can be only `VIQualityIssueLevel.Critical`
-/// if the issue is detected or `VIQualityIssueLevel.None`
+/// Issue level can be only [VIQualityIssueLevel.Critical]
+/// if the issue is detected or [VIQualityIssueLevel.None]
 /// if the issue is not detected or resolved.
 ///
 /// If no audio receive is detected on several remote audio streams,the
 /// event will be invoked for each of the remote audio streams with the issue.
 ///
-/// If the issue level is `VIQualityIssueLevel.Critical`
-/// the event will not be invoked with the level `VIQualityIssueLevel.None` in cases:
+/// If the issue level is [VIQualityIssueLevel.Critical]
+/// the event will not be invoked with the level [VIQualityIssueLevel.None] in cases:
 ///
 /// * The (conference) call ended
 /// * The endpoint left the conference call -
@@ -239,6 +263,8 @@ class VIPacketLoss extends VIQualityIssue {
 ///
 /// * Poor internet connection on the client or the endpoint
 /// * Connection lost on the endpoint
+///
+/// A subclass of [VIQualityIssue]
 class VINoAudioReceive extends VIQualityIssue {
   /// Id remote audio stream the issue occured on.
   final String audiostreamId;
@@ -252,18 +278,18 @@ class VINoAudioReceive extends VIQualityIssue {
         super._fromMap(map);
 }
 
-/// Represents class reporting that no video is received on the
+/// Represents a quality issue reporting that no video is received on the
 /// remote video stream.
 ///
-/// Issue level can be only `VIQualityIssueLevel.Critical`
-/// if the issue is detected or `VIQualityIssueLevel.None`
+/// Issue level can be only [VIQualityIssueLevel.Critical]
+/// if the issue is detected or [VIQualityIssueLevel.None]
 /// if the issue is not detected or resolved.
 ///
 /// If no video receive is detected on several remote video streams,the
 /// event will be invoked for each of the remote video streams with the issue.
 ///
-/// If the issue level is `VIQualityIssueLevel.Critical`
-/// the event will not be invoked with the level `VIQualityIssueLevel.None` in cases:
+/// If the issue level is [VIQualityIssueLevel.Critical]
+/// the event will not be invoked with the level [VIQualityIssueLevel.None] in cases:
 ///
 /// * The (conference) call ended
 /// * The remote video stream was removed -
@@ -284,6 +310,8 @@ class VINoAudioReceive extends VIQualityIssue {
 /// * Connection lost on the endpoint
 /// * The endpoint's application has been moved to the background state on an
 /// iOS device (camera usage is prohibited while in the background on iOS)
+///
+/// A subclass of [VIQualityIssue]
 class VINoVideoReceive extends VIQualityIssue {
   /// Id remote video stream the issue occured on.
   final String videostreamId;
