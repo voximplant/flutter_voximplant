@@ -94,11 +94,11 @@ abstract class VIQualityIssue {
 }
 
 /// Represents class reporting that local video is encoded by a codec
-/// different from specified in `VICallSettings.preferredVideoCodec`.
+/// different from specified in [VICallSettings.preferredVideoCodec].
 ///
-/// Issue level is `VIQualityIssueLevel.Critical` if video
-/// is not sent, `VIQualityIssueLevel.Major` in case of
-/// codec mismatch or `VIQualityIssueLevel.None` if the issue
+/// Issue level is [VIQualityIssueLevel.Critical] if video
+/// is not sent, [VIQualityIssueLevel.Major] in case of
+/// codec mismatch or [VIQualityIssueLevel.None] if the issue
 /// is not detected.
 ///
 /// Possible reasons:
@@ -167,7 +167,7 @@ class VIHighMediaLatency extends VIQualityIssue {
 /// Represents class reporting that ICE connection is switched to the
 /// "disconnected" state during the call
 ///
-/// Issue level is always `VIQualityIssueLevel.Critical`,
+/// Issue level is always [VIQualityIssueLevel.Critical],
 /// because there is no media in the call until the issue is resolved.
 ///
 /// Event may be triggered intermittently and be resolved just as spontaneously
@@ -182,8 +182,8 @@ class VIIceDisconnected extends VIQualityIssue {
 
 /// Represents class reporting that no audio is captured by the microphone.
 ///
-/// Issue level can be only `VIQualityIssueLevel.Critical`
-/// if the issue is detected or `VIQualityIssueLevel.None` if the issue is not
+/// Issue level can be only [VIQualityIssueLevel.Critical]
+/// if the issue is detected or [VIQualityIssueLevel.None] if the issue is not
 /// detected or resolved.
 ///
 /// Possible reasons:
@@ -216,15 +216,15 @@ class VIPacketLoss extends VIQualityIssue {
 /// Represents class reporting that no audio is received on the
 /// remote audio stream.
 ///
-/// Issue level can be only `VIQualityIssueLevel.Critical`
-/// if the issue is detected or `VIQualityIssueLevel.None`
+/// Issue level can be only [VIQualityIssueLevel.Critical]
+/// if the issue is detected or [VIQualityIssueLevel.None]
 /// if the issue is not detected or resolved.
 ///
 /// If no audio receive is detected on several remote audio streams,the
 /// event will be invoked for each of the remote audio streams with the issue.
 ///
-/// If the issue level is `VIQualityIssueLevel.Critical`
-/// the event will not be invoked with the level `VIQualityIssueLevel.None` in cases:
+/// If the issue level is [VIQualityIssueLevel.Critical]
+/// the event will not be invoked with the level [VIQualityIssueLevel.None] in cases:
 ///
 /// * The (conference) call ended
 /// * The endpoint left the conference call -
@@ -255,15 +255,15 @@ class VINoAudioReceive extends VIQualityIssue {
 /// Represents class reporting that no video is received on the
 /// remote video stream.
 ///
-/// Issue level can be only `VIQualityIssueLevel.Critical`
-/// if the issue is detected or `VIQualityIssueLevel.None`
+/// Issue level can be only [VIQualityIssueLevel.Critical]
+/// if the issue is detected or [VIQualityIssueLevel.None]
 /// if the issue is not detected or resolved.
 ///
 /// If no video receive is detected on several remote video streams,the
 /// event will be invoked for each of the remote video streams with the issue.
 ///
-/// If the issue level is `VIQualityIssueLevel.Critical`
-/// the event will not be invoked with the level `VIQualityIssueLevel.None` in cases:
+/// If the issue level is [VIQualityIssueLevel.Critical]
+/// the event will not be invoked with the level [VIQualityIssueLevel.None] in cases:
 ///
 /// * The (conference) call ended
 /// * The remote video stream was removed -
