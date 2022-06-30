@@ -4,7 +4,9 @@
 * Introduce new APIs to monitor issues that affect call quality:
   * [VICall.qualityIssuesStream](/docs/references/fluttersdk/call/vicall#qualityissuesstream) - stream to handle quality issues.
   * [VICall.getCurrentQualityIssues](/docs/references/fluttersdk/call/vicall#getcurrentqualityissues) - get current status for all quality issues.
+
 * Fix for [#37](https://github.com/voximplant/flutter_voximplant/issues/37)
+* Feature for [#35](https://github.com/voximplant/flutter_voximplant/issues/35)
 
 
 ## 3.4.0
