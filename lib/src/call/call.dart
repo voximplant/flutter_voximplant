@@ -259,21 +259,27 @@ class VICall {
   final MethodChannel _channel;
   late StreamSubscription<dynamic> _eventSubscription;
   List<VIEndpoint> _endpoints = [];
-  late Stream<VIQualityIssue> qualityIssuesStream;
+
+  /// Stream to monitor issues that affect call quality.
+  ///
+  /// Quality issues are detected only if a call is connected.
+  /// If a call is reconnecting, all previously detected issues (if any) are
+  /// reset, their issue level is changed to [VIQualityIssueLevel.None]
+  Stream<VIQualityIssue> qualityIssuesStream;
 
   VIVideoStream? _localVideoStream;
 
-  VICall._(this._callId, this._channel) {
+  VICall._(this._callId, this._channel)
+      : qualityIssuesStream =
+            _VICallQualityIssue._(_callId)._qualityStreamController.stream {
     _setupEventSubscription();
-    qualityIssuesStream =
-        _VICallQualityIssue._(this._callId)._qualityStreamController.stream;
   }
 
-  VICall._withEndpoint(this._callId, this._channel, VIEndpoint endpoint) {
+  VICall._withEndpoint(this._callId, this._channel, VIEndpoint endpoint)
+      : qualityIssuesStream =
+            _VICallQualityIssue._(_callId)._qualityStreamController.stream {
     _endpoints.add(endpoint);
     _setupEventSubscription();
-    qualityIssuesStream =
-        _VICallQualityIssue._(this._callId)._qualityStreamController.stream;
   }
 
   void _setupEventSubscription() {
