@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.5.1
+* Hotfix for quality issues events:
+  * Unhandled exception on processing VIQualityIssueLevel
+  * Unhandled exception on processing VIFrameSize on iOS platform
+
 ## 3.5.0
 * Introduce new APIs to monitor issues that affect call quality [#35](https://github.com/voximplant/flutter_voximplant/issues/35):
   * [VICall.qualityIssuesStream](/docs/references/fluttersdk/call/vicall#qualityissuesstream) - stream to handle quality issues.
