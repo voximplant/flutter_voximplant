@@ -101,7 +101,7 @@ abstract class VIQualityIssue {
   final VIQualityIssueLevel level;
 
   VIQualityIssue._fromMap(Map<dynamic, dynamic> map)
-      : this.level = map['level'];
+      : this.level = VIQualityIssueLevel.values[map['issueLevel']];
 }
 
 /// Represents a quality issue reporting that the local video is encoded by a
@@ -148,11 +148,11 @@ class VILocalVideoDegradation extends VIQualityIssue {
 
   VILocalVideoDegradation._fromMap(Map<dynamic, dynamic> map)
       : this.actualSize = VIFrameSize(
-            width: map['actualSize']['width'],
-            height: map['actualSize']['height']),
+            width: map['actualSizeStruct']['width'],
+            height: map['actualSizeStruct']['height']),
         this.targetSize = VIFrameSize(
-            width: map['targetSize']['width'],
-            height: map['targetSize']['height']),
+            width: map['targetSizeStruct']['width'],
+            height: map['targetSizeStruct']['height']),
         super._fromMap(map);
 }
 
