@@ -78,8 +78,8 @@ enum VIQualityIssueType {
 
 /// Represents a captured or sent frame size.
 class VIFrameSize {
-  final double width;
-  final double height;
+  final int width;
+  final int height;
 
   VIFrameSize({required this.width, required this.height});
 }
