@@ -101,7 +101,7 @@ abstract class VIQualityIssue {
   final VIQualityIssueLevel level;
 
   VIQualityIssue._fromMap(Map<dynamic, dynamic> map)
-      : this.level = map['level'];
+      : this.level = VIQualityIssueLevel.values[map['issueLevel']];
 }
 
 /// Represents a quality issue reporting that the local video is encoded by a
