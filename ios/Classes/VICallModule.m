@@ -588,12 +588,12 @@
 
 - (void)call:(VICall *)call didDetectLocalVideoDegradation:(CGSize)actualSize targetSize:(CGSize)targetSize issueLevel:(VIQualityIssueLevel)level {
     NSDictionary *actualSizeStruct = @{
-        @"width": @(actualSize.width),
-        @"height": @(actualSize.height)
+        @"width": @((int)actualSize.width),
+        @"height": @((int)actualSize.height)
     };
     NSDictionary *targetSizeStruct = @{
-        @"width": @(targetSize.width),
-        @"height": @(targetSize.height)
+        @"width": @((int)targetSize.width),
+        @"height": @((int)targetSize.height)
     };
     [self sendQualityIssueEvent:@{
         @"event": @"VIQualityIssueTypeLocalVideoDegradation",
