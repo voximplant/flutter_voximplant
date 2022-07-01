@@ -587,18 +587,13 @@
 }
 
 - (void)call:(VICall *)call didDetectLocalVideoDegradation:(CGSize)actualSize targetSize:(CGSize)targetSize issueLevel:(VIQualityIssueLevel)level {
-    NSNumber *actWidth = [[NSNumber alloc] initWithFloat:actualSize.width];
-    NSNumber *actHeight = [[NSNumber alloc] initWithFloat:actualSize.height];
-    NSNumber *targWidth = [[NSNumber alloc] initWithFloat:targetSize.width];
-    NSNumber *targHeight = [[NSNumber alloc] initWithFloat:targetSize.height];
-
     NSDictionary *actualSizeStruct = @{
-        @"width": @([actWidth integerValue]),
-        @"height": @([actHeight integerValue])
+        @"width": @((int)actualSize.width),
+        @"height": @((int)actualSize.height)
     };
     NSDictionary *targetSizeStruct = @{
-        @"width": @([targWidth integerValue]),
-        @"height": @([targHeight integerValue])
+        @"width": @((int)targetSize.width),
+        @"height": @((int)targetSize.height)
     };
     [self sendQualityIssueEvent:@{
         @"event": @"VIQualityIssueTypeLocalVideoDegradation",
