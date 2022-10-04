@@ -47,7 +47,28 @@
     } else if ([@"loginWithToken" isEqualToString:call.method]) {
         [self loginWithToken:call.arguments result:result];
     } else if ([@"getClientState" isEqualToString:call.method]) {
-        result(@(self.client.clientState));
+        switch (self.client.clientState) {
+          case VIClientStateDisconnected:
+            result(@("Disconnected"));
+            break;
+          case VIClientStateConnecting:
+            result(@("Connecting"));
+            break;
+          case VIClientStateReconnecting:
+            result(@("Reconnecting"));
+            break;
+          case VIClientStateConnected:
+            result(@("Connected"));
+            break;
+          case VIClientStateLoggingIn:
+            result(@("LoggingIn"));
+            break;
+          case VIClientStateLoggedIn:
+            result(@("LoggedIn"));
+            break;
+          default:
+            result(@("Disconnected"));
+        }
     } else if ([@"requestOneTimeKey" isEqualToString:call.method]) {
         [self requestOneTimeKey:call.arguments result:result];
     } else if ([@"tokenRefresh" isEqualToString:call.method]) {
