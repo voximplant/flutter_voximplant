@@ -49,25 +49,25 @@
     } else if ([@"getClientState" isEqualToString:call.method]) {
         switch (self.client.clientState) {
           case VIClientStateDisconnected:
-            result(@("Disconnected"));
+            result(@"Disconnected");
             break;
           case VIClientStateConnecting:
-            result(@("Connecting"));
+            result(@"Connecting");
             break;
           case VIClientStateReconnecting:
-            result(@("Reconnecting"));
+            result(@"Reconnecting");
             break;
           case VIClientStateConnected:
-            result(@("Connected"));
+            result(@"Connected");
             break;
           case VIClientStateLoggingIn:
-            result(@("LoggingIn"));
+            result(@"LoggingIn");
             break;
           case VIClientStateLoggedIn:
-            result(@("LoggedIn"));
+            result(@"LoggedIn");
             break;
           default:
-            result(@("Disconnected"));
+            result(@"Disconnected");
         }
     } else if ([@"requestOneTimeKey" isEqualToString:call.method]) {
         [self requestOneTimeKey:call.arguments result:result];
