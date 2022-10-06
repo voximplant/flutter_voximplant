@@ -83,13 +83,31 @@ class VIClient {
 
   /// Returns the current client state
   Future<VIClientState> getClientState() async {
-    int? result = await (_channel.invokeMethod<int>('Client.getClientState'));
+    String? result = await (_channel.invokeMethod<String>('Client.getClientState'));
     if (result == null) {
       _VILog._e(
           'VIClient: getClientState: result was null, returning disconnected');
       throw VIClientError.ERROR_INTERNAL;
     }
-    return VIClientState.values[result];
+
+    switch (result) {
+      case "Disconnected":
+        return VIClientState.Disconnected;
+      case "Connecting":
+        return VIClientState.Connecting;
+      case "Reconnecting":
+        return VIClientState.Reconnecting;
+      case "Connected":
+        return VIClientState.Connected;
+      case "LoggingIn":
+        return VIClientState.LoggingIn;
+      case "LoggedIn":
+        return VIClientState.LoggedIn;
+      default:
+        _VILog._e(
+            'VIClient: getClientState: result was undefined, returning disconnected');
+        return VIClientState.Disconnected;
+    }
   }
 
   /// Connects to the Voximplant Cloud.

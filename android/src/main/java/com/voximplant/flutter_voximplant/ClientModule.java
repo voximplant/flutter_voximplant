@@ -89,7 +89,22 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
                 break;
             case "getClientState":
                 if (mClient != null) {
-                    result.success(mClient.getClientState().ordinal());
+                    switch (mClient.getClientState()) {
+                        case DISCONNECTED:
+                            result.success("Disconnected");
+                        case CONNECTING:
+                            result.success("Connecting");
+                        case CONNECTED:
+                            result.success("Connected");
+                        case LOGGING_IN:
+                            result.success("LoggingIn");
+                        case LOGGED_IN:
+                            result.success("LoggedIn");
+                        case RECONNECTING:
+                            result.success("Reconnecting");
+                        default:
+                            result.error(ERROR_INTERNAL, "Unknown state", null);
+                    }
                 } else {
                     result.error(ERROR_INTERNAL, "Client does not exist", null);
                 }
