@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.6.0:
+* Update Android and iOS platform code to use Voximplant Android SDK 2.33.1 and Voximplant iOS SDK 2.46.10
+* Fix for [#43](https://github.com/voximplant/flutter_voximplant/issues/43)
+
 ## 3.5.1
 * Hotfix for quality issues events:
   * Unhandled exception on processing VIQualityIssueLevel
