@@ -27,6 +27,7 @@ class VIVideoView extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
+    _VILog._e('VIVideoView: ${this.toString()} set controller: ${controller}');
     return _VIVideoViewState(controller);
   }
 }
@@ -36,10 +37,12 @@ class _VIVideoViewState extends State<VIVideoView> {
   int? _textureId;
 
   _VIVideoViewState(this._controller) {
+    _VILog._e('_VIVideoViewState constructor: ${this.toString()}, controller: ${this._controller.toString()}');
     _controller._textureChanged = _textureChanged;
   }
 
   void _textureChanged(int? textureId) {
+    _VILog._e('_VIVideoViewState _textureChanged: ${this.toString()}, texture id: ${textureId?.toString()}, context: ${this.context}');
     setState(() {
       _VILog._i('textureChanged: $textureId');
       _textureId = textureId;
@@ -51,6 +54,8 @@ class _VIVideoViewState extends State<VIVideoView> {
     var id = _textureId;
     return id != null ? Texture(textureId: id) : Container();
   }
+
+
 }
 
 typedef void _TextureChanged(int? textureId);
@@ -92,8 +97,10 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
   VIVideoViewController() : super(_VIVideoViewValue());
 
   Future<void> _setStreamId(String? streamId) async {
+    _VILog._e('VIVideoViewController._setStreamId: controller: ${this.toString()}, streamId: ${streamId}');
     if (streamId != null) {
       if (this._streamId != null && this._streamId == streamId) {
+        _VILog._e('VIVideoViewController ${this.toString()} _setStreamId: stream id is the same');
         return Future<void>.value();
       }
 
@@ -103,11 +110,11 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
       });
 
       if (data == null) {
-        _VILog._w('VideoView: setStreamId: data was null, skipping');
+        _VILog._w('VideoView: ${this.toString()} setStreamId: data was null, skipping');
         return;
       }
 
-      _VILog._i('VideoView: setStreamId: textureId ${data['textureId']} '
+      _VILog._i('VideoView: ${this.toString()} setStreamId: textureId ${data['textureId']} '
           'is allocated for streamId $streamId');
       EventChannel rendererChannel =
           EventChannel('plugins.voximplant.com/renderer_${data['textureId']}');
@@ -115,10 +122,13 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
           .receiveBroadcastStream(
               'plugins.voximplant.com/renderer_${data['textureId']}')
           .listen(_onRendererEvent);
+      _VILog._e('VIVideoViewController ${this.toString()} _setStreamId: _textureChanged: ${_textureChanged?.toString()}');
       _textureChanged?.call(data['textureId']);
       _streamId = streamId;
     } else {
+      _VILog._e('VIVideoViewController ${this.toString()} _setStreamId: null');
       if (this._streamId == null) {
+        _VILog._e('VIVideoViewController ${this.toString()} _setStreamId: already null');
         return Future<void>.value();
       }
       await _channel
