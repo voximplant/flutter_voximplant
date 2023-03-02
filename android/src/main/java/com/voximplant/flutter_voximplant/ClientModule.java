@@ -461,7 +461,9 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
 
     @Override
     public void onIncomingCall(ICall call, boolean video, Map<String, String> headers) {
+        Log.i(TAG_NAME, "VoximplantPlugin: onIncomingCall");
         if (mIncomingCallEventSink != null) {
+            Log.i(TAG_NAME, "VoximplantPlugin: onIncomingCall: " + mIncomingCallEventSink);
             CallModule callModule = new CallModule(mMessenger, mTextures, mCallManager, call);
             mCallManager.addNewCall(call.getCallId(), callModule);
             Map<String, Object> params = new HashMap<>();
@@ -477,7 +479,10 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
                 params.put("endpointSipUri", endpoint.getSipUri());
                 params.put("endpointPlace", endpoint.getPlace());
             }
+            Log.i(TAG_NAME, "VoximplantPlugin: onIncomingCall: report incoming call to flutter");
             mHandler.post(() -> mIncomingCallEventSink.success(params));
+        } else {
+            Log.e(TAG_NAME, "VoximplantPlugin: onIncomingCall: mIncomingCallEventSink is not set");
         }
     }
 
@@ -503,12 +508,14 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
 
     @Override
     public void onListen(Object arguments, EventChannel.EventSink eventSink) {
+        Log.i(TAG_NAME, "VoximplantPlugin: onListen: " + arguments + ", event sink: " + eventSink);
         if (arguments instanceof String) {
             String type = (String) arguments;
             if (type.equals("connection_events")) {
                 mConnectionEventSink = eventSink;
             }
             if (type.equals("incoming_calls")) {
+                Log.i(TAG_NAME, "VoximplantPlugin: onListen: set mIncomingCallEventSink");
                 mIncomingCallEventSink = eventSink;
             }
         }
@@ -516,12 +523,15 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
 
     @Override
     public void onCancel(Object arguments) {
+        Log.i(TAG_NAME, "VoximplantPlugin: onCancel");
         if (arguments instanceof String) {
             String type = (String) arguments;
+            Log.i(TAG_NAME, "VoximplantPlugin: onCancel: " + type);
             if (type.equals("connection_events")) {
                 mConnectionEventSink = null;
             }
             if (type.equals("incoming_calls")) {
+                Log.i(TAG_NAME, "VoximplantPlugin: onCancel: setting mIncomingCallEventSink to null");
                 mIncomingCallEventSink = null;
             }
         }

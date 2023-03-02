@@ -48,8 +48,6 @@ class VIClient {
   VIPushDidExpire? onPushDidExpire;
 
   final MethodChannel _channel;
-  late EventChannel _incomingCallEventChannel;
-  StreamSubscription<dynamic>? _incomingCallEventSubscription;
   late StreamController<VIClientState> _clientStateStreamController;
 
   /// Receive [VIClientState] each time the state is changed.
@@ -57,8 +55,9 @@ class VIClient {
       _clientStateStreamController.stream;
 
   VIClient._(this._channel, VIClientConfig clientConfig) {
-    _incomingCallEventChannel =
-        EventChannel('plugins.voximplant.com/incoming_calls');
+    EventChannel('plugins.voximplant.com/incoming_calls')
+        .receiveBroadcastStream('incoming_calls')
+        .listen(_incomingCallEventListener);
     EventChannel('plugins.voximplant.com/connection_events')
         .receiveBroadcastStream('connection_events')
         .listen(_connectionEventListener);
@@ -573,10 +572,6 @@ class VIClient {
   }
 
   Future<VIAuthResult> _processLoginSuccess(Map<String, dynamic> data) async {
-    _incomingCallEventSubscription = _incomingCallEventChannel
-        .receiveBroadcastStream('incoming_calls')
-        .listen(_incomingCallEventListener);
-
     VILoginTokens? loginTokens;
     if (data['accessExpire'] != null && data['refreshExpire'] != null) {
       loginTokens = VILoginTokens(
@@ -624,9 +619,9 @@ class VIClient {
   void _connectionEventListener(dynamic event) {
     final Map<dynamic, dynamic> map = event;
     if (map['event'] == 'connectionClosed') {
+      _VILog._i(
+          'VIClient: _connectionEventListener: connection is closed, stop listen to incoming call events');
       _changeClientState(VIClientState.Disconnected);
-      _incomingCallEventSubscription?.cancel();
-      _incomingCallEventSubscription = null;
       _saveUsername(null);
     }
     if (map['event'] == 'reconnecting') {
