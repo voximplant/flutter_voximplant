@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.8.0
+* Update iOS platform code to use Voximplant iOS SDK 2.46.12
+
 ## 3.7.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.34.0 and Voximplant iOS SDK 2.46.11
 * Fix(android): "java.lang.IllegalStateException: Reply already submitted" on [VIClient.getClientState()](/docs/references/fluttersdk/client/viclient#getclientstate) API call

@@ -157,7 +157,6 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
   }
 }
 
-@immutable
 class _VIVideoViewValue {
   final int width;
   final int height;
