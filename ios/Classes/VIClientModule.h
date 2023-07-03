@@ -4,7 +4,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Flutter/Flutter.h>
-#import <VoxImplant/VoxImplant.h>
+#import <VoxImplantSDK/VoxImplantSDK.h>
 #import "VoximplantCallManager.h"
 
 NS_ASSUME_NONNULL_BEGIN

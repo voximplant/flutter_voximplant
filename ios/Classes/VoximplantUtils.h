@@ -3,9 +3,9 @@
 */
 
 #import <Flutter/Flutter.h>
-#import <VoxImplant/VoxImplant.h>
+#import <VoxImplantSDK/VoxImplantSDK.h>
 
-@interface VoximplantUtils : NSObject 
+@interface VoximplantUtils : NSObject
 
 + (NSString *)convertLoginErrorToString:(VILoginErrorCode)code;
 + (NSString *)getErrorDescriptionForLoginError:(VILoginErrorCode)code;
@@ -15,6 +15,7 @@
 + (NSString *)convertAudioFileErrorToString:(VIAudioFileErrorCode)audioFileError;
 + (NSDictionary *)convertAuthParamsToDictionary:(VIAuthParams *)authParams;
 + (NSNumber *)convertVideoStreamTypeToNumber:(VIVideoStreamType)type;
++ (NSNumber *)convertVideoStreamReceiveStopReasonToNumber:(VIVideoStreamReceiveStopReason)reason;
 + (int)convertVideoRotationToInt:(RTCVideoRotation)rotation;
 + (BOOL)isBackCameraByCameraType:(NSNumber *)cameraType;
 + (VIVideoCodec)convertCodecFromString:(NSString *)codec;

@@ -784,6 +784,33 @@ class VICall {
         }
         endpoint?._voiceActivityStopped();
         break;
+      case 'startReceivingVideoStream':
+        String endpointId = map['endpointId'];
+        String videoStreamId = map['videoStreamId'];
+        VIEndpoint? endpoint;
+        for (VIEndpoint callEndpoint in _endpoints) {
+          if (callEndpoint.endpointId == endpointId) {
+            endpoint = callEndpoint;
+            break;
+          }
+        }
+        endpoint?._startReceivingVideoStream(videoStreamId);
+        break;
+      case 'stopReceivingVideoStream':
+        String endpointId = map['endpointId'];
+        String videoStreamId = map['videoStreamId'];
+        int reason = map['reason'];
+        VIVideoStreamReceiveStopReason stopReason =
+            VIVideoStreamReceiveStopReason.values[reason];
+        VIEndpoint? endpoint;
+        for (VIEndpoint callEndpoint in _endpoints) {
+          if (callEndpoint.endpointId == endpointId) {
+            endpoint = callEndpoint;
+            break;
+          }
+        }
+        endpoint?._stopReceivingVideoStream(videoStreamId, stopReason);
+        break;
     }
   }
 }

@@ -42,7 +42,7 @@
     return nil;
 }
 
-- (void)renderFrame:(nullable RTCVideoFrame *)frame {
+- (void)renderFrame:(nullable VIRTCVideoFrame *)frame {
     [frame renderToCVPixelBuffer:self.pixelBufferRef];
     
     if (frame.rotation != self.frameRotation || frame.width * frame.height != self.frameWidth * self.frameHeight) {

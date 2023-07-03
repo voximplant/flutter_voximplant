@@ -3,7 +3,7 @@
 */
 
 #import <Foundation/Foundation.h>
-#import <VoxImplant/VoxImplant.h>
+#import <VoxImplantSDK/VoxImplantSDK.h>
 #import <Flutter/Flutter.h>
 #import "VoximplantPlugin.h"
 
