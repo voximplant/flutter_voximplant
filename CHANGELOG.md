@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.10.0-beta
+* This is a beta SDK version. Not recommended for production use.
+* Update Android and iOS platform code to use Voximplant Android SDK 2.37.0-beta and Voximplant iOS SDK 2.50.0-beta
+* The result of VIRemoteVideoStream.startReceiving and VIRemoteVideoStream.stopReceiving API call is now provided via events:
+  * VIEndpoint.onStartReceivingVideoStream
+  * VIEndpoint.onStopReceivingVideoStream
+* Introduce new API to handle video receive stop on a remote video stream:
+  * VIEndpoint.onStartReceivingVideoStream
+  * VIEndpoint.onStopReceivingVideoStream
+* Introduce new API VIVideoStreamReceiveStopReason to handle the reason for video receive stop on a remote video stream.
+
 ## 3.8.0
 * Update iOS platform code to use Voximplant iOS SDK 2.46.12
 
