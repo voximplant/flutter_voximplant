@@ -43,8 +43,12 @@
 }
 
 - (void)renderFrame:(nullable RTCVideoFrame *)frame {
+    if (!frame) {
+        return;
+    }
+
     [frame renderToCVPixelBuffer:self.pixelBufferRef];
-    
+
     if (frame.rotation != self.frameRotation || frame.width * frame.height != self.frameWidth * self.frameHeight) {
         if (frame.rotation == RTCVideoRotation_90 || frame.rotation == RTCVideoRotation_270) {
             self.frameWidth = frame.height;
@@ -56,7 +60,7 @@
         self.frameRotation = frame.rotation;
         [self sendResolutionChangedEvent];
     }
-    
+
     __weak VoximplantRenderer *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         VoximplantRenderer *strongSelf = weakSelf;
