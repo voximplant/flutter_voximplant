@@ -44,6 +44,7 @@
 
 - (void)renderFrame:(nullable RTCVideoFrame *)frame {
     if (!frame) {
+        NSLog(@"VOXFLUTTER >  renderer: renderFrame: skip frame");
         return;
     }
 
@@ -70,6 +71,7 @@
 
 - (void)setSize:(CGSize)size {
     if (self.frameWidth != size.width || self.frameHeight != size.height) {
+        NSLog(@"VOXFLUTTER >  renderer: setSize - size is changed");
         if (self.pixelBufferRef) {
             CVPixelBufferRelease(self.pixelBufferRef);
             self.pixelBufferRef = NULL;
@@ -79,6 +81,7 @@
                             size.width, size.height,
                             kCVPixelFormatType_32BGRA,
                             (__bridge CFDictionaryRef)(pixelAttributes), &_pixelBufferRef);
+        NSLog(@"VOXFLUTTER >  renderer: setSize - CVPixelBuffer is recreated");
     }
 }
 
@@ -87,8 +90,11 @@
 }
 
 - (void)dealloc {
+    NSLog(@"VOXFLUTTER >  renderer: dealloc");
     if (self.pixelBufferRef) {
+        NSLog(@"VOXFLUTTER >  renderer: dealloc - release CVPixelBuffer");
         CVBufferRelease(self.pixelBufferRef);
+        NSLog(@"VOXFLUTTER >  renderer: dealloc - CVPixelBuffer is released");
     }
 }
 
