@@ -1,6 +1,6 @@
 # Changelog
 
-### 3.10.0-beta.2
+## 3.10.0-beta.2
 * Fix(ios): crash on rendering local video when an iPhone is rotated
 
 ## 3.10.0-beta
