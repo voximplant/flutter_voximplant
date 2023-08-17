@@ -14,6 +14,7 @@
 @property(nonatomic, strong) FlutterEventChannel *rendererEventChannel;
 @property(nonatomic, strong) FlutterEventSink eventSink;
 @property(nonatomic, assign) BOOL reportRendererEvent;
+@property(nonatomic, strong) RTCVideoFrame *frameToRender;
 @end
 
 @implementation VoximplantRenderer
@@ -35,28 +36,50 @@
 }
 
 - (CVPixelBufferRef _Nullable)copyPixelBuffer {
-    if (self.pixelBufferRef != nil){
-        CVBufferRetain(self.pixelBufferRef);
+    @synchronized (self) {
+        if (!self.frameToRender) {
+            return nil;
+        }
+        RTCVideoFrame *frame = self.frameToRender;
+        int width = 0;
+        int height = 0;
+
+        if (frame.rotation == RTCVideoRotation_90 || frame.rotation == RTCVideoRotation_270) {
+            width = frame.height;
+            height = frame.width;
+        } else {
+            width = frame.width;
+            height = frame.height;
+        }
+
+        if (!self.pixelBufferRef) {
+            [self recreateCVPixelBufferWithWidth:width height:height];
+        }
+
+        if ((width != self.frameWidth && height != self.frameHeight) || frame.rotation != self.frameRotation) {
+            self.frameWidth = width;
+            self.frameHeight = height;
+            self.frameRotation = frame.rotation;
+
+            [self sendResolutionChangedEvent];
+
+            [self recreateCVPixelBufferWithWidth:self.frameWidth height:self.frameHeight];
+        }
+
+        [frame renderToCVPixelBuffer:self.pixelBufferRef];
+        CVPixelBufferRetain(self.pixelBufferRef);
         return self.pixelBufferRef;
     }
-    return nil;
 }
 
 - (void)renderFrame:(nullable RTCVideoFrame *)frame {
-    [frame renderToCVPixelBuffer:self.pixelBufferRef];
-    
-    if (frame.rotation != self.frameRotation || frame.width * frame.height != self.frameWidth * self.frameHeight) {
-        if (frame.rotation == RTCVideoRotation_90 || frame.rotation == RTCVideoRotation_270) {
-            self.frameWidth = frame.height;
-            self.frameHeight = frame.width;
-        } else {
-            self.frameWidth = frame.width;
-            self.frameHeight = frame.height;
-        }
-        self.frameRotation = frame.rotation;
-        [self sendResolutionChangedEvent];
+    if (!frame) {
+        return;
     }
-    
+    @synchronized (self) {
+        self.frameToRender = frame;
+    }
+
     __weak VoximplantRenderer *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         VoximplantRenderer *strongSelf = weakSelf;
@@ -65,49 +88,55 @@
 }
 
 - (void)setSize:(CGSize)size {
-    if (self.frameWidth != size.width || self.frameHeight != size.height) {
-        if (self.pixelBufferRef) {
-            CVPixelBufferRelease(self.pixelBufferRef);
-            self.pixelBufferRef = NULL;
-        }
-        NSDictionary *pixelAttributes = @{(id)kCVPixelBufferIOSurfacePropertiesKey : @{}};
-        CVPixelBufferCreate(kCFAllocatorDefault,
-                            size.width, size.height,
-                            kCVPixelFormatType_32BGRA,
-                            (__bridge CFDictionaryRef)(pixelAttributes), &_pixelBufferRef);
+}
+
+- (void)recreateCVPixelBufferWithWidth:(int)width height:(int)height {
+    if (self.pixelBufferRef) {
+        CVPixelBufferRelease(self.pixelBufferRef);
+        self.pixelBufferRef = NULL;
     }
+
+    NSDictionary *pixelAttributes = @{
+        (id)kCVPixelBufferIOSurfacePropertiesKey : @{},
+        (NSString*)kCVPixelBufferMetalCompatibilityKey : @YES
+    };
+    CVPixelBufferCreate(kCFAllocatorDefault,
+                        width, height,
+                        kCVPixelFormatType_32BGRA,
+                        (__bridge CFDictionaryRef)(pixelAttributes), &_pixelBufferRef);
 }
 
 - (void)cleanup {
     [self.textureRegistry unregisterTexture:self.textureId];
 }
 
-- (void)dealloc {
-    if (self.pixelBufferRef) {
-        CVBufferRelease(self.pixelBufferRef);
-    }
-}
-
 - (void)sendResolutionChangedEvent {
     __weak VoximplantRenderer *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         VoximplantRenderer *strongSelf = weakSelf;
-        if (self.eventSink) {
+        if (strongSelf.eventSink) {
             NSMutableDictionary *event = [NSMutableDictionary new];
             [event setObject:@"resolutionChanged" forKey:@"event"];
             [event setObject:@(strongSelf.frameWidth) forKey:@"width"];
             [event setObject:@(strongSelf.frameHeight) forKey:@"height"];
-            if (self.frameHeight != 0) {
+            if (strongSelf.frameHeight != 0) {
                 [event setObject:@((double)strongSelf.frameWidth / strongSelf.frameHeight) forKey:@"aspectRatio"];
             }
             [event setObject:@([VoximplantUtils convertVideoRotationToInt:strongSelf.frameRotation]) forKey:@"rotation"];
             [event setObject:@(strongSelf.textureId) forKey:@"textureId"];
-            self.eventSink(event);
-            self.reportRendererEvent = NO;
+            strongSelf.eventSink(event);
+            strongSelf.reportRendererEvent = NO;
         } else {
-            self.reportRendererEvent = YES;
+            strongSelf.reportRendererEvent = YES;
         }
     });
+}
+
+- (void)onTextureUnregistered:(NSObject<FlutterTexture> *)texture {
+    if (self.pixelBufferRef) {
+        CVBufferRelease(self.pixelBufferRef);
+        self.pixelBufferRef = NULL;
+    }
 }
 
 - (FlutterError* _Nullable)onListenWithArguments:(id _Nullable)arguments
