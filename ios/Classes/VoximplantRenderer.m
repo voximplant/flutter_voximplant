@@ -36,17 +36,6 @@
 }
 
 - (CVPixelBufferRef _Nullable)copyPixelBuffer {
-//    VIRTCVideoFrame * frame = self.frameToRender;
-//    [frame renderToCVPixelBuffer:self.pixelBufferRef];
-//    @synchronized (self) {
-//        if (self.pixelBufferRef != nil) {
-//            NSLog(@"VOXFLUTTER >  renderer: copyPixelBuffer %lld", self.textureId);
-//            CVBufferRetain(self.pixelBufferRef);
-//            NSLog(@"VOXFLUTTER >  renderer: copyPixelBuffer - retained %lld", self.textureId);
-//            return self.pixelBufferRef;
-//        }
-//        return nil;
-//    }
     @synchronized (self) {
         if (!self.frameToRender) {
             return nil;
@@ -64,14 +53,7 @@
         }
         
         if (!self.pixelBufferRef) {
-            NSDictionary *pixelAttributes = @{
-                (id)kCVPixelBufferIOSurfacePropertiesKey : @{},
-                (NSString*)kCVPixelBufferMetalCompatibilityKey : @YES
-            };
-            CVPixelBufferCreate(kCFAllocatorDefault,
-                                width, height,
-                                kCVPixelFormatType_32BGRA,
-                                (__bridge CFDictionaryRef)(pixelAttributes), &_pixelBufferRef);
+            [self recreateCVPixelBufferWithWidth:width height:height];
         }
         
         if ((width != self.frameWidth && height != self.frameHeight) || frame.rotation != self.frameRotation) {
@@ -81,18 +63,7 @@
             
             [self sendResolutionChangedEvent];
             
-            if (self.pixelBufferRef) {
-                CVPixelBufferRelease(self.pixelBufferRef);
-                self.pixelBufferRef = NULL;
-                NSDictionary *pixelAttributes = @{
-                    (id)kCVPixelBufferIOSurfacePropertiesKey : @{},
-                    (NSString*)kCVPixelBufferMetalCompatibilityKey : @YES
-                };
-                CVPixelBufferCreate(kCFAllocatorDefault,
-                                    self.frameWidth, self.frameHeight,
-                                    kCVPixelFormatType_32BGRA,
-                                    (__bridge CFDictionaryRef)(pixelAttributes), &_pixelBufferRef);
-            }
+            [self recreateCVPixelBufferWithWidth:self.frameWidth height:self.frameHeight];
         }
 
         [frame renderToCVPixelBuffer:self.pixelBufferRef];
@@ -103,62 +74,36 @@
 
 - (void)renderFrame:(nullable VIRTCVideoFrame *)frame {
     if (!frame) {
-        NSLog(@"VOXFLUTTER >  renderer: renderFrame: skip frame %lld", self.textureId);
         return;
     }
     @synchronized (self) {
         self.frameToRender = frame;
     }
 
-//    @synchronized (self) {
-//        NSLog(@"VOXFLUTTER >  renderer: renderFrame: renderToCVPixelBuffer %lld", self.textureId);
-//        [frame renderToCVPixelBuffer:self.pixelBufferRef];
-//        NSLog(@"VOXFLUTTER >  renderer: renderFrame: renderToCVPixelBuffer - done %lld", self.textureId);
-//    }
-    
-    if (frame.rotation != self.frameRotation || (frame.width != self.frameWidth && frame.height != self.frameHeight)) {
-//        if (frame.rotation == RTCVideoRotation_90 || frame.rotation == RTCVideoRotation_270) {
-//            self.frameWidth = frame.height;
-//            self.frameHeight = frame.width;
-//        } else {
-//            self.frameWidth = frame.width;
-//            self.frameHeight = frame.height;
-//        }
-//        self.frameRotation = frame.rotation;
-        [self sendResolutionChangedEvent];
-    }
-
     __weak VoximplantRenderer *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         VoximplantRenderer *strongSelf = weakSelf;
-//        NSLog(@"VOXFLUTTER >  renderer: renderFrame: textureFrameAvailable %lld", strongSelf.textureId);
         [strongSelf.textureRegistry textureFrameAvailable:strongSelf.textureId];
     });
 }
 
 - (void)setSize:(CGSize)size {
-    NSLog(@"VOXFLUTTER >  renderer: setSize - size is changed %lld %f %f", self.textureId, size.width, size.height);
-//    if (size.width != self.frameWidth && size.height != self.frameHeight) {
-//        [self sendResolutionChangedEvent];
-//    }
-//    if (self.frameWidth != size.width || self.frameHeight != size.height) {
-//        NSLog(@"VOXFLUTTER >  renderer: setSize - size is changed %lld", self.textureId);
-//        @synchronized (self) {
-//            if (self.pixelBufferRef) {
-//                CVPixelBufferRelease(self.pixelBufferRef);
-//                self.pixelBufferRef = NULL;
-//            }
-//            NSDictionary *pixelAttributes = @{
-//                (id)kCVPixelBufferIOSurfacePropertiesKey : @{},
-//                (NSString*)kCVPixelBufferMetalCompatibilityKey : @YES
-//            };
-//            CVPixelBufferCreate(kCFAllocatorDefault,
-//                                size.width, size.height,
-//                                kCVPixelFormatType_32BGRA,
-//                                (__bridge CFDictionaryRef)(pixelAttributes), &_pixelBufferRef);
-//            NSLog(@"VOXFLUTTER >  renderer: setSize - CVPixelBuffer is recreated %lld", self.textureId);
-//        }
-//    }
+}
+
+- (void)recreateCVPixelBufferWithWidth:(int)width height:(int)height {
+    if (self.pixelBufferRef) {
+        CVPixelBufferRelease(self.pixelBufferRef);
+        self.pixelBufferRef = NULL;
+    }
+    
+    NSDictionary *pixelAttributes = @{
+        (id)kCVPixelBufferIOSurfacePropertiesKey : @{},
+        (NSString*)kCVPixelBufferMetalCompatibilityKey : @YES
+    };
+    CVPixelBufferCreate(kCFAllocatorDefault,
+                        width, height,
+                        kCVPixelFormatType_32BGRA,
+                        (__bridge CFDictionaryRef)(pixelAttributes), &_pixelBufferRef);
 }
 
 - (void)cleanup {
@@ -188,9 +133,10 @@
     });
 }
 
-- (void) onTextureUnregistered:(NSObject<FlutterTexture> *)texture {
+- (void)onTextureUnregistered:(NSObject<FlutterTexture> *)texture {
     if (self.pixelBufferRef) {
         CVBufferRelease(self.pixelBufferRef);
+        self.pixelBufferRef = NULL;
     }
 }
 
