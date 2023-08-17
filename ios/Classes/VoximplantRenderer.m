@@ -124,7 +124,6 @@
             }
             [event setObject:@([VoximplantUtils convertVideoRotationToInt:strongSelf.frameRotation]) forKey:@"rotation"];
             [event setObject:@(strongSelf.textureId) forKey:@"textureId"];
-            NSLog(@"VOXFLUTTER >  sendResolutionChangedEvent %lld", strongSelf.textureId);
             strongSelf.eventSink(event);
             strongSelf.reportRendererEvent = NO;
         } else {

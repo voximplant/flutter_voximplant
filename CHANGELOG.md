@@ -1,5 +1,8 @@
 # Changelog
 
+### 3.10.0-beta.2
+* Fix(ios): crash on rendering local video when an iPhone is rotated
+
 ## 3.10.0-beta
 * This is a beta SDK version. Not recommended for production use.
 * Update Android and iOS platform code to use Voximplant Android SDK 2.37.0-beta and Voximplant iOS SDK 2.50.0-beta
