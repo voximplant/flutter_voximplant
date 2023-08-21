@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.10.0-beta.3
+* Fix(ios): crash on remove video renderer that does not exist anymore
+
 ## 3.10.0-beta.2
 * Fix(ios): crash on rendering local video when an iPhone is rotated
 * Remove e2e from dev_dependencies
