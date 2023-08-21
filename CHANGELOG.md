@@ -15,6 +15,9 @@
   * VIEndpoint.onStopReceivingVideoStream
 * Introduce new API VIVideoStreamReceiveStopReason to handle the reason for video receive stop on a remote video stream.
 
+## 3.8.2
+* Fix(ios): crash on remove video renderer that does not exist anymore
+
 ## 3.8.1
 * Fix(ios): crash on rendering local video when an iPhone is rotated
 * Remove e2e from dev_dependencies
