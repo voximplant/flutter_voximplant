@@ -26,7 +26,7 @@
                       callManager:(VoximplantCallManager *)callManager
                              call:(VICall *)call {
     self = [super init];
-    
+
     if (self) {
         self.registrar = registrar;
         self.callManager = callManager;
@@ -40,7 +40,7 @@
         [self.eventChannel setStreamHandler:self];
         [self.eventChannelQualityIssues setStreamHandler:self];
     }
-    
+
     return self;
 }
 
@@ -280,9 +280,11 @@
     }
     if ([self.localVideoStream.streamId isEqualToString:streamId]) {
         VoximplantRenderer *renderer = [self.renderers objectForKey:streamId];
-        [self.localVideoStream removeRenderer:renderer];
-        [renderer cleanup];
-        [self.renderers removeObjectForKey:streamId];
+        if (renderer) {
+            [self.localVideoStream removeRenderer:renderer];
+            [renderer cleanup];
+            [self.renderers removeObjectForKey:streamId];
+        }
         self.localVideoStream = nil;
         result(nil);
         return;
@@ -304,7 +306,7 @@
 - (void)getCallDuration:(NSDictionary *)arguments result:(FlutterResult)result {
     result([NSNumber fromTimeInterval:[self.call duration]]);
 }
- 
+
 - (BOOL)hasVideoStreamId:(NSString *)streamId {
     return [self.localVideoStream.streamId isEqualToString:streamId] || [self.remoteVideoStreams objectForKey:streamId] != nil;
 }
@@ -327,7 +329,7 @@
     }];
     [self.renderers removeAllObjects];
     [self.remoteVideoStreams removeAllObjects];
-    
+
     for (VIEndpoint *endpoint in self.call.endpoints) {
         endpoint.delegate = nil;
     }
@@ -406,7 +408,7 @@
 }
 
 - (void)call:(VICall *)call didReceiveStatistics:(VICallStats *)stat {
-    
+
 }
 
 - (void)callDidStartReconnecting:(VICall *)call {
@@ -685,7 +687,7 @@ didDetectNoVideoReceiveOnStream:(VIRemoteVideoStream *)videoStream
         if ([type isEqual:channelName]) {
             self.eventSink = events;
             [self.call addDelegate:self];
-            
+
             for (VIEndpoint *endpoint in self.call.endpoints) {
                 endpoint.delegate = self;
             }
