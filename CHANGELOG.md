@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.10.0-beta.3
+* Fix(ios): crash on remove video renderer that does not exist anymore
+
 ## 3.10.0-beta.2
 * Fix(ios): crash on rendering local video when an iPhone is rotated
 
@@ -13,6 +16,13 @@
   - VIEndpoint.onStartReceivingVideoStream
   - VIEndpoint.onStopReceivingVideoStream
 * Introduce new API VIVideoStreamReceiveStopReason to handle the reason for video receive stop on a remote video stream.
+
+## 3.8.2
+* Fix(ios): crash on remove video renderer that does not exist anymore
+
+## 3.8.1
+* Fix(ios): crash on rendering local video when an iPhone is rotated
+* Remove e2e from dev_dependencies
 
 ## 3.8.0
 * Update iOS platform code to use Voximplant iOS SDK 2.46.12
