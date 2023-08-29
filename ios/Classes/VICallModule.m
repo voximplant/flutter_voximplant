@@ -426,14 +426,14 @@
 - (void)call:(VICall *)call didConnectWithHeaders:(NSDictionary *)headers {
     [self sendEvent:@{
         @"event"   : @"callConnected",
-        @"headers" : headers
+        @"headers" : headers ? headers : [NSNull null]
     }];
 }
 
 - (void)call:(VICall *)call startRingingWithHeaders:(NSDictionary *)headers {
     [self sendEvent:@{
         @"event"   : @"callRinging",
-        @"headers" : headers
+        @"headers" : headers ? headers : [NSNull null]
     }];
 }
 
@@ -444,7 +444,7 @@
         @"event"       : @"callFailed",
         @"code"        : @(error.code),
         @"description" : error.localizedDescription,
-        @"headers"     : headers
+        @"headers"     : headers ? headers : [NSNull null]
     }];
 }
 
@@ -452,7 +452,6 @@
     [self sendEvent:@{
         @"event"   : @"messageReceived",
         @"message" : message,
-        @"headers" : headers
     }];
 }
 
@@ -461,7 +460,7 @@
         @"event"   : @"sipInfoReceived",
         @"type"    : type,
         @"body"    : body,
-        @"headers" : headers
+        @"headers" : headers ? headers : [NSNull null]
     }];
 }
 
@@ -470,7 +469,7 @@
     [self.callManager callHasEnded:call.callId];
     [self sendEvent:@{
         @"event"             : @"callDisconnected",
-        @"headers"           : headers,
+        @"headers"           : headers ? headers : [NSNull null],
         @"answeredElsewhere" : answeredElsewhere
     }];
 }
