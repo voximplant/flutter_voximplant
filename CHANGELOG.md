@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.10.0-beta.4
+* Fix(ios): crash on receiving a message during a call
+
 ## 3.10.0-beta.3
 * Fix(ios): crash on remove video renderer that does not exist anymore
 
@@ -16,6 +19,9 @@
   - VIEndpoint.onStartReceivingVideoStream
   - VIEndpoint.onStopReceivingVideoStream
 * Introduce new API VIVideoStreamReceiveStopReason to handle the reason for video receive stop on a remote video stream.
+
+## 3.8.3
+* Fix(ios): crash on receiving a message during a call
 
 ## 3.8.2
 * Fix(ios): crash on remove video renderer that does not exist anymore
