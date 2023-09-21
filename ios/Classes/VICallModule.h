@@ -4,7 +4,7 @@
 
 #import <Flutter/Flutter.h>
 #import <Foundation/Foundation.h>
-#import <VoxImplant/VoxImplant.h>
+#import <VoxImplantSDK/VoxImplantSDK.h>
 
 #import "VoximplantRenderer.h"
 

@@ -338,34 +338,28 @@
 
 - (void)startReceiving:(NSDictionary *)arguments result:(FlutterResult)result {
     NSString *streamId = [arguments objectForKey:@"streamId"];
-    VIRemoteVideoStream *videoStream = [self.remoteVideoStreams objectForKey:streamId];
-    if (videoStream) {
-        [videoStream startReceivingWithCompletion:^(NSError * _Nullable error) {
-            if (error) {
-                result([FlutterError errorWithCode:[VoximplantUtils convertCallErrorToString:error.code]
-                                           message:[error.userInfo objectForKey:@"reason"]
-                                           details:nil]);
-            } else {
-                result(nil);
-            }
-        }];
+    if (!streamId) {
+        result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
+                            message:@"Endpoint.startReceiving: Invalid streamId"
+                            details:nil]);
+        return;
     }
+    VIRemoteVideoStream *videoStream = [self.remoteVideoStreams objectForKey:streamId];
+    [videoStream startReceiving];
+    result(nil);
 }
 
 - (void)stopReceiving:(NSDictionary *)arguments result:(FlutterResult)result {
     NSString *streamId = [arguments objectForKey:@"streamId"];
-    VIRemoteVideoStream *videoStream = [self.remoteVideoStreams objectForKey:streamId];
-    if (videoStream) {
-        [videoStream stopReceivingWithCompletion:^(NSError * _Nullable error) {
-            if (error) {
-                result([FlutterError errorWithCode:[VoximplantUtils convertCallErrorToString:error.code]
-                                           message:[error.userInfo objectForKey:@"reason"]
-                                           details:nil]);
-            } else {
-                result(nil);
-            }
-        }];
+    if (!streamId) {
+        result([FlutterError errorWithCode:@"ERROR_INVALID_ARGUMENTS"
+                            message:@"Endpoint.stopReceiving: Invalid streamId"
+                            details:nil]);
+        return;
     }
+    VIRemoteVideoStream *videoStream = [self.remoteVideoStreams objectForKey:streamId];
+    [videoStream stopReceiving];
+    result(nil);
 }
 
 - (void)requestVideoSize:(NSDictionary *)arguments result:(FlutterResult)result {
@@ -566,6 +560,23 @@
     [self sendEvent:@{
         @"event"               : @"endpointVoiceActivityStopped",
         @"endpointId"          : endpoint.endpointId
+    }];
+}
+
+- (void)endpoint:(VIEndpoint *)endpoint didStartReceivingVideoStream:(VIRemoteVideoStream *)videoStream {
+    [self sendEvent:@{
+        @"event"               : @"startReceivingVideoStream",
+        @"endpointId"          : endpoint.endpointId,
+        @"videoStreamId"       : videoStream.streamId,
+    }];
+}
+
+- (void)endpoint:(VIEndpoint *)endpoint didStopReceivingVideoStream:(VIRemoteVideoStream *)videoStream reason:(VIVideoStreamReceiveStopReason)reason {
+    [self sendEvent:@{
+        @"event"               : @"stopReceivingVideoStream",
+        @"endpointId"          : endpoint.endpointId,
+        @"videoStreamId"       : videoStream.streamId,
+        @"reason"              : [VoximplantUtils convertVideoStreamReceiveStopReasonToNumber:reason]
     }];
 }
 

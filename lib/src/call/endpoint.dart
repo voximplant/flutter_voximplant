@@ -2,6 +2,20 @@
 
 part of voximplant;
 
+/// Enum that represents the reason why video receive on the remote
+/// video stream was stopped.
+///
+/// /// Used in [VICall].
+enum VIVideoStreamReceiveStopReason {
+  /// Indicates that video receive on a remote video stream is stopped by
+  /// the Voximplant Cloud due to a network issue on the device.
+  AUTOMATIC,
+
+  /// Indicates that video receive on a remote video stream is stopped
+  /// by the client via [VICall.sendVideo] API.
+  MANUAL,
+}
+
 /// Signature for callbacks reporting that the endpoint information such as
 /// display name, user name, and SIP URI is updates.
 ///
@@ -44,6 +58,57 @@ typedef void VIRemoteVideoStreamRemoved(
   VIVideoStream videoStream,
 );
 
+/// Signature for callbacks reporting that video receive on a remote video
+/// stream is started after previously being stopped.
+/// Available only for the conference calls.
+///
+/// The event is triggered if:
+/// 1.[VIEndpoint.startReceiving] was called and the request has been processed
+/// successfully.
+/// 2. A network issue that caused the Voximplant Cloud to stop video receive
+/// of the remote video stream is gone.
+///
+/// The event is not triggered if the endpoint client has started sending video
+/// using [VICall.sendVideo] API.
+///
+/// Used in [VIEndpoint].
+///
+/// `endpoint` - VIEndpoint instance initiated the event
+///
+/// `videoStream` - The remote video stream where video receive is started
+typedef void VIStartReceivingVideoStream(
+    VIEndpoint endpoint, VIVideoStream videoStream);
+
+/// Signature for callbacks reporting that video receive on a remote video
+/// stream is stopped. Available only for the conference calls.
+///
+/// Video receive on a remote video stream can be stopped due to:
+/// 1. [VIEndpoint.stopReceiving] was called and the request has been processed
+/// successfully. In this case the value of the [reason] parameter is
+/// [VIVideoStreamReceiveStopReason.MANUAL].
+/// 2.Voximplant Cloud has detected a network issue on the client and
+/// automatically stopped the video. In this case the value of the [reason]
+/// parameter is [VIVideoStreamReceiveStopReason.AUTOMATIC].
+///
+/// If the video receive is disabled automatically, it may be automatically
+/// enabled as soon as the network condition on the device is good and there is
+/// enough bandwidth to receive the video on this remote video stream.
+/// In this case event will be invoked.
+///
+/// The event is not triggered if the endpoint client has started sending video
+/// using [VICall.sendVideo] API.
+///
+/// Used in [VIEndpoint].
+///
+/// `endpoint` - VIEndpoint instance initiated the event
+///
+/// `videoStream` - The remote video stream where video receive is stopped
+///
+/// `reason` - The reason for the event, such as video receive is disabled
+/// by client or automatically
+typedef void VIStopReceivingVideoStream(VIEndpoint endpoint,
+    VIVideoStream videoStream, VIVideoStreamReceiveStopReason reason);
+
 /// Signature for callbacks reporting when a voice activity of the endpoint is
 /// detected in a conference call.
 ///
@@ -83,6 +148,15 @@ class VIEndpoint {
   /// in a conference call.
   VIVoiceActivityStopped? onVoiceActivityStopped;
 
+  /// Callback for getting notified when video receive on a remote video
+  /// stream is started after previously being stopped.
+  /// Available only for the conference calls.
+  VIStartReceivingVideoStream? onStartReceivingVideoStream;
+
+  /// Callback for getting notified when video receive on a remote video
+  /// stream is stopped. Available only for the conference calls.
+  VIStopReceivingVideoStream? onStopReceivingVideoStream;
+
   String? _userName;
   String? _displayName;
   String? _sipUri;
@@ -119,19 +193,20 @@ class VIEndpoint {
     this._place,
   );
 
-  /// Starts receiving video on the video stream.
+  /// Starts receiving video on the remote video stream.
   ///
-  /// Valid only for conferences.
+  /// Available only for the conference calls.
+  ///
+  /// If the video is already receiving, this method call is ignored.
+  ///
+  /// If the request is processed successfully, [VIStartReceivingVideoStream]
+  /// event will be invoked.
   ///
   /// `streamId` - Remote video stream id
   ///
   /// Throws [VIException], if an error occurred.
   ///
   /// Errors:
-  /// * [VICallError.ERROR_TIMEOUT] - If the operation is not completed in time.
-  /// * [VICallError.ERROR_ALREADY_IN_THIS_STATE] - If the call is already in
-  ///   the requested state.
-  /// * [VICallError.ERROR_INCORRECT_OPERATION] - If the call is not connected.
   /// * [VICallError.ERROR_INTERNAL] - If an internal error occurred.
   Future<void> startReceiving(String streamId) async {
     try {
@@ -143,19 +218,19 @@ class VIEndpoint {
     }
   }
 
-  /// Stops receiving video on the video stream.
+  /// Stops receiving video on the remote video stream.
   ///
-  /// Valid only for conferences.
+  /// Available only for the conference calls.
+  ///
+  /// If the request is processed successfully,
+  /// [VIStopReceivingVideoStream] event will be invoked with
+  /// the reason [VIVideoStreamReceiveStopReason.MANUAL].
   ///
   /// `streamId` - Remote video stream id
   ///
   /// Throws [VIException], if an error occurred.
   ///
   /// Errors:
-  /// * [VICallError.ERROR_TIMEOUT] - If the operation is not completed in time.
-  /// * [VICallError.ERROR_ALREADY_IN_THIS_STATE] - If the call is already in
-  ///   the requested state.
-  /// * [VICallError.ERROR_INCORRECT_OPERATION] - If the call is not connected.
   /// * [VICallError.ERROR_INTERNAL] - If an internal error occurred.
   Future<void> stopReceiving(String streamId) async {
     try {
@@ -240,5 +315,32 @@ class VIEndpoint {
 
   _voiceActivityStopped() {
     onVoiceActivityStopped?.call(this);
+  }
+
+  _startReceivingVideoStream(String videoStreamId) {
+    VIVideoStream? remoteVideoStream;
+    for (VIVideoStream videoStream in _remoteVideoStreams) {
+      if (videoStream.streamId == videoStreamId) {
+        remoteVideoStream = videoStream;
+        break;
+      }
+    }
+    if (remoteVideoStream != null) {
+      onStartReceivingVideoStream?.call(this, remoteVideoStream);
+    }
+  }
+
+  _stopReceivingVideoStream(
+      String videoStreamId, VIVideoStreamReceiveStopReason reason) {
+    VIVideoStream? remoteVideoStream;
+    for (VIVideoStream videoStream in _remoteVideoStreams) {
+      if (videoStream.streamId == videoStreamId) {
+        remoteVideoStream = videoStream;
+        break;
+      }
+    }
+    if (remoteVideoStream != null) {
+      onStopReceivingVideoStream?.call(this, remoteVideoStream, reason);
+    }
   }
 }

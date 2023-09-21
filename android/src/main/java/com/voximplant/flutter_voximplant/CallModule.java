@@ -28,6 +28,7 @@ import com.voximplant.sdk.call.QualityIssueLevel;
 import com.voximplant.sdk.call.RejectMode;
 import com.voximplant.sdk.call.RenderScaleType;
 import com.voximplant.sdk.call.VideoFlags;
+import com.voximplant.sdk.call.VideoStreamReceiveStopReason;
 
 import java.util.HashMap;
 import java.util.List;
@@ -364,17 +365,10 @@ public class CallModule implements ICallListener, IEndpointListener, IQualityIss
         String streamId = call.argument("streamId");
         IRemoteVideoStream videoStream = mRemoteVideoStreams.get(streamId);
         if (videoStream != null) {
-            videoStream.startReceiving(new ICallCompletionHandler() {
-                @Override
-                public void onComplete() {
-                    mHandler.post(() -> result.success(null));
-                }
-
-                @Override
-                public void onFailure(CallException exception) {
-                    mHandler.post(() -> result.error(exception.getErrorCode().toString(), exception.getMessage(), null));
-                }
-            });
+            videoStream.startReceiving();
+            mHandler.post(() -> result.success(null));
+        } else {
+            mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS, "Failed to find remote video stream by provided video stream id", null));
         }
     }
 
@@ -382,17 +376,10 @@ public class CallModule implements ICallListener, IEndpointListener, IQualityIss
         String streamId = call.argument("streamId");
         IRemoteVideoStream videoStream = mRemoteVideoStreams.get(streamId);
         if (videoStream != null) {
-            videoStream.stopReceiving(new ICallCompletionHandler() {
-                @Override
-                public void onComplete() {
-                    mHandler.post(() -> result.success(null));
-                }
-
-                @Override
-                public void onFailure(CallException exception) {
-                    mHandler.post(() -> result.error(exception.getErrorCode().toString(), exception.getMessage(), null));
-                }
-            });
+            videoStream.stopReceiving();
+            mHandler.post(() -> result.success(null));
+        } else {
+            mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS, "Failed to find remote video stream by provided video stream id", null));
         }
     }
 
@@ -652,6 +639,25 @@ public class CallModule implements ICallListener, IEndpointListener, IQualityIss
         Map<String, Object> event = new HashMap<>();
         event.put("event", "endpointVoiceActivityStopped");
         event.put("endpointId", endpoint.getEndpointId());
+        sendCallEvent(event);
+    }
+
+    @Override
+    public void onStartReceivingVideoStream(@NonNull IEndpoint endpoint, @NonNull IRemoteVideoStream videoStream) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "startReceivingVideoStream");
+        event.put("endpointId", endpoint.getEndpointId());
+        event.put("videoStreamId", videoStream.getVideoStreamId());
+        sendCallEvent(event);
+    }
+
+    @Override
+    public void onStopReceivingVideoStream(@NonNull IEndpoint endpoint, @NonNull IRemoteVideoStream videoStream, @NonNull VideoStreamReceiveStopReason reason) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("event", "stopReceivingVideoStream");
+        event.put("endpointId", endpoint.getEndpointId());
+        event.put("videoStreamId", videoStream.getVideoStreamId());
+        event.put("reason", Utils.convertVideoStreamReceiveStopReasonToInt(reason));
         sendCallEvent(event);
     }
 

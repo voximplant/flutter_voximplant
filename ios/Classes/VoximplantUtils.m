@@ -3,6 +3,7 @@
 */
 
 #import "VoximplantUtils.h"
+#import <VoximplantWebRTC/VoximplantWebRTC.h>
 
 @implementation VoximplantUtils
 
@@ -213,6 +214,13 @@
     }
 }
 
++ (NSNumber *)convertVideoStreamReceiveStopReasonToNumber:(VIVideoStreamReceiveStopReason)reason {
+    if ([reason isEqualToString:VIVideoStreamReceiveStopReasonManual]) {
+        return @(1);
+    }
+    return @(0);
+}
+
 + (NSNumber *)convertQualityIssueLevelToInt:(VIQualityIssueLevel)level {
     switch(level) {
         case VIQualityIssueLevelNone:
@@ -298,7 +306,7 @@
     NSString *method = methodNameComponents && methodNameComponents.count > 0
     ? methodNameComponents[1]
     : self.method;
-    
+
     return [FlutterMethodCall methodCallWithMethodName:method
                                              arguments:self.arguments];
 }

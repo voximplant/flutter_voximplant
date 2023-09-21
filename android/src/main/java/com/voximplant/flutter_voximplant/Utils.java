@@ -8,6 +8,7 @@ import com.voximplant.sdk.call.CallError;
 import com.voximplant.sdk.call.QualityIssue;
 import com.voximplant.sdk.call.QualityIssueLevel;
 import com.voximplant.sdk.call.VideoCodec;
+import com.voximplant.sdk.call.VideoStreamReceiveStopReason;
 import com.voximplant.sdk.call.VideoStreamType;
 import com.voximplant.sdk.client.LoginError;
 import com.voximplant.sdk.hardware.AudioFileUsage;
@@ -245,6 +246,16 @@ class Utils {
                 return 1;
             default:
             case VIDEO:
+                return 0;
+        }
+    }
+
+    static int convertVideoStreamReceiveStopReasonToInt(VideoStreamReceiveStopReason reason) {
+        switch (reason) {
+            case MANUAL:
+                return 1;
+            case AUTOMATIC:
+            default:
                 return 0;
         }
     }

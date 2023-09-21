@@ -3,7 +3,7 @@
 */
 
 #import <Flutter/Flutter.h>
-#import <VoxImplant/VoxImplant.h>
+#import <VoxImplantSDK/VoxImplantSDK.h>
 
 @interface VoximplantPlugin : NSObject<FlutterPlugin, FlutterStreamHandler, VILogDelegate>
 @property(nonatomic, strong) NSObject<FlutterPluginRegistrar> *registrar;

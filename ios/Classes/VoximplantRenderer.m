@@ -14,7 +14,7 @@
 @property(nonatomic, strong) FlutterEventChannel *rendererEventChannel;
 @property(nonatomic, strong) FlutterEventSink eventSink;
 @property(nonatomic, assign) BOOL reportRendererEvent;
-@property(nonatomic, strong) RTCVideoFrame *frameToRender;
+@property(nonatomic, strong) VIRTCVideoFrame *frameToRender;
 @end
 
 @implementation VoximplantRenderer
@@ -40,10 +40,10 @@
         if (!self.frameToRender) {
             return nil;
         }
-        RTCVideoFrame *frame = self.frameToRender;
+        VIRTCVideoFrame *frame = self.frameToRender;
         int width = 0;
         int height = 0;
-
+        
         if (frame.rotation == RTCVideoRotation_90 || frame.rotation == RTCVideoRotation_270) {
             width = frame.height;
             height = frame.width;
@@ -72,7 +72,7 @@
     }
 }
 
-- (void)renderFrame:(nullable RTCVideoFrame *)frame {
+- (void)renderFrame:(nullable VIRTCVideoFrame *)frame {
     if (!frame) {
         return;
     }
