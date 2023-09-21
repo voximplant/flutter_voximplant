@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.10.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.37.0 and Voximplant iOS SDK 2.50.0
+* Introduce new API to handle video receive stop on a remote video stream and its reason (see 3.10.0-beta changelog)
+
 ## 3.10.0-beta.4
 * Fix(ios): crash on receiving a message during a call
 
@@ -13,13 +17,13 @@
 ## 3.10.0-beta
 * This is a beta SDK version. Not recommended for production use.
 * Update Android and iOS platform code to use Voximplant Android SDK 2.37.0-beta and Voximplant iOS SDK 2.50.0-beta
-* The result of VIRemoteVideoStream.startReceiving and VIRemoteVideoStream.stopReceiving API call is now provided via events:
-  * VIEndpoint.onStartReceivingVideoStream
-  * VIEndpoint.onStopReceivingVideoStream
+* The result of [VIEndpoint.startReceiving](/docs/references/fluttersdk/call/viendpoint#startreceiving) and [VIEndpoint.stopReceiving](/docs/references/fluttersdk/call/viendpoint#stopreceiving) API call is now provided via events:
+  * [VIEndpoint.onStartReceivingVideoStream](/docs/references/fluttersdk/call/viendpoint#onstartreceivingvideostream)
+  * [VIEndpoint.onStopReceivingVideoStream](/docs/references/fluttersdk/call/viendpoint#onstopreceivingvideostream)
 * Introduce new API to handle video receive stop on a remote video stream:
-  * VIEndpoint.onStartReceivingVideoStream
-  * VIEndpoint.onStopReceivingVideoStream
-* Introduce new API VIVideoStreamReceiveStopReason to handle the reason for video receive stop on a remote video stream.
+  * [VIEndpoint.onStartReceivingVideoStream](/docs/references/fluttersdk/call/viendpoint#onstartreceivingvideostream)
+  * [VIEndpoint.onStopReceivingVideoStream](/docs/references/fluttersdk/call/viendpoint#onstopreceivingvideostream)
+* Introduce new API [VIVideoStreamReceiveStopReason](/docs/references/fluttersdk/call/vivideostreamreceivestopreason) to handle the reason for video receive stop on a remote video stream.
 
 ## 3.8.3
 * Fix(ios): crash on receiving a message during a call
