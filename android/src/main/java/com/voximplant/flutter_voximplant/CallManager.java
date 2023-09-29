@@ -15,7 +15,7 @@ import io.flutter.plugin.common.MethodChannel;
 
 class CallManager {
     private final Map<String, CallModule> mCallModules;
-    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     CallManager() {
         mCallModules = new HashMap<>();

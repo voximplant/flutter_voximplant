@@ -48,13 +48,13 @@ public class CallModule implements ICallListener, IEndpointListener, IQualityIss
     private EventChannel mQualityIssuesEventChannel;
     private EventChannel.EventSink mEventSink;
     private EventChannel.EventSink mIssuesEventSink;
-    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final BinaryMessenger mMessenger;
     private final TextureRegistry mTextures;
 
     private ILocalVideoStream mLocalVideoStream;
-    private Map<String, IRemoteVideoStream> mRemoteVideoStreams = new HashMap<>();
-    private Map<String, VoximplantRenderer> mRenderers = new HashMap<>();
+    private final Map<String, IRemoteVideoStream> mRemoteVideoStreams = new HashMap<>();
+    private final Map<String, VoximplantRenderer> mRenderers = new HashMap<>();
 
     CallModule(BinaryMessenger messenger, TextureRegistry textures, CallManager callManager, ICall call) {
         mCallManager = callManager;
@@ -388,8 +388,8 @@ public class CallModule implements ICallListener, IEndpointListener, IQualityIss
         Integer width = call.argument("width");
         Integer height = call.argument("height");
         IRemoteVideoStream videoStream = mRemoteVideoStreams.get(streamId);
-        if (videoStream != null) {
-           videoStream.requestVideoSize(width, height);
+        if (videoStream != null && width != null && height != null) {
+            videoStream.requestVideoSize(width, height);
             mHandler.post(() -> result.success(null));
         } else {
             mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS, "Failed to find remote video stream by provided video stream id", null));

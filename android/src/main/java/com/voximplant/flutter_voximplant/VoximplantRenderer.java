@@ -37,7 +37,7 @@ class VoximplantRenderer implements RendererCommon.RendererEvents, EventChannel.
     private int mFrameHeight;
     private double mAspectRatio;
     private int mRotation;
-    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     VoximplantRenderer(BinaryMessenger messenger, TextureRegistry textures) {
         mSurfaceTextureEntry = textures.createSurfaceTexture();
@@ -104,7 +104,13 @@ class VoximplantRenderer implements RendererCommon.RendererEvents, EventChannel.
             }
             params.put("rotation", mRotation / 90);
             params.put("textureId", getTextureId());
-            mHandler.post(() -> mRendererEventSink.success(params));
+            mHandler.post(() -> {
+                synchronized (this) {
+                    if (mRendererEventSink != null) {
+                        mRendererEventSink.success(params);
+                    }
+                }
+            });
             mReportRendererEvent = false;
         } else {
             mReportRendererEvent = true;
@@ -116,7 +122,9 @@ class VoximplantRenderer implements RendererCommon.RendererEvents, EventChannel.
         if (arguments instanceof String) {
             String type = (String) arguments;
             if (type.equals("plugins.voximplant.com/renderer_" + getTextureId())) {
-                mRendererEventSink = events;
+                synchronized (this) {
+                    mRendererEventSink = events;
+                }
                 if (mReportRendererEvent) {
                     sendResolutionChangedEvent();
                 }
@@ -129,7 +137,9 @@ class VoximplantRenderer implements RendererCommon.RendererEvents, EventChannel.
         if (arguments instanceof String) {
             String type = (String) arguments;
             if (type.equals("plugins.voximplant.com/renderer_" + getTextureId())) {
-                mRendererEventSink = null;
+                synchronized (this) {
+                    mRendererEventSink = null;
+                }
             }
         }
     }
