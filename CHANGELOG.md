@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.10.1
+* Fix(android): crash if the resolution of the video stream changes at the same moment when the renderer is removed
+
 ## 3.10.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.37.0 and Voximplant iOS SDK 2.50.0
 * Introduce new API to handle video receive stop on a remote video stream and its reason (see 3.10.0-beta changelog)
