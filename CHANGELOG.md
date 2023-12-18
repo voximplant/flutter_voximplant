@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.11.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.38.2 and Voximplant iOS SDK 2.51.0
+* Fix(android): [VILocalVideoDegradation](/docs/references/fluttersdk/call/vilocalvideodegradation) is not processed correctly in native code
+
 ## 3.10.1
 * Fix(android): crash if the resolution of the video stream changes at the same moment when the renderer is removed
 
