@@ -25,7 +25,7 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 21
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
@@ -38,6 +38,6 @@ android {
     }
 
     dependencies {
-        api 'com.voximplant:voximplant-sdk:2.37.0'
+        api 'com.voximplant:voximplant-sdk:2.38.2'
     }
 }

@@ -18,6 +18,7 @@ import com.voximplant.sdk.call.IEndpoint;
 import com.voximplant.sdk.call.VideoFlags;
 import com.voximplant.sdk.client.AuthParams;
 import com.voximplant.sdk.client.ClientConfig;
+import com.voximplant.sdk.client.ClientException;
 import com.voximplant.sdk.client.IClient;
 import com.voximplant.sdk.client.IClientIncomingCallListener;
 import com.voximplant.sdk.client.IClientLoginListener;
@@ -171,13 +172,22 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
             Boolean value = call.argument("forceRelayTraffic");
             clientConfig.forceRelayTraffic = value;
         }
-        mClient = Voximplant.getClientInstance(Executors.newSingleThreadExecutor(), mContext, clientConfig);
+        try {
+            mClient = Voximplant.getClientInstance(Executors.newSingleThreadExecutor(), mContext, clientConfig);
+        } catch (ClientException e) {
+            Log.e(TAG_NAME, "VoximplantPlugin: initClient: exception on client init: " + e.getMessage());
+            return;
+        }
         mClient.setClientSessionListener(this);
         mClient.setClientLoginListener(this);
         mClient.setClientIncomingCallListener(this);
     }
 
     private void connect(MethodCall call, MethodChannel.Result result) {
+        if (mClient == null) {
+            result.error(ERROR_INTERNAL, "Client is not initialized", null);
+            return;
+        }
         if (call.arguments != null) {
             boolean connectivityCheck = false;
             if (call.hasArgument("connectivityCheck")) {
@@ -208,11 +218,19 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
     }
 
     private void disconnect(MethodChannel.Result result) {
+        if (mClient == null) {
+            result.error(ERROR_INTERNAL, "Client is not initialized", null);
+            return;
+        }
         mClient.disconnect();
         mClientMethodCallResults.put("disconnect", result);
     }
 
     private void login(MethodCall call, MethodChannel.Result result) {
+        if (mClient == null) {
+            result.error(ERROR_INTERNAL, "Client is not initialized", null);
+            return;
+        }
         String username = call.argument("username");
         String password = call.argument("password");
         mClient.login(username, password);
@@ -220,6 +238,10 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
     }
 
     private void loginWithToken(MethodCall call, MethodChannel.Result result) {
+        if (mClient == null) {
+            result.error(ERROR_INTERNAL, "Client is not initialized", null);
+            return;
+        }
         String username = call.argument("username");
         String token = call.argument("token");
         mClient.loginWithAccessToken(username, token);
@@ -227,6 +249,10 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
     }
 
     private void loginWithKey(MethodCall call, MethodChannel.Result result) {
+        if (mClient == null) {
+            result.error(ERROR_INTERNAL, "Client is not initialized", null);
+            return;
+        }
         String username = call.argument("username");
         String hash = call.argument("hash");
         if (username == null || hash == null) {
@@ -238,12 +264,20 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
     }
 
     private void requestOneTimeKey(MethodCall call, MethodChannel.Result result) {
+        if (mClient == null) {
+            result.error(ERROR_INTERNAL, "Client is not initialized", null);
+            return;
+        }
         String username = (String) call.arguments;
         mClient.requestOneTimeKey(username);
         mClientMethodCallResults.put("requestOneTimeKey", result);
     }
 
     private void refreshToken(MethodCall call, MethodChannel.Result result) {
+        if (mClient == null) {
+            result.error(ERROR_INTERNAL, "Client is not initialized", null);
+            return;
+        }
         String username = call.argument("username");
         String refreshToken = call.argument("refreshToken");
         if (username == null || refreshToken == null) {
@@ -255,6 +289,10 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
     }
 
     private void call(MethodCall call, MethodChannel.Result result) {
+        if (mClient == null) {
+            result.error(ERROR_INTERNAL, "Client is not initialized", null);
+            return;
+        }
         if (call.arguments != null) {
             String number = call.argument("number");
             if (number == null) {
@@ -311,6 +349,10 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
     }
 
     private void registerForPushNotifications(MethodCall call, MethodChannel.Result result) {
+        if (mClient == null) {
+            result.error(ERROR_INTERNAL, "Client is not initialized", null);
+            return;
+        }
         if (call.arguments == null) {
             mHandler.post(() -> result.error(ERROR_INVALID_ARGUMENTS, "Client.registerForPushNotifications: Invalid arguments", null));
             return;
@@ -321,6 +363,10 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
     }
 
     private void unregisterFromPushNotifications(MethodCall call, MethodChannel.Result result) {
+        if (mClient == null) {
+            result.error(ERROR_INTERNAL, "Client is not initialized", null);
+            return;
+        }
         if (call.arguments == null) {
             mHandler.post(() -> result.error(ERROR_INVALID_ARGUMENTS, "Client.unregisterFromPushNotifications: Invalid arguments", null));
             return;
@@ -332,6 +378,10 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
 
     @SuppressWarnings("unchecked")
     private void handlePushNotification(MethodCall call, MethodChannel.Result result) {
+        if (mClient == null) {
+            result.error(ERROR_INTERNAL, "Client is not initialized", null);
+            return;
+        }
         if (call.arguments == null) {
             mHandler.post(() -> result.error(ERROR_INVALID_ARGUMENTS, "Client.handlePushNotification: Invalid arguments", null));
             return;
