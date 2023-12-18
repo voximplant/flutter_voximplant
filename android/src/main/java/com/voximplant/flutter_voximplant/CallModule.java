@@ -688,8 +688,8 @@ public class CallModule implements ICallListener, IEndpointListener, IQualityIss
         actualSizeStruct.put("height", actualHeight);
 
         Map<String, Object> targetSizeStruct = new HashMap<>();
-        actualSizeStruct.put("width", targetWidth);
-        actualSizeStruct.put("height", targetHeight);
+        targetSizeStruct.put("width", targetWidth);
+        targetSizeStruct.put("height", targetHeight);
 
         event.put("event", "VIQualityIssueTypeLocalVideoDegradation");
         event.put("actualSizeStruct", actualSizeStruct);
