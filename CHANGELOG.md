@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.11.1
+* Fix(android): End all calls on Flutter engine detach
+
 ## 3.11.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.38.2 and Voximplant iOS SDK 2.51.0
 * Fix(android): [VILocalVideoDegradation](/docs/references/fluttersdk/call/vilocalvideodegradation) is not processed correctly in native code
