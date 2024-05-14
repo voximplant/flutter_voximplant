@@ -38,7 +38,7 @@ class CallManager {
         return callModule;
     }
 
-    CallModule findCallByStreamId(MethodCall call, MethodChannel.Result result, String methodName) {
+    synchronized CallModule findCallByStreamId(MethodCall call, MethodChannel.Result result, String methodName) {
         if (call.arguments == null) {
             mHandler.post(() -> result.error(VoximplantErrors.ERROR_INVALID_ARGUMENTS, methodName + ": Invalid arguments", null));
             return null;
@@ -62,11 +62,17 @@ class CallManager {
 
     }
 
-    void callHasEnded(String callId) {
+    synchronized void endAllCalls() {
+        for (Map.Entry<String, CallModule> entry : mCallModules.entrySet()) {
+            entry.getValue().endCall();
+        }
+    }
+
+    synchronized void callHasEnded(String callId) {
         mCallModules.remove(callId);
     }
 
-    void addNewCall(String callId, CallModule callModule) {
+    synchronized void addNewCall(String callId, CallModule callModule) {
         mCallModules.put(callId, callModule);
     }
 }

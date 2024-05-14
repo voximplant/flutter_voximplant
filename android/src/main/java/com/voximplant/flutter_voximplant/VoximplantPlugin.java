@@ -74,10 +74,17 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin, Event
 
     @Override
     public void onDetachedFromEngine(FlutterPluginBinding binding) {
-        mChannel.setMethodCallHandler(null);
-        mChannel = null;
-        mLogsEventChannel.setStreamHandler(null);
-        mLogsEventChannel = null;
+        if (mCallManager != null) {
+            mCallManager.endAllCalls();
+        }
+        if (mChannel != null) {
+            mChannel.setMethodCallHandler(null);
+            mChannel = null;
+        }
+        if (mLogsEventChannel != null) {
+            mLogsEventChannel.setStreamHandler(null);
+            mLogsEventChannel = null;
+        }
     }
 
     @Override

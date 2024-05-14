@@ -126,6 +126,12 @@ public class CallModule implements ICallListener, IEndpointListener, IQualityIss
         }
     }
 
+    void endCall() {
+        if (mCall != null) {
+            mCall.hangup(null);
+        }
+    }
+
     private void answerCall(MethodCall call, MethodChannel.Result result) {
         String customData = call.argument("customData");
         Map<String, String> headers = call.argument("extraHeaders");
