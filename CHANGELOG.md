@@ -1,4 +1,9 @@
 # Changelog
+## 3.12.0
+- Update Android and iOS platform code to use Voximplant Android SDK 2.39.0 and Voximplant iOS SDK 2.52.0
+- Change minimum iOS deployment target to 12.0
+- Introduce [VINode](/docs/references/fluttersdk/client/vinode) enum
+- [VIClient.connect](/docs/references/fluttersdk/client/viclient#connect) API now takes an optional parameter to specify the node the Voximplant account belongs to
 
 ## 3.11.1
 * Fix(android): End all calls on Flutter engine detach
