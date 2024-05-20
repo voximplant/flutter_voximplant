@@ -24,6 +24,7 @@ import com.voximplant.sdk.client.IClientIncomingCallListener;
 import com.voximplant.sdk.client.IClientLoginListener;
 import com.voximplant.sdk.client.IClientSessionListener;
 import com.voximplant.sdk.client.LoginError;
+import com.voximplant.sdk.client.Node;
 import com.voximplant.sdk.client.RequestAudioFocusMode;
 
 import java.util.HashMap;
@@ -189,6 +190,11 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
             return;
         }
         if (call.arguments != null) {
+            Node node = null;
+            if (call.hasArgument("node")) {
+                String value = call.argument("node");
+                node = Utils.convertStringToNode(value);
+            }
             boolean connectivityCheck = false;
             if (call.hasArgument("connectivityCheck")) {
                 Boolean value = call.argument("connectivityCheck");
@@ -200,7 +206,11 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
                 servers = call.argument("servers");
             }
             try {
-                mClient.connect(connectivityCheck, servers);
+                if (node == null) {
+                    mClient.connect(connectivityCheck, servers);
+                } else {
+                    mClient.connect(node, connectivityCheck, servers);
+                }
             } catch (IllegalStateException e) {
                 result.error(ERROR_CONNECTION_FAILED, "Invalid state", null);
                 return;

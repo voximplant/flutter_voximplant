@@ -114,7 +114,7 @@ enum VIClientState {
 
   /// The client is currently connecting.
   Connecting,
-  
+
   /// The client is currently reconnecting.
   Reconnecting,
 
@@ -126,5 +126,18 @@ enum VIClientState {
 
   /// The client is currently logged in.
   LoggedIn,
+}
 
+/// Describes the nodes the Voximplant account may belong to.
+enum VINode {
+  Node1,
+  Node2,
+  Node3,
+  Node4,
+  Node5,
+  Node6,
+  Node7,
+  Node8,
+  Node9,
+  Node10,
 }

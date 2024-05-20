@@ -21,6 +21,7 @@
 + (VIVideoCodec)convertCodecFromString:(NSString *)codec;
 + (NSNumber *)convertQualityIssueLevelToInt:(VIQualityIssueLevel)level;
 + (NSNumber *)convertQualityIssueTypeToInt:(VIQualityIssueType)type;
++ (VIConnectionNode)convertStringToNode:(NSString *)node;
 @end
 
 

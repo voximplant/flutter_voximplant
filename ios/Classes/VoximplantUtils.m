@@ -289,6 +289,32 @@
     }
 }
 
++ (VIConnectionNode)convertStringToNode:(NSString *)node {
+    if ([node isEqualToString:@"Node1"]) {
+        return VIConnectionNodeNode1;
+    } else if ([node isEqualToString:@"Node2"]) {
+        return VIConnectionNodeNode2;
+    } else if ([node isEqualToString:@"Node3"]) {
+        return VIConnectionNodeNode3;
+    } else if ([node isEqualToString:@"Node4"]) {
+        return VIConnectionNodeNode4;
+    } else if ([node isEqualToString:@"Node5"]) {
+        return VIConnectionNodeNode5;
+    } else if ([node isEqualToString:@"Node6"]) {
+        return VIConnectionNodeNode6;
+    } else if ([node isEqualToString:@"Node7"]) {
+        return VIConnectionNodeNode7;
+    } else if ([node isEqualToString:@"Node8"]) {
+        return VIConnectionNodeNode8;
+    } else if ([node isEqualToString:@"Node9"]) {
+        return VIConnectionNodeNode9;
+    } else if ([node isEqualToString:@"Node10"]) {
+        return VIConnectionNodeNode10;
+    } else {
+        return VIConnectionNodeNode1;
+    }
+}
+
 @end
 
 

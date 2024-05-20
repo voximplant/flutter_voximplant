@@ -130,9 +130,16 @@
 - (void)connectWithArguments:(NSDictionary *)arguments result:(FlutterResult)result {
     BOOL connectResult = false;
     if (arguments) {
+        NSString *node = [arguments objectForKey:@"node"] != [NSNull null] ? [arguments objectForKey:@"node"] : nil;
         NSNumber *connectivityCheck = [arguments objectForKey:@"connectivityCheck"];
         NSArray *servers = [arguments objectForKey:@"servers"] != [NSNull null] ? [arguments objectForKey:@"servers"] : nil;
-        connectResult = [self.client connectWithConnectivityCheck:[connectivityCheck boolValue] gateways:servers];
+        
+        if (node) {
+            VIConnectionNode connectionNode = [VoximplantUtils convertStringToNode:node];
+            connectResult = [self.client connectTo:connectionNode connectivityCheck:[connectivityCheck boolValue] gateways:servers];
+        } else {
+            connectResult = [self.client connectWithConnectivityCheck:[connectivityCheck boolValue] gateways:servers];
+        }
     } else {
         connectResult = [self.client connect];
     }

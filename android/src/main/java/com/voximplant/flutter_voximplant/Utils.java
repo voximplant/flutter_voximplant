@@ -11,6 +11,7 @@ import com.voximplant.sdk.call.VideoCodec;
 import com.voximplant.sdk.call.VideoStreamReceiveStopReason;
 import com.voximplant.sdk.call.VideoStreamType;
 import com.voximplant.sdk.client.LoginError;
+import com.voximplant.sdk.client.Node;
 import com.voximplant.sdk.hardware.AudioFileUsage;
 import com.voximplant.sdk.messaging.IErrorEvent;
 
@@ -310,6 +311,37 @@ class Utils {
             case ICE_DISCONNECTED:
             default:
                 return 3;
+        }
+    }
+
+    static Node convertStringToNode(String node) {
+        if (node == null) {
+            return null;
+        }
+        switch (node) {
+            case "Node1":
+                return Node.NODE_1;
+            case "Node2":
+                return Node.NODE_2;
+            case "Node3":
+                return Node.NODE_3;
+            case "Node4":
+                return Node.NODE_4;
+            case "Node5":
+                return Node.NODE_5;
+            case "Node6":
+                return Node.NODE_6;
+            case "Node7":
+                return Node.NODE_7;
+            case "Node8":
+                return Node.NODE_8;
+            case "Node9":
+                return Node.NODE_9;
+            case "Node10":
+                return Node.NODE_10;
+            default:
+                return null;
+
         }
     }
 
