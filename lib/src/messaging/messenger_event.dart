@@ -1,6 +1,6 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
-part of voximplant;
+part of '../../flutter_voximplant.dart';
 
 /// Base interface that represents all messenger events provided
 /// via [VIMessenger] callbacks or as a result of method calls.
@@ -15,9 +15,9 @@ abstract class VIMessengerEvent {
   final VIMessengerEventType type;
 
   VIMessengerEvent._fromMap(Map<dynamic, dynamic> map)
-      : this.imUserId = map['id'],
-        this.action = VIMessengerAction.values[map['action']],
-        this.type = VIMessengerEventType.values[map['type']];
+      : imUserId = map['id'],
+        action = VIMessengerAction.values[map['action']],
+        type = VIMessengerEventType.values[map['type']];
 }
 
 /// Enum that represents actions that trigger messenger events. Each action is the reason for every triggered event.

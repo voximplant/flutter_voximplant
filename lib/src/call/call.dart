@@ -1,6 +1,6 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
-part of voximplant;
+part of '../../flutter_voximplant.dart';
 
 /// Represents supported video codecs.
 enum VIVideoCodec {
@@ -258,7 +258,7 @@ class VICall {
   String? _callKitUUID;
   final MethodChannel _channel;
   late StreamSubscription<dynamic> _eventSubscription;
-  List<VIEndpoint> _endpoints = [];
+  final List<VIEndpoint> _endpoints = [];
 
   /// Stream to monitor issues that affect call quality.
   ///
@@ -335,9 +335,7 @@ class VICall {
   ///   already answered.
   Future<void> answer({VICallSettings? settings}) async {
     try {
-      if (settings == null) {
-        settings = VICallSettings();
-      }
+      settings ??= VICallSettings();
       await _channel.invokeMethod<void>('Call.answerCall', <String, dynamic>{
         'callId': _callId,
         'sendVideo': settings.videoFlags.sendVideo,

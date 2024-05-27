@@ -1,6 +1,6 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
-part of voximplant;
+part of '../../flutter_voximplant.dart';
 
 /// Interface that may be used to manage a conversation.
 class VIConversation {
@@ -433,29 +433,29 @@ class VIConversation {
     this.lastSequence,
     this.lastUpdateTime,
     this.createdTime,
-  )   : this.title = config.title,
-        this.direct = config.direct,
-        this.uber = config.uber,
-        this.publicJoin = config.publicJoin,
-        this.participants = config.participants,
-        this.customData = config.customData,
-        this._methodChannel = Voximplant._channel;
+  )   : title = config.title,
+        direct = config.direct,
+        uber = config.uber,
+        publicJoin = config.publicJoin,
+        participants = config.participants,
+        customData = config.customData,
+        _methodChannel = Voximplant._channel;
 
   VIConversation._fromMap(Map<dynamic, dynamic> map)
-      : this.uuid = map['uuid'],
-        this.title = map['title'],
-        this.direct = map['direct'],
-        this.uber = map['uber'],
-        this.publicJoin = map['publicJoin'],
-        this.participants = (map['participants'] as List?)
+      : uuid = map['uuid'],
+        title = map['title'],
+        direct = map['direct'],
+        uber = map['uber'],
+        publicJoin = map['publicJoin'],
+        participants = (map['participants'] as List?)
                 ?.map((e) => VIConversationParticipant._fromMap(e))
                 .toList() ??
             [],
-        this.createdTime = map['createdTime'],
-        this.lastSequence = map['lastSequence'],
-        this.lastUpdateTime = map['lastUpdateTime'],
-        this.customData = map['customData']?.cast<String, dynamic>() ?? {},
-        this._methodChannel = Voximplant._channel;
+        createdTime = map['createdTime'],
+        lastSequence = map['lastSequence'],
+        lastUpdateTime = map['lastUpdateTime'],
+        customData = map['customData']?.cast<String, dynamic>() ?? {},
+        _methodChannel = Voximplant._channel;
 }
 
 /// Configuration either to create a new conversation or restore a previously created conversation:

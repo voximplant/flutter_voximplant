@@ -1,6 +1,6 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
-part of voximplant;
+part of '../../flutter_voximplant.dart';
 
 /// Signature for callbacks reporting that there is a new incoming call
 /// to the current user.
@@ -131,7 +131,7 @@ class VIClient {
   /// * [VIClientError.ERROR_CONNECTION_FAILED] - If the connection is currently
   ///   establishing or already established, or an error occurred.
   Future<void> connect({
-    VINode? node = null,
+    VINode? node,
     bool connectivityCheck = false,
     List<String>? servers,
   }) async {
@@ -412,9 +412,7 @@ class VIClient {
   ///   video calls - RECORD_AUDIO and CAMERA
   Future<VICall> call(String number, {VICallSettings? settings}) async {
     try {
-      if (settings == null) {
-        settings = VICallSettings();
-      }
+      settings ??= VICallSettings();
       Map<String, dynamic>? data = await _channel
           .invokeMapMethod<String, dynamic>('Client.call', <String, dynamic>{
         'number': number,
@@ -462,9 +460,7 @@ class VIClient {
     VICallSettings? settings,
   }) async {
     try {
-      if (settings == null) {
-        settings = VICallSettings();
-      }
+      settings ??= VICallSettings();
       Map<String, dynamic>? data = await _channel
           .invokeMapMethod<String, dynamic>('Client.call', <String, dynamic>{
         'number': conference,

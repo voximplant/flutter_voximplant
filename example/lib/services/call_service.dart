@@ -1,4 +1,4 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
 import 'package:audio_call/screens/incoming_call_screen.dart';
 import 'package:audio_call/services/navigation_service.dart';
@@ -7,8 +7,8 @@ import 'package:flutter_voximplant/flutter_voximplant.dart';
 import 'package:get_it/get_it.dart';
 
 class CallService {
-  VIClient _client;
-  VICall _call;
+  final VIClient _client = Voximplant().getClient();
+  VICall? _call;
 
   static final CallService _singleton = CallService._();
   factory CallService() {
@@ -16,7 +16,6 @@ class CallService {
   }
 
   CallService._() {
-    _client = Voximplant().getClient();
     _client.onIncomingCall = _onIncomingCall;
   }
 
@@ -27,13 +26,14 @@ class CallService {
   }
 
   Future<VICall> makeAudioCall(String number) async {
-    _call = await _client.call(number);
-    print('CallService: created call: ${_call.callId}');
-    return _call;
+    final call = await _client.call(number);
+    _call = call;
+    print('CallService: created call: ${_call?.callId}');
+    return call;
   }
 
   _onIncomingCall(VIClient client, VICall call, bool video,
-      Map<String, String> headers) async {
+      Map<String, String>? headers) async {
     if (_call != null) {
       await call.decline();
       return;
@@ -41,6 +41,6 @@ class CallService {
     _call = call;
     GetIt locator = GetIt.instance;
     locator<NavigationService>().navigateTo(IncomingCallScreen.routeName,
-        arguments: CallArguments(_call));
+        arguments: CallArguments(call));
   }
 }

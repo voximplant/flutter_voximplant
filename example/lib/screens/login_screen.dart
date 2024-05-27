@@ -1,8 +1,10 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+
 import 'package:audio_call/screens/main_screen.dart';
 import 'package:audio_call/services/auth_service.dart';
 import 'package:audio_call/theme/voximplant_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_voximplant/flutter_voximplant.dart';
 
 class LoginScreen extends StatefulWidget {
   static const routeName = '/';
@@ -22,7 +24,9 @@ class LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _authService.getUsername().then((value) {
-      _loginController.text = value;
+      if (value != null) {
+        _loginController.text = value;
+      }
     });
     _loginWithToken();
   }
@@ -37,33 +41,35 @@ class LoginScreenState extends State<LoginScreen> {
   Future<void> _loginWithToken() async {
     print('LoginScreen: login with accessToken');
     try {
-      String displayName = await _authService.loginWithAccessToken();
+      String? displayName = await _authService.loginWithAccessToken();
       print('LoginScreen: login with accessToken: displayName: $displayName');
       Navigator.pushReplacementNamed(context, MainScreen.routeName);
-    } catch (e) {
+    } on VIException catch (e) {
       _showAlertDialog(e.message);
+    } on Exception catch (e) {
+      _showAlertDialog(e.toString());
     }
   }
 
   Future<void> _loginWithPassword(String user, String password) async {
     print('LoginScreen: login with password: username: $user');
     try {
-      String displayName = await _authService.loginWithPassword(
-          user + '.voximplant.com', password);
+      String? displayName = await _authService.loginWithPassword(
+          '$user.voximplant.com', password);
       print('LoginScreen: login with password: displayName: $displayName');
       Navigator.pushReplacementNamed(context, MainScreen.routeName);
-    } catch (e) {
+    } on VIException catch (e) {
       _showAlertDialog(e.message);
     }
   }
 
-  void _showAlertDialog(String reason) {
+  void _showAlertDialog(String? reason) {
     showDialog<void>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Login error'),
-            content: Text(reason),
+            content: Text(reason ?? 'Internal error'),
             actions: <Widget>[
               TextButton(
                 child: Text('OK'),

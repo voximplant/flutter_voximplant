@@ -1,6 +1,6 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
-part of voximplant;
+part of '../../flutter_voximplant.dart';
 
 /// Interface that represents message within a conversation.
 class VIMessage {
@@ -94,16 +94,16 @@ class VIMessage {
     this.text,
     this.payload,
     this.sequence,
-  ) : this._methodChannel = Voximplant._channel;
+  ) : _methodChannel = Voximplant._channel;
 
   VIMessage._fromMap(Map<dynamic, dynamic> map)
-      : this.uuid = map['uuid'],
-        this.conversation = map['conversation'],
-        this.sequence = map['sequence'],
-        this.text = map['text'],
-        this.payload = (map['payload'] as List?)
+      : uuid = map['uuid'],
+        conversation = map['conversation'],
+        sequence = map['sequence'],
+        text = map['text'],
+        payload = (map['payload'] as List?)
                 ?.map((e) => (e as Map).cast<String, dynamic>())
                 .toList() ??
             [],
-        this._methodChannel = Voximplant._channel;
+        _methodChannel = Voximplant._channel;
 }

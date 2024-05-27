@@ -1,6 +1,6 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
-part of voximplant;
+part of '../../flutter_voximplant.dart';
 
 /// Interface that represents user information.
 /// Voximplant users are created via the Voximplant control panel or HTTP API.
@@ -45,21 +45,19 @@ class VIUser {
   final Map<String, dynamic> customData;
 
   VIUser._fromMap(Map<dynamic, dynamic> map)
-      : this.imId = map['id'],
-        this.displayName = map['displayName'],
-        this.name = map['name'],
-        this.isDeleted = map['isDeleted'],
-        this.conversationList =
-            (map['conversationList'] as List?)?.cast<String>(),
-        this.leaveConversationList =
+      : imId = map['id'],
+        displayName = map['displayName'],
+        name = map['name'],
+        isDeleted = map['isDeleted'],
+        conversationList = (map['conversationList'] as List?)?.cast<String>(),
+        leaveConversationList =
             (map['leaveConversationList'] as List?)?.cast<String>(),
-        this.notifications = (map['notifications'] as List?)
+        notifications = (map['notifications'] as List?)
             ?.cast<int>()
             .map((e) => VIMessengerNotification.values[e])
             .toList(),
-        this.privateCustomData =
-            map['privateCustomData']?.cast<String, dynamic>(),
-        this.customData = map['customData']?.cast<String, dynamic>();
+        privateCustomData = map['privateCustomData']?.cast<String, dynamic>(),
+        customData = map['customData']?.cast<String, dynamic>();
 }
 
 /// Enum that represents events available for push notification subscriptions.
