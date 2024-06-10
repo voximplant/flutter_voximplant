@@ -1,0 +1,7 @@
+include: package:lints/recommended.yaml
+
+linter:
+  rules:
+    # temporary disable these rules to avoid breaking refactor
+    prefer_generic_function_type_aliases: false
+    constant_identifier_names: false

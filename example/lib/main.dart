@@ -1,4 +1,4 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
 import 'package:audio_call/screens/call_screen.dart';
 import 'package:audio_call/screens/incoming_call_screen.dart';
@@ -7,7 +7,6 @@ import 'package:audio_call/screens/main_screen.dart';
 import 'package:audio_call/theme/voximplant_theme.dart';
 import 'package:audio_call/utils/screen_arguments.dart';
 import 'package:audio_call/services/navigation_service.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -32,12 +31,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: VoximplantColors.primary,
         primaryColorDark: VoximplantColors.primaryDark,
-        accentColor: VoximplantColors.accent,
+        // accentColor: VoximplantColors.accent,
       ),
       navigatorKey: getIt<NavigationService>().navigatorKey,
       onGenerateRoute: (settings) {
         if (settings.name == CallScreen.routeName) {
-          final CallArguments args = settings.arguments;
+          final args = settings.arguments as CallArguments;
           return MaterialPageRoute(
             builder: (context) {
               return CallScreen(
@@ -46,7 +45,7 @@ class MyApp extends StatelessWidget {
             },
           );
         } else if (settings.name == IncomingCallScreen.routeName) {
-          final CallArguments args = settings.arguments;
+          final args = settings.arguments as CallArguments;
           return MaterialPageRoute(
             builder: (context) {
               return IncomingCallScreen(call: args.call);

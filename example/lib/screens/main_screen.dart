@@ -1,4 +1,4 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
 import 'dart:io';
 
@@ -21,9 +21,9 @@ class MainScreen extends StatelessWidget {
   final AuthService _authService = AuthService();
   final CallService _callService = CallService();
   final TextEditingController _callToController = TextEditingController();
-  String get _displayName => _authService.displayName;
+  String? get _displayName => _authService.displayName;
 
-  MainScreen({Key key}) : super(key: key) {
+  MainScreen({super.key}) {
     _authService.onConnectionClosed = _onConnectionClosed;
   }
 

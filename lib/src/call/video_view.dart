@@ -1,6 +1,6 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
-part of voximplant;
+part of '../../flutter_voximplant.dart';
 
 /// Represents supported video rotations.
 enum VIVideoRotation {
@@ -89,11 +89,12 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
   String? get streamId => _streamId;
   _TextureChanged? _textureChanged;
 
-  VIVideoViewController() : super(_VIVideoViewValue());
+  VIVideoViewController()
+      : super(_VIVideoViewValue(0, 0, 1.0, VIVideoRotation.Rotation_0));
 
   Future<void> _setStreamId(String? streamId) async {
     if (streamId != null) {
-      if (this._streamId != null && this._streamId == streamId) {
+      if (_streamId != null && _streamId == streamId) {
         return Future<void>.value();
       }
 
@@ -118,12 +119,12 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
       _textureChanged?.call(data['textureId']);
       _streamId = streamId;
     } else {
-      if (this._streamId == null) {
+      if (_streamId == null) {
         return Future<void>.value();
       }
       await _channel
           .invokeMethod('VideoStream.removeVideoRenderer', <String, String?>{
-        'streamId': this._streamId,
+        'streamId': _streamId,
       });
       _rendererSubscription?.cancel();
       _rendererSubscription = null;
@@ -163,12 +164,7 @@ class _VIVideoViewValue {
   final double aspectRatio;
   final VIVideoRotation rotation;
 
-  _VIVideoViewValue({
-    this.width = 0,
-    this.height = 0,
-    this.aspectRatio = 1.0,
-    this.rotation = VIVideoRotation.Rotation_0,
-  });
+  _VIVideoViewValue(this.width, this.height, this.aspectRatio, this.rotation);
 
   _VIVideoViewValue.copy(
     this.width,

@@ -1,6 +1,6 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
-part of voximplant;
+part of '../../flutter_voximplant.dart';
 
 /// Class that represents a participant of the conversation.
 ///
@@ -109,18 +109,18 @@ class VIConversationParticipant {
     this.canRemoveMessages = true,
     this.canRemoveAllMessages = false,
     this.canManageParticipants = false,
-  }) : this.lastReadSequence = 0;
+  }) : lastReadSequence = 0;
 
   VIConversationParticipant._fromMap(Map<dynamic, dynamic> map)
-      : this.imUserId = map['id'],
-        this.lastReadSequence = map['lastReadSequence'],
-        this.isOwner = map['isOwner'],
-        this.canWrite = map['canWrite'],
-        this.canEditMessages = map['canEditMessages'],
-        this.canEditAllMessages = map['canEditAllMessages'],
-        this.canRemoveMessages = map['canRemoveMessages'],
-        this.canRemoveAllMessages = map['canRemoveAllMessages'],
-        this.canManageParticipants = map['canManageParticipants'];
+      : imUserId = map['id'],
+        lastReadSequence = map['lastReadSequence'],
+        isOwner = map['isOwner'],
+        canWrite = map['canWrite'],
+        canEditMessages = map['canEditMessages'],
+        canEditAllMessages = map['canEditAllMessages'],
+        canRemoveMessages = map['canRemoveMessages'],
+        canRemoveAllMessages = map['canRemoveAllMessages'],
+        canManageParticipants = map['canManageParticipants'];
 
   Map<String, Object> get _toMap => {
         'id': imUserId,

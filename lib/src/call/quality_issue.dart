@@ -1,4 +1,6 @@
-part of voximplant;
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+
+part of '../../flutter_voximplant.dart';
 
 /// Represents quality issue levels.
 enum VIQualityIssueLevel {
@@ -101,7 +103,7 @@ abstract class VIQualityIssue {
   final VIQualityIssueLevel level;
 
   VIQualityIssue._fromMap(Map<dynamic, dynamic> map)
-      : this.level = VIQualityIssueLevel.values[map['issueLevel']];
+      : level = VIQualityIssueLevel.values[map['issueLevel']];
 }
 
 /// Represents a quality issue reporting that the local video is encoded by a
@@ -121,9 +123,9 @@ class VICodecMismatch extends VIQualityIssue {
   /// Codec that is currently used or null if the video is not sent
   final String? codec;
 
-  VICodecMismatch._fromMap(Map<dynamic, dynamic> map)
-      : this.codec = map['codec'],
-        super._fromMap(map);
+  VICodecMismatch._fromMap(super.map)
+      : codec = map['codec'],
+        super._fromMap();
 }
 
 /// Represents a quality issue reporting that the video resolution sent to the
@@ -146,14 +148,14 @@ class VILocalVideoDegradation extends VIQualityIssue {
   /// Captured frame size.
   final VIFrameSize targetSize;
 
-  VILocalVideoDegradation._fromMap(Map<dynamic, dynamic> map)
-      : this.actualSize = VIFrameSize(
+  VILocalVideoDegradation._fromMap(super.map)
+      : actualSize = VIFrameSize(
             width: map['actualSizeStruct']['width'],
             height: map['actualSizeStruct']['height']),
-        this.targetSize = VIFrameSize(
+        targetSize = VIFrameSize(
             width: map['targetSizeStruct']['width'],
             height: map['targetSizeStruct']['height']),
-        super._fromMap(map);
+        super._fromMap();
 }
 
 /// Represents a quality issue reporting that the network-based media latency
@@ -176,9 +178,9 @@ class VIHighMediaLatency extends VIQualityIssue {
   /// the issue triggered.
   final double latency;
 
-  VIHighMediaLatency._fromMap(Map<dynamic, dynamic> map)
-      : this.latency = map['latency'],
-        super._fromMap(map);
+  VIHighMediaLatency._fromMap(super.map)
+      : latency = map['latency'],
+        super._fromMap();
 }
 
 /// Represents a quality issue reporting that the ICE connection is switched to
@@ -196,7 +198,7 @@ class VIHighMediaLatency extends VIQualityIssue {
 ///
 /// A subclass of [VIQualityIssue]
 class VIIceDisconnected extends VIQualityIssue {
-  VIIceDisconnected._fromMap(Map<dynamic, dynamic> map) : super._fromMap(map);
+  VIIceDisconnected._fromMap(super.map) : super._fromMap();
 }
 
 /// Represents a quality issue reporting that no audio is captured by the
@@ -213,7 +215,7 @@ class VIIceDisconnected extends VIQualityIssue {
 ///
 /// A subclass of [VIQualityIssue]
 class VINoAudioSignal extends VIQualityIssue {
-  VINoAudioSignal._fromMap(Map<dynamic, dynamic> map) : super._fromMap(map);
+  VINoAudioSignal._fromMap(super.map) : super._fromMap();
 }
 
 /// Represents a quality issue reporting that packet loss detection.
@@ -232,9 +234,9 @@ class VIPacketLoss extends VIQualityIssue {
   /// Average packet loss for 2.5 seconds.
   final double packetLoss;
 
-  VIPacketLoss._fromMap(Map<dynamic, dynamic> map)
-      : this.packetLoss = map['packetLoss'],
-        super._fromMap(map);
+  VIPacketLoss._fromMap(super.map)
+      : packetLoss = map['packetLoss'],
+        super._fromMap();
 }
 
 /// Represents a quality issue reporting that no audio is received on the
@@ -272,10 +274,10 @@ class VINoAudioReceive extends VIQualityIssue {
   /// Id endpoint the issue belongs to.
   final String endpointId;
 
-  VINoAudioReceive._fromMap(Map<dynamic, dynamic> map)
-      : this.audiostreamId = map['audiostreamId'],
-        this.endpointId = map['endpointId'],
-        super._fromMap(map);
+  VINoAudioReceive._fromMap(super.map)
+      : audiostreamId = map['audiostreamId'],
+        endpointId = map['endpointId'],
+        super._fromMap();
 }
 
 /// Represents a quality issue reporting that no video is received on the
@@ -319,17 +321,17 @@ class VINoVideoReceive extends VIQualityIssue {
   /// Id endpoint the issue belongs to.
   final String endpointId;
 
-  VINoVideoReceive._fromMap(Map<dynamic, dynamic> map)
-      : this.videostreamId = map['videostreamId'],
-        this.endpointId = map['endpointId'],
-        super._fromMap(map);
+  VINoVideoReceive._fromMap(super.map)
+      : videostreamId = map['videostreamId'],
+        endpointId = map['endpointId'],
+        super._fromMap();
 }
 
 /// Represents a quality issue.
 class _VICallQualityIssue {
-  String _callId;
+  final String _callId;
 
-  StreamController<VIQualityIssue> _qualityStreamController =
+  final StreamController<VIQualityIssue> _qualityStreamController =
       StreamController.broadcast();
 
   _VICallQualityIssue._(this._callId) {

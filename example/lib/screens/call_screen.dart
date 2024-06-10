@@ -1,4 +1,4 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
 import 'package:audio_call/screens/main_screen.dart';
 import 'package:audio_call/services/call_service.dart';
@@ -10,25 +10,25 @@ class CallScreen extends StatefulWidget {
   static const routeName = '/callScreen';
   final VICall call;
 
-  CallScreen({Key key, @required this.call}) : super(key: key);
+  CallScreen({super.key, required this.call});
 
   @override
   State<StatefulWidget> createState() {
-    return new CallScreenState(this.call);
+    return CallScreenState(call);
   }
 }
 
 class CallScreenState extends State<CallScreen> {
-  String _endpointName;
+  String? _endpointName;
   String _callStatus = 'Connecting...';
   bool _isAudioMuted = false;
   bool _isOnHold = false;
-  VICall _call;
+  final VICall _call;
   IconData _audioDeviceIcon = Icons.hearing;
-  VIAudioDeviceManager _audioDeviceManager;
+  final VIAudioDeviceManager _audioDeviceManager =
+      Voximplant().audioDeviceManager;
 
   CallScreenState(this._call) {
-    _audioDeviceManager = Voximplant().audioDeviceManager;
     _audioDeviceManager.onAudioDeviceChanged = _onAudioDeviceChange;
     _call.onCallDisconnected = _onCallDisconnected;
     _call.onCallFailed = _onCallFailed;
@@ -38,7 +38,7 @@ class CallScreenState extends State<CallScreen> {
     _call.onCallReconnecting = _onReconnecting;
     _call.onCallReconnected = _onReconnected;
     if (_call.endpoints.isNotEmpty) {
-      _endpointName = _call.endpoints.first?.userName ?? 'Unknown';
+      _endpointName = _call.endpoints.first.userName ?? 'Unknown';
     }
     print('CallScreen: received callId: ${_call.callId}');
   }
@@ -66,25 +66,25 @@ class CallScreenState extends State<CallScreen> {
   }
 
   _onCallDisconnected(
-      VICall call, Map<String, String> headers, bool answeredElsewhere) {
+      VICall call, Map<String, String>? headers, bool answeredElsewhere) {
     print('CallScreen: onCallDisconnected');
     CallService().notifyCallIsEnded(_call.callId);
     Navigator.pushReplacementNamed(context, MainScreen.routeName);
   }
 
   _onCallFailed(
-      VICall call, int code, String description, Map<String, String> headers) {
+      VICall call, int code, String description, Map<String, String>? headers) {
     print('CallScreen: onCallFailed');
     CallService().notifyCallIsEnded(_call.callId);
     Navigator.pushReplacementNamed(context, MainScreen.routeName);
   }
 
-  _onCallConnected(VICall call, Map<String, String> headers) {
+  _onCallConnected(VICall call, Map<String, String>? headers) {
     print('CallScreen: onCallConnected');
     setState(() {
       _callStatus = 'Call in progress';
       if (_call.endpoints.isNotEmpty) {
-        _endpointName = _call.endpoints.first?.userName ?? 'Unknown';
+        _endpointName = _call.endpoints.first.userName ?? 'Unknown';
       }
     });
   }
@@ -103,7 +103,7 @@ class CallScreenState extends State<CallScreen> {
     });
   }
 
-  _onCallRinging(VICall call, Map<String, String> headers) {
+  _onCallRinging(VICall call, Map<String, String>? headers) {
     print('CallScreen: onCallRinging');
     setState(() {
       _callStatus = 'Ringing...';
@@ -208,7 +208,7 @@ class CallScreenState extends State<CallScreen> {
                     ),
                   ),
                   Text(
-                    '$_callStatus',
+                    _callStatus,
                     style: TextStyle(
                       fontSize: 18,
                     ),

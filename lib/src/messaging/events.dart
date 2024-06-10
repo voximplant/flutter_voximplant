@@ -1,6 +1,6 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
-part of voximplant;
+part of '../../flutter_voximplant.dart';
 
 /// Interface that represents messenger events related to users, such as get or edit user.
 ///
@@ -9,9 +9,9 @@ class VIUserEvent extends VIMessengerEvent {
   /// VIUser instance with the user details.
   final VIUser user;
 
-  VIUserEvent._fromMap(Map<dynamic, dynamic> map)
-      : this.user = VIUser._fromMap(map['user']),
-        super._fromMap(map);
+  VIUserEvent._fromMap(super.map)
+      : user = VIUser._fromMap(map['user']),
+        super._fromMap();
 }
 
 /// Interface that represents the messenger events for the following methods call result:
@@ -31,8 +31,8 @@ class VIRetransmitEvent extends VIMessengerEvent {
   /// The event sequence number to which the events were retransmitted.
   final int toSequence;
 
-  VIRetransmitEvent._fromMap(Map<dynamic, dynamic> map)
-      : this.events = (map['events'] as List?)
+  VIRetransmitEvent._fromMap(super.map)
+      : events = (map['events'] as List?)
                 ?.cast<Map<dynamic, dynamic>>()
                 .map((e) => e['conversation'] == null
                     ? VIMessageEvent._fromMap(e)
@@ -40,9 +40,9 @@ class VIRetransmitEvent extends VIMessengerEvent {
                 .toList()
                 .cast<VIMessengerEvent>() ??
             [],
-        this.fromSequence = map['fromSequence'],
-        this.toSequence = map['toSequence'],
-        super._fromMap(map);
+        fromSequence = map['fromSequence'],
+        toSequence = map['toSequence'],
+        super._fromMap();
 }
 
 /// Interface that represents messenger events related to messages (send, update, remove).
@@ -58,11 +58,11 @@ class VIMessageEvent extends VIMessengerEvent {
   /// The UNIX timestamp (seconds) that specifies the time the message event was provoked.
   final int timestamp;
 
-  VIMessageEvent._fromMap(Map<dynamic, dynamic> map)
-      : this.message = VIMessage._fromMap(map['message']),
-        this.sequence = map['sequence'],
-        this.timestamp = map['timestamp'],
-        super._fromMap(map);
+  VIMessageEvent._fromMap(super.map)
+      : message = VIMessage._fromMap(map['message']),
+        sequence = map['sequence'],
+        timestamp = map['timestamp'],
+        super._fromMap();
 }
 
 /// Interface that represents messenger events related to conversations such as create, edit, remove, etc.
@@ -78,11 +78,11 @@ class VIConversationEvent extends VIMessengerEvent {
   /// The UNIX timestamp (seconds) that specifies the time the conversation event was provoked.
   final int timestamp;
 
-  VIConversationEvent._fromMap(Map<dynamic, dynamic> map)
-      : this.conversation = VIConversation._fromMap(map['conversation']),
-        this.sequence = map['sequence'],
-        this.timestamp = map['timestamp'],
-        super._fromMap(map);
+  VIConversationEvent._fromMap(super.map)
+      : conversation = VIConversation._fromMap(map['conversation']),
+        sequence = map['sequence'],
+        timestamp = map['timestamp'],
+        super._fromMap();
 }
 
 /// Interface that represents the messenger events related to user status changes.
@@ -92,9 +92,9 @@ class VIStatusEvent extends VIMessengerEvent {
   /// The user status.
   final bool isOnline;
 
-  VIStatusEvent._fromMap(Map<dynamic, dynamic> map)
-      : this.isOnline = map['isOnline'],
-        super._fromMap(map);
+  VIStatusEvent._fromMap(super.map)
+      : isOnline = map['isOnline'],
+        super._fromMap();
 }
 
 /// Interface that represents the messenger events related to subscriptions.
@@ -104,9 +104,9 @@ class VISubscriptionEvent extends VIMessengerEvent {
   /// The list of the IM user identifiers of the current (un)subscription.
   final List<int> users;
 
-  VISubscriptionEvent._fromMap(Map<dynamic, dynamic> map)
-      : this.users = (map['users'] as List?)?.cast<int>() ?? [],
-        super._fromMap(map);
+  VISubscriptionEvent._fromMap(super.map)
+      : users = (map['users'] as List?)?.cast<int>() ?? [],
+        super._fromMap();
 }
 
 /// Interface that represents messenger events such as typing, isRead.
@@ -120,10 +120,10 @@ class VIConversationServiceEvent extends VIMessengerEvent {
   /// Only available for [VIMessengerEventType.read].
   final int sequence;
 
-  VIConversationServiceEvent._fromMap(Map<dynamic, dynamic> map)
-      : this.conversationUuid = map['conversationUuid'],
-        this.sequence = map['sequence'],
-        super._fromMap(map);
+  VIConversationServiceEvent._fromMap(super.map)
+      : conversationUuid = map['conversationUuid'],
+        sequence = map['sequence'],
+        super._fromMap();
 }
 
 /// Interface that represents messenger events related to conversation enumeration.
@@ -133,8 +133,8 @@ class VIConversationListEvent extends VIMessengerEvent {
   /// The list of conversations UUIDs.
   final List<String> conversationList;
 
-  VIConversationListEvent._fromMap(Map<dynamic, dynamic> map)
-      : this.conversationList =
+  VIConversationListEvent._fromMap(super.map)
+      : conversationList =
             (map['conversationList'] as List?)?.cast<String>() ?? [],
-        super._fromMap(map);
+        super._fromMap();
 }

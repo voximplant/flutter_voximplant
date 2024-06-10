@@ -1,6 +1,6 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
-part of voximplant;
+part of '../../flutter_voximplant.dart';
 
 /// Enum that represents the reason why video receive on the remote
 /// video stream was stopped.
@@ -162,7 +162,7 @@ class VIEndpoint {
   String? _sipUri;
   final String _endpointId;
   int? _place;
-  List<VIVideoStream> _remoteVideoStreams = [];
+  final List<VIVideoStream> _remoteVideoStreams = [];
   final MethodChannel _channel = Voximplant._channel;
 
   /// This endpoint's user name.
@@ -279,10 +279,10 @@ class VIEndpoint {
     String? sipUri,
     int? place,
   ) {
-    this._displayName = displayName;
-    this._userName = username;
-    this._sipUri = sipUri;
-    this._place = place;
+    _displayName = displayName;
+    _userName = username;
+    _sipUri = sipUri;
+    _place = place;
     onEndpointUpdated?.call(this);
   }
 

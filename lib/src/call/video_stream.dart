@@ -1,6 +1,6 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
-part of voximplant;
+part of '../../flutter_voximplant.dart';
 
 /// Represents video stream types.
 enum VIVideoStreamType {

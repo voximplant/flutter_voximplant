@@ -1,4 +1,4 @@
-/// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 
 import 'dart:io';
 
@@ -17,12 +17,12 @@ class IncomingCallScreen extends StatelessWidget {
   static const routeName = '/incomingCall';
   final VICall call;
 
-  IncomingCallScreen({Key key, @required this.call}) : super(key: key) {
+  IncomingCallScreen({super.key, required this.call}) {
     call.onCallDisconnected = _onCallDisconnected;
   }
 
   _onCallDisconnected(
-      VICall call, Map<String, String> headers, bool answeredElsewhere) {
+      VICall call, Map<String, String>? headers, bool answeredElsewhere) {
     CallService().notifyCallIsEnded(call.callId);
     GetIt locator = GetIt.instance;
     locator<NavigationService>().navigateTo(MainScreen.routeName);
