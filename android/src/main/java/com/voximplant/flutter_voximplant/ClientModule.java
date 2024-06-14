@@ -195,6 +195,10 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
                 String value = call.argument("node");
                 node = Utils.convertStringToNode(value);
             }
+            if (node == null) {
+                result.error(ERROR_INTERNAL, "Invalid arguments", null);
+                return;
+            }
             boolean connectivityCheck = false;
             if (call.hasArgument("connectivityCheck")) {
                 Boolean value = call.argument("connectivityCheck");
@@ -206,22 +210,14 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
                 servers = call.argument("servers");
             }
             try {
-                if (node == null) {
-                    mClient.connect(connectivityCheck, servers);
-                } else {
-                    mClient.connect(node, connectivityCheck, servers);
-                }
+                mClient.connect(node, connectivityCheck, servers);
             } catch (IllegalStateException e) {
                 result.error(ERROR_CONNECTION_FAILED, "Invalid state", null);
                 return;
             }
         } else {
-            try {
-                mClient.connect();
-            } catch (IllegalStateException e) {
-                result.error(ERROR_CONNECTION_FAILED, "Invalid state", null);
-                return;
-            }
+            result.error(ERROR_INTERNAL, "Invalid arguments", null);
+            return;
         }
 
         mClientMethodCallResults.put(call.method, result);

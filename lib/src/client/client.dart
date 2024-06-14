@@ -117,7 +117,7 @@ class VIClient {
   /// the Voximplant Cloud if [connectivityCheck] is enabled (disabled by
   /// default).
   ///
-  /// Optional `node` - Specifies the node the Voximplant account belongs to.
+  /// `node` - Specifies the node the Voximplant account belongs to.
   ///
   /// Optional `connectivityCheck` - Checks whether UDP traffic will flow correctly
   /// between device and Voximplant cloud. This check reduces connection speed.
@@ -131,24 +131,17 @@ class VIClient {
   /// * [VIClientError.ERROR_CONNECTION_FAILED] - If the connection is currently
   ///   establishing or already established, or an error occurred.
   Future<void> connect({
-    VINode? node,
+    required VINode node,
     bool connectivityCheck = false,
     List<String>? servers,
   }) async {
     _changeClientState(VIClientState.Connecting);
     try {
-      if (node != null) {
-        await _channel.invokeMethod<void>('Client.connect', <String, dynamic>{
-          'connectivityCheck': connectivityCheck,
-          'servers': servers,
-          'node': node.name,
-        });
-      } else {
-        await _channel.invokeMethod<void>('Client.connect', <String, dynamic>{
-          'connectivityCheck': connectivityCheck,
-          'servers': servers,
-        });
-      }
+      await _channel.invokeMethod<void>('Client.connect', <String, dynamic>{
+        'connectivityCheck': connectivityCheck,
+        'servers': servers,
+        'node': node.name,
+      });
       VIClientState state = await getClientState();
       _changeClientState(state);
     } on PlatformException catch (e) {

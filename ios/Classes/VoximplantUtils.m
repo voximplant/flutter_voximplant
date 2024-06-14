@@ -315,6 +315,19 @@
     }
 }
 
++ (BOOL)validateConnectionNodeString:(NSString *)node {
+    return [node isEqualToString:@"Node1"] ||
+    [node isEqualToString:@"Node2"] ||
+    [node isEqualToString:@"Node3"] ||
+    [node isEqualToString:@"Node4"] ||
+    [node isEqualToString:@"Node5"] ||
+    [node isEqualToString:@"Node6"] ||
+    [node isEqualToString:@"Node7"] ||
+    [node isEqualToString:@"Node8"] ||
+    [node isEqualToString:@"Node9"] ||
+    [node isEqualToString:@"Node10"];
+}
+
 @end
 
 

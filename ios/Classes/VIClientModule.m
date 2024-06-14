@@ -134,15 +134,18 @@
         NSNumber *connectivityCheck = [arguments objectForKey:@"connectivityCheck"];
         NSArray *servers = [arguments objectForKey:@"servers"] != [NSNull null] ? [arguments objectForKey:@"servers"] : nil;
         
-        if (node) {
-            VIConnectionNode connectionNode = [VoximplantUtils convertStringToNode:node];
-            connectResult = [self.client connectTo:connectionNode connectivityCheck:[connectivityCheck boolValue] gateways:servers];
-        } else {
-            connectResult = [self.client connectWithConnectivityCheck:[connectivityCheck boolValue] gateways:servers];
+        if (!node || ![VoximplantUtils validateConnectionNodeString:node]) {
+            result([FlutterError errorWithCode:@"ERROR_INTERNAL" message:@"Invalid arguments" details:nil]);
+            return;
         }
+        
+        VIConnectionNode connectionNode = [VoximplantUtils convertStringToNode:node];
+        connectResult = [self.client connectTo:connectionNode connectivityCheck:[connectivityCheck boolValue] gateways:servers];
     } else {
-        connectResult = [self.client connect];
+        result([FlutterError errorWithCode:@"ERROR_INTERNAL" message:@"Invalid arguments" details:nil]);
+        return;
     }
+    
     if (connectResult) {
         [self.clientMethodCallResults setObject:result forKey:@"connect"];
     } else {

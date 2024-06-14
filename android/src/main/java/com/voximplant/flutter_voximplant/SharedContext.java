@@ -4,7 +4,7 @@
 
 package com.voximplant.flutter_voximplant;
 
-import org.webrtc.EglBase;
+import com.voximplant.webrtc.EglBase;
 
 class SharedContext {
     private static EglBase mSharedEglBase;

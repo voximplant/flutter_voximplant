@@ -9,11 +9,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import org.webrtc.EglBase;
-import org.webrtc.GlRectDrawer;
-import org.webrtc.RendererCommon;
-import org.webrtc.SurfaceEglRenderer;
-import org.webrtc.ThreadUtils;
+import com.voximplant.webrtc.EglBase;
+import com.voximplant.webrtc.GlRectDrawer;
+import com.voximplant.webrtc.RendererCommon;
+import com.voximplant.webrtc.SurfaceEglRenderer;
+import com.voximplant.webrtc.ThreadUtils;
 
 import java.util.HashMap;
 import java.util.Map;
