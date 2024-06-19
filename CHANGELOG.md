@@ -8,7 +8,7 @@
 * Resolve dart static analyzer issues
 * Update dependency constraints to
   * sdk: '>=2.18.0 <4.0.0'
-  *flutter: '>=3.3.0'
+  * flutter: '>=3.3.0'
 
 ## 3.12.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.39.0 and Voximplant iOS SDK 2.52.0
