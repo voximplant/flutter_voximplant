@@ -1,4 +1,15 @@
 # Changelog
+
+## 3.13.0
+- Update Android and iOS platform code to use Voximplant Android SDK 2.40.1 and Voximplant iOS SDK 2.53.0
+- [VINode](/docs/references/fluttersdk/client/vinode) is a required parameter to establish the connection with the Voximplant Cloud. 
+  Find more information about [VINode](/docs/references/fluttersdk/client/vinode) in the [getting started guide](/docs/getting-started/platform/flutter#connect-to-the-voximplant-cloud-and-log-in).
+- Update example project
+- Resolve dart static analyzer issues
+- Update dependency constraints to
+  - sdk: '>=2.18.0 <4.0.0'
+  - flutter: '>=3.3.0'
+
 ## 3.12.0
 - Update Android and iOS platform code to use Voximplant Android SDK 2.39.0 and Voximplant iOS SDK 2.52.0
 - Change minimum iOS deployment target to 12.0
