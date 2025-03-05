@@ -140,4 +140,5 @@ enum VINode {
   Node8,
   Node9,
   Node10,
+  Node11,
 }

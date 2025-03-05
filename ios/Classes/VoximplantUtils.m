@@ -310,6 +310,8 @@
         return VIConnectionNodeNode9;
     } else if ([node isEqualToString:@"Node10"]) {
         return VIConnectionNodeNode10;
+    } else if ([node isEqualToString:@"Node11"]) {
+        return VIConnectionNodeNode11;
     } else {
         return VIConnectionNodeNode1;
     }
@@ -325,7 +327,8 @@
     [node isEqualToString:@"Node7"] ||
     [node isEqualToString:@"Node8"] ||
     [node isEqualToString:@"Node9"] ||
-    [node isEqualToString:@"Node10"];
+    [node isEqualToString:@"Node10"] ||
+    [node isEqualToString:@"Node11"];
 }
 
 @end
