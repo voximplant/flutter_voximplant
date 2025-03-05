@@ -8,6 +8,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
+
 import com.voximplant.sdk.Voximplant;
 import com.voximplant.sdk.client.ILogListener;
 import com.voximplant.sdk.client.LogLevel;
@@ -23,7 +25,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.TextureRegistry;
 
 public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin, EventChannel.StreamHandler, ILogListener {
@@ -57,13 +58,6 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin, Event
         mAudioFileManager = new AudioFileManager(messenger, context);
     }
 
-    public static void registerWith(Registrar registrar) {
-        new VoximplantPlugin().configure(registrar.context(),
-                                         registrar.textures(),
-                                         registrar.messenger()
-        );
-    }
-
     @Override
     public void onAttachedToEngine(FlutterPluginBinding binding) {
         configure(binding.getApplicationContext(),
@@ -73,7 +67,7 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin, Event
     }
 
     @Override
-    public void onDetachedFromEngine(FlutterPluginBinding binding) {
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
         if (mCallManager != null) {
             mCallManager.endAllCalls();
         }
@@ -88,7 +82,7 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin, Event
     }
 
     @Override
-    public void onMethodCall(MethodCall call, Result result) {
+    public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
         String MESSAGING = "Messaging";
         String CLIENT = "Client";
         String CALL = "Call";
