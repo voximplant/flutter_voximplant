@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.14.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.41.1 and Voximplant iOS SDK 2.54.0
+* Introduce [VINode.Node11](/docs/references/fluttersdk/client/vinode#node11)
+* Fix(android): update build.gradle and VoximplantPlugin for compatibility with the latest flutter versions
+
 ## 3.13.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.40.1 and Voximplant iOS SDK 2.53.0
 * [VINode](/docs/references/fluttersdk/client/vinode) is a required parameter to establish the connection with the Voximplant Cloud. 

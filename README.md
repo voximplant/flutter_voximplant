@@ -47,14 +47,20 @@ VIClient client = Voximplant().getClient();
 #### Connect and log in to the Voximplant Cloud
 The `VIClient.getClientState()` method is used to get the current state of connection 
 to the Voximplant cloud and perform the actions according to it.
+
+When initializing and connecting the SDK to the Voximplant cloud, you need to specify the node to connect to. 
+Your node is bound to your Voximplant account.
+To find which node your account belongs to, log in to your control panel and see 
+the [Credentials for working with API, SDK, SIP](https://manage.voximplant.com/) section on the main dashboard.
 ```dart
+  const accountNode = VINode.NodeX;
   Future<String> loginWithPassword(String username, String password) async {
     VIClientState clientState = await _client.getClientState();
     if (clientState == VIClientState.LoggedIn) {
       return _displayName;
     }
     if (clientState == VIClientState.Disconnected) {
-      await _client.connect();
+      await _client.connect(node: accountNode);
     }
     VIAuthResult authResult = await _client.login(username, password);
     _displayName = authResult.displayName;

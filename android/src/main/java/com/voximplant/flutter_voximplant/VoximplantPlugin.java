@@ -41,7 +41,7 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin, Event
     private AudioFileManager mAudioFileManager;
 
     public VoximplantPlugin() {
-        Voximplant.subVersion = "flutter-3.13.0";
+        Voximplant.subVersion = "flutter-3.14.0";
     }
 
     private void configure(Context context, TextureRegistry textures, BinaryMessenger messenger) {
