@@ -7,6 +7,9 @@ typedef ConnectionClosed = void Function();
 
 class AuthService {
   VIClient _client;
+  // IMPORTANT!
+  // Set the node the Voximplant account belongs to.
+  VINode _node = VINode.Node1;
   String? _displayName;
 
   String? get displayName => _displayName;
@@ -34,7 +37,7 @@ class AuthService {
     // synchronized.
     _logoutRequested = false;
     await _client.disconnect();
-    await _client.connect();
+    await _client.connect(node: _node);
     VIAuthResult authResult = await _client.login(username, password);
     await _saveAuthDetails(username, authResult.loginTokens);
     _displayName = authResult.displayName;
@@ -48,7 +51,7 @@ class AuthService {
     // synchronized.
     _logoutRequested = false;
     await _client.disconnect();
-    await _client.connect();
+    await _client.connect(node: _node);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     VILoginTokens? loginTokens = _getAuthDetails(prefs);
     String? user = prefs.getString('username');

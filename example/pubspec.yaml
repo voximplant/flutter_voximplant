@@ -12,10 +12,9 @@ dependencies:
     sdk: flutter
   flutter_voximplant:
     path: ..
-  shared_preferences: 2.2.3
-  crypto: ^3.0.1
-  get_it: 7.7.0
-  permission_handler: 9.0.2
+  shared_preferences: 2.5.2
+  get_it: 8.0.3
+  permission_handler: 11.4.0
 
 dev_dependencies:
   integration_test:
