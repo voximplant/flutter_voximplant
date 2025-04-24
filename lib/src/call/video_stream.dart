@@ -16,13 +16,13 @@ class VIVideoStream {
   final String _streamId;
   final VIVideoStreamType _streamType;
 
-  /// The video stream id.
+  /// Video stream ID.
   ///
   /// Used to connect a widget [VIVideoView] and this video stream to render
   /// local or remote video.
   String get streamId => _streamId;
 
-  /// This video stream type.
+  /// Video stream type.
   VIVideoStreamType get streamType => _streamType;
 
   VIVideoStream._(this._streamId, this._streamType);

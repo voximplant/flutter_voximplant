@@ -44,10 +44,10 @@ class VIAudioFile {
   /// Local audio file type/format, for example ".mp3"
   final String? type;
 
-  /// Indicate if the audio file should be played repeatedly or once
+  /// Whether the audio file should be played repeatedly or once
   bool get looped => _looped;
 
-  /// Invoked when the audio file playing is stopped.
+  /// Triggered when the audio file playing is stopped.
   VIAudioFileStopped? onStopped;
 
   static MethodChannel get _methodChannel => Voximplant._channel;
@@ -65,7 +65,7 @@ class VIAudioFile {
   ///
   /// `usage` - Audio file usage mode. ANDROID ONLY.
   ///
-  /// On android, the audio file must be located in resources "raw" folder.
+  /// On android, the audio file should be located in resources "raw" folder.
   VIAudioFile.file(
     this.name,
     this.type, {
@@ -87,9 +87,9 @@ class VIAudioFile {
         name = null,
         type = null;
 
-  /// Initialize and prepare the audio file to play
+  /// Initializes and prepares the audio file to play.
   ///
-  /// Must be used before any other interactions with the object
+  /// Should be used before any other interactions with the object.
   Future<void> initialize() async {
     try {
       String? fileId;
@@ -127,9 +127,9 @@ class VIAudioFile {
     }
   }
 
-  /// Starts playing the audio file
+  /// Starts playing the audio file.
   ///
-  /// `looped` - Indicate if the audio file should be played repeatedly or once
+  /// `looped` - Whether the audio file should be played repeatedly or once
   ///
   /// Throws [VIException], if an error occurred.
   /// For all possible errors see [VIAudioFileError]
@@ -146,7 +146,7 @@ class VIAudioFile {
     }
   }
 
-  /// Stops playing of the audio file
+  /// Stops playing of the audio file.
   ///
   /// Throws [VIException], if an error occurred.
   /// For all possible errors see [VIAudioFileError]
@@ -164,7 +164,7 @@ class VIAudioFile {
 
   /// Releases all resources allocated for playing audio file.
   ///
-  /// Must be called even if the file was not played.
+  /// Should be called even if the file has not been played.
   ///
   /// Throws [VIException], if an error occurred.
   Future<void> releaseResources() async {

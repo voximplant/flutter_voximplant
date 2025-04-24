@@ -84,7 +84,7 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
 
   set streamId(String? value) => _setStreamId(value);
 
-  /// The id of the [VIVideoStream] to be rendered to the [VIVideoView] this
+  /// ID of the [VIVideoStream] to be rendered to the [VIVideoView] this
   /// controller belongs to.
   String? get streamId => _streamId;
   _TextureChanged? _textureChanged;

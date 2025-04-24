@@ -22,13 +22,13 @@ class VIUserEvent extends VIMessengerEvent {
 ///
 /// Extends [VIMessengerEvent] which provides service information (IM user id, action, event type).
 class VIRetransmitEvent extends VIMessengerEvent {
-  /// The list of the event objects that were retransmitted.
+  /// List of the event objects that have been retransmitted.
   final List<VIMessengerEvent> events;
 
-  /// The event sequence number from which the events were retransmitted.
+  /// Event sequence number from which the events have been retransmitted.
   final int fromSequence;
 
-  /// The event sequence number to which the events were retransmitted.
+  /// Event sequence number to which the events have been retransmitted.
   final int toSequence;
 
   VIRetransmitEvent._fromMap(super.map)
@@ -52,10 +52,10 @@ class VIMessageEvent extends VIMessengerEvent {
   /// VIMessage instance with the message information.
   final VIMessage message;
 
-  /// The sequence number for this event.
+  /// Sequence number for this event.
   final int sequence;
 
-  /// The UNIX timestamp (seconds) that specifies the time the message event was provoked.
+  /// UNIX timestamp (seconds) that specifies the time the message event has been triggered.
   final int timestamp;
 
   VIMessageEvent._fromMap(super.map)
@@ -72,10 +72,10 @@ class VIConversationEvent extends VIMessengerEvent {
   /// VIConversation with the conversation details.
   final VIConversation conversation;
 
-  /// The sequence number of this event.
+  /// Sequence number of this event.
   final int sequence;
 
-  /// The UNIX timestamp (seconds) that specifies the time the conversation event was provoked.
+  /// UNIX timestamp (seconds) that specifies the time the conversation event has been triggered.
   final int timestamp;
 
   VIConversationEvent._fromMap(super.map)
@@ -116,7 +116,7 @@ class VIConversationServiceEvent extends VIMessengerEvent {
   /// The conversation UUID associated with this event.
   final String conversationUuid;
 
-  /// The sequence number of the event that was marked as read by the user initiated this event.
+  /// The sequence number of the event that is marked as read by the user initiated this event.
   /// Only available for [VIMessengerEventType.read].
   final int sequence;
 

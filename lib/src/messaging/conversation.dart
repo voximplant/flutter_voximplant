@@ -7,72 +7,72 @@ class VIConversation {
   /// An universally unique identifier (UUID) of this conversation.
   final String uuid;
 
-  /// The current conversation title.
+  /// Current conversation title.
   ///
   /// Note that changing this property value does not send changes to the cloud.
   /// Use [VIConversation.update] to send all changes at once
   String? title;
 
-  /// A bool value that determines whether the conversation is direct.
+  /// Whether the conversation is direct.
   ///
-  /// A direct conversation can't be uber and/or public.
+  /// A direct conversation cannot be uber and/or public.
   ///
   /// There can be only 2 participants in a direct conversation which is unique and the only one for these participants.
-  /// There can't be more than 1 direct conversation for the same 2 users.
+  /// There cannot be more than 1 direct conversation for the same 2 users.
   ///
   /// If one of these users tries to create a new direct conversation with the same participant
-  /// via [VIMessenger.createConversation] the method will return the UUID of the already existing direct conversation.
+  /// via [VIMessenger.createConversation] the method returns the UUID of the already existing direct conversation.
   final bool direct;
 
-  /// A bool value that determines whether the conversation is uber.
+  /// Whether the conversation is uber.
   ///
-  /// A uber conversation can't be direct.
+  /// A uber conversation cannot be direct.
   ///
-  /// Users in a uber conversation will not be able to retrieve messages that were posted to the conversation after they quit.
+  /// Users in a uber conversation cannot retrieve messages that have been posted to the conversation after they quit.
   final bool uber;
 
-  /// A bool value that determines whether the conversation is public.
+  /// Whether the conversation is public.
   ///
   /// If true, anyone can join the conversation by UUID.
   ///
-  /// A public conversation can't be direct.
+  /// A public conversation cannot be direct.
   ///
   /// Note that changing this property value does not send changes to the cloud.
   /// Use [VIConversation.update] to send all changes at once
   bool publicJoin;
 
-  /// A list of participants alongside with their permissions.
+  /// List of participants alongside with their permissions.
   final List<VIConversationParticipant> participants;
 
-  /// The UNIX timestamp (seconds) that specifies the time of the conversation creation.
+  /// UNIX timestamp (seconds) that specifies the time of the conversation creation.
   final int createdTime;
 
-  /// The sequence of the last event in the conversation.
+  /// Sequence of the last event in the conversation.
   final int lastSequence;
 
-  /// The UNIX timestamp (seconds) that specifies the time when one of [VIConversationEvent]
-  /// or [VIMessageEvent] was the last provoked event in this conversation.
+  /// UNIX timestamp (seconds) that specifies the time when one of [VIConversationEvent]
+  /// or [VIMessageEvent] is the last triggered event in this conversation.
   final int lastUpdateTime;
 
-  /// A custom data, up to 5kb.
+  /// Custom data, up to 5kb.
   Map<String, dynamic> customData;
 
   final MethodChannel _methodChannel;
 
-  /// Add new participants to the conversation.
+  /// Adds new participants to the conversation.
   ///
-  /// It's possible only on the following conditions:
+  /// It is possible only on the following conditions:
   ///
   /// - the participants are users of the main Voximplant developer account or its child accounts
   /// - the current user can manage other participants (ConversationParticipant.canManageParticipants() is true)
   /// - the conversation is not a direct one ([VIConversation.direct] is false)
-  /// Duplicated users are ignored. Will cause [VIException] if at least one user does not exist or already belongs to the conversation.
+  /// Duplicated users are ignored. Causes [VIException] if at least one user does not exist or already belongs to the conversation.
   ///
   /// Other parties of the conversation (online participants and logged in clients)
   /// can be informed about adding participants
   /// via the [VIMessenger.onEditConversation] callback.
   ///
-  /// `participants` - List of [VIConversationParticipant] to be added to the conversation. Shouldn't contain null(s), be null or empty list.
+  /// `participants` - List of [VIConversationParticipant] to be added to the conversation. Should not contain null(s), be null or empty list.
   ///
   /// Throws [VIException], if operation failed, otherwise returns [VIConversationEvent] instance.
   /// For all possible errors see [VIMessagingError]
@@ -98,16 +98,16 @@ class VIConversation {
     }
   }
 
-  /// Edit participants permissions.
-  /// It's possible only if the current user can manage other participants ([VIConversationParticipant.canManageParticipants] is true).
+  /// Edits participants permissions.
+  /// It is possible only if the current user can manage other participants ([VIConversationParticipant.canManageParticipants] is true).
   ///
-  /// Duplicated users are ignored. Will cause [VIException] if at least one user does not exist or belong to the conversation.
+  /// Duplicated users are ignored. Causes [VIException] if at least one user does not exist or belong to the conversation.
   ///
   /// Other parties of the conversation (online participants and logged in clients)
   /// can be informed about editing participants
   /// via the [VIMessenger.onEditConversation] callback.
   ///
-  /// `participants` - List of [VIConversationParticipant] to be edited in the conversation. Shouldn't contain null(s), be null or empty list.
+  /// `participants` - List of [VIConversationParticipant] to be edited in the conversation. Should not contain null(s), be null or empty list.
   ///
   /// Throws [VIException], if operation failed, otherwise returns [VIConversationEvent] instance.
   /// For all possible errors see [VIMessagingError]
@@ -133,13 +133,13 @@ class VIConversation {
     }
   }
 
-  /// Remove participants from the conversation.
+  /// Removes participants from the conversation.
   ///
-  /// It's possible only on two conditions:
+  /// It is possible only on two conditions:
   /// - the current user can manage other participants ([VIConversationParticipant.canManageParticipants] is true).
   /// - the conversation is not a direct one ([VIConversation.direct] is false)
   ///
-  /// Duplicated users are ignored. Will cause [VIException] if at least one user:
+  /// Duplicated users are ignored. Causes [VIException] if at least one user:
   /// - does not exist
   /// - is already removed
   ///
@@ -151,7 +151,7 @@ class VIConversation {
   /// can be informed about removing participants
   /// via the [VIMessenger.onEditConversation] callback.
   ///
-  /// `participants` - List of [VIConversationParticipant] to be removed from the conversation. Shouldn't contain null(s), be null or empty list.
+  /// `participants` - List of [VIConversationParticipant] to be removed from the conversation. Should not contain null(s), be null or empty list.
   ///
   /// Throws [VIException], if operation failed, otherwise returns [VIConversationEvent] instance.
   /// For all possible errors see [VIMessagingError]
@@ -178,9 +178,9 @@ class VIConversation {
     }
   }
 
-  /// Send conversation changes to the cloud. The sent changes are: title, public join flag and custom data.
+  /// Sends the conversation changes to the cloud. The sent changes are: title, public join flag and custom data.
   ///
-  /// Successful update will happen if a participant is the owner ([VIConversationParticipant.isOwner] is true).
+  /// Successful update happens if a participant is the owner ([VIConversationParticipant.isOwner] is true).
   ///
   /// Throws [VIException], if operation failed, otherwise returns [VIConversationEvent] instance.
   /// For all possible errors see [VIMessagingError]
@@ -206,20 +206,20 @@ class VIConversation {
     }
   }
 
-  /// Mark the event with the specified sequence as read.
+  /// Marks the event with the specified sequence as read.
   ///
   /// A method call with the specified sequence makes the [VIConversationParticipant.lastReadSequence] property return this sequence,
   /// i.e., such sequences can be get for each participant separately.
   ///
   /// If the sequence parameter specified less than 1,
-  /// the method will mark all the events as unread (for this participant)
+  /// the method marks all the events as unread (for this participant)
   /// except the event with the sequence equals to '1'.
   ///
   /// Other parties of the conversation (online participants and logged in clients)
   /// can be informed about marking events as read
   /// via the [VIMessenger.onRead] callback.
   ///
-  /// `sequence` - Sequence number of the event in the conversation to be marked as read. Shouldn't be greater than currently possible.
+  /// `sequence` - Sequence number of the event in the conversation to be marked as read. Should not be greater than currently possible.
   ///
   /// Throws [VIException], if operation failed, otherwise returns [VIConversationServiceEvent] instance.
   /// For all possible errors see [VIMessagingError]
@@ -240,12 +240,12 @@ class VIConversation {
     }
   }
 
-  /// Inform the cloud that the user is typing some text.
+  /// Informs the cloud that the user is typing some text.
   ///
   /// The method calls within 10s interval from the last call cause [VIException].
   ///
   /// If the sequence parameter specified less than 1,
-  /// the method will mark all the events as unread (for this participant)
+  /// the method marks all the events as unread (for this participant)
   /// except the event with the sequence equals to '1'.
   ///
   /// Other parties of the conversation (online participants and logged in clients)
@@ -271,7 +271,7 @@ class VIConversation {
     }
   }
 
-  /// Send a message to the conversation.
+  /// Sends a message to the conversation.
   ///
   /// Sending messages is available only for participants that
   /// have write permissions ([VIConversationParticipant.canWrite] is true).
@@ -310,20 +310,20 @@ class VIConversation {
     }
   }
 
-  /// Request events in the specified sequence range to be sent from the cloud to this client.
+  /// Requests events in the specified sequence range to be sent from the cloud to this client.
   ///
   /// Only [VIConversationEvent] and [VIMessageEvent] events can be retransmitted;
-  /// any other events can't be retransmitted.
+  /// any other events cannot be retransmitted.
   ///
   /// The method is used to get history or missed events in case of network disconnect.
   /// Client should use this method to request all events based on the last event sequence received from the cloud
   /// and last event sequence saved locally (if any).
   ///
-  /// The maximum amount of retransmitted events per method call is 100.
-  /// Requesting more than 100 events will cause [VIException].
+  /// The maximum number of retransmitted events per method call is 100.
+  /// Requesting more than 100 events causes [VIException].
   ///
   /// If the current user quits a [VIConversation.uber] conversation,
-  /// messages that are posted during the user's absence will not be retransmitted later.
+  /// messages that are posted during the user's absence are not retransmitted later.
   ///
   /// `from` - First event in sequence range, inclusive
   ///
@@ -349,20 +349,20 @@ class VIConversation {
     }
   }
 
-  /// Request a number of events starting with the specified sequence to be sent from the cloud to this client.
+  /// Requests a number of events starting with the specified sequence to be sent from the cloud to this client.
   ///
   /// Only [VIConversationEvent] and [VIMessageEvent] events can be retransmitted;
-  /// any other events can't be retransmitted.
+  /// any other events cannot be retransmitted.
   ///
   /// The method is used to get history or missed events in case of network disconnect.
   /// Client should use this method to request all events based on the last event sequence received from the cloud
   /// and last event sequence saved locally (if any).
   ///
-  /// The maximum amount of retransmitted events per method call is 100.
-  /// Requesting more than 100 events will cause [VIException].
+  /// The maximum number of retransmitted events per method call is 100.
+  /// Requesting more than 100 events causes [VIException].
   ///
   /// If the current user quits a [VIConversation.uber] conversation,
-  /// messages that are posted during the user's absence will not be retransmitted later.
+  /// messages that are posted during the user's absence are not retransmitted later.
   ///
   /// `from` - First event in sequence range, inclusive
   ///
@@ -388,20 +388,20 @@ class VIConversation {
     }
   }
 
-  /// Request a number of events up to the specified sequence to be sent from the cloud to this client.
+  /// Requests a number of events up to the specified sequence to be sent from the cloud to this client.
   ///
   /// Only [VIConversationEvent] and [VIMessageEvent] events can be retransmitted;
-  /// any other events can't be retransmitted.
+  /// any other events cannot be retransmitted.
   ///
   /// The method is used to get history or missed events in case of network disconnect.
   /// Client should use this method to request all events based on the last event sequence received from the cloud
   /// and last event sequence saved locally (if any).
   ///
-  /// The maximum amount of retransmitted events per method call is 100.
-  /// Requesting more than 100 events will cause [VIException].
+  /// The maximum number of retransmitted events per method call is 100.
+  /// Requesting more than 100 events causes [VIException].
   ///
   /// If the current user quits a [VIConversation.uber] conversation,
-  /// messages that are posted during the user's absence will not be retransmitted later.
+  /// messages that are posted during the user's absence are not retransmitted later.
   ///
   /// `to` - Last event in sequence range, inclusive
   ///
@@ -462,40 +462,40 @@ class VIConversation {
 /// - [VIMessenger.createConversation]
 /// - [VIMessenger.recreateConversation]
 class VIConversationConfig {
-  /// Check if a conversation is configured as direct or not.
+  /// Whether a conversation is configured as direct or not.
   ///
   /// There can be only 2 participants in a direct conversation which is unique and the only one for these participants.
-  /// There can't be more than 1 direct conversation for the same 2 users.
+  /// There cannot be more than 1 direct conversation for the same 2 users.
   ///
   /// If one of these users tries to create a new direct conversation with the same participant
   /// via [VIMessenger.createConversation],
-  /// the method will return the UUID of the already existing direct conversation.
+  /// the method returns the UUID of the already existing direct conversation.
   ///
-  /// A direct conversation can't be uber and/or public.
+  /// A direct conversation cannot be uber and/or public.
   bool direct;
 
-  /// Check if a conversation is configured as public or not.
+  /// Whether a conversation is configured as public or not.
   ///
   /// If true, any user can join the conversation via [VIMessenger.joinConversation] by specifying its UUID.
   /// Use the [VIMessenger.getPublicConversations] method to retrieve all public conversations' UUIDs.
   ///
-  /// A public conversation can't be direct.
+  /// A public conversation cannot be direct.
   bool publicJoin;
 
-  /// Check if a conversation is configured as uber or not.
+  /// Whether a conversation is configured as uber or not.
   ///
-  /// Users in a uber conversation will not be able to retrieve messages that were sent to the conversation after they quit.
+  /// Users in a uber conversation cannot retrieve messages that have been sent to the conversation after they quit.
   ///
-  /// A uber conversation can't be direct.
+  /// A uber conversation cannot be direct.
   bool uber;
 
-  /// Get the title
+  /// Gets the title
   String? title;
 
-  /// Get the custom data
+  /// Gets the custom data
   Map<String, Object> customData;
 
-  /// Get the list of conversation participants
+  /// Gets the list of conversation participants
   List<VIConversationParticipant> participants;
 
   VIConversationConfig({

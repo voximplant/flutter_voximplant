@@ -17,7 +17,7 @@ enum VIAudioDevice {
   WiredHeadset,
 
   /// No audio device, generally indicates that something went wrong with audio
-  /// device selection.
+  /// device selection
   ///
   /// This type should not be used with [VIAudioDeviceManager.selectAudioDevice]
   /// API.
@@ -25,13 +25,13 @@ enum VIAudioDevice {
 }
 
 /// Signature for callbacks reporting that the active audio device or audio
-/// device that will be used for a further call is changed.
+/// device that is used for a further call is changed.
 ///
 /// If the event is triggered during a call, [device] is the audio device that
 /// is currently used.
 ///
 /// If the event is triggered when there is no call, [device] is the audio device
-/// that will be used for the next call.
+/// that is used for the next call.
 ///
 /// `audioManager` - VIAudioDeviceManager instance initiated the event
 ///
@@ -44,7 +44,7 @@ typedef void VIAudioDeviceChanged(
 /// Signature for callbacks reporting that a new audio device is connected or
 /// a previously connected audio device is disconnected.
 ///
-/// For iOS: if the disconnected device was not selected before via
+/// For iOS: if the disconnected device has not been selected before via
 /// [VIAudioDeviceManager.selectAudioDevice] API, this callback may be not
 /// invoked.
 ///
@@ -71,7 +71,7 @@ typedef void VIAudioDeviceListChanged(
 ///
 /// Limitations for Android:
 /// * The plug in/out of a wired headset and bluetooth devices is monitored only
-///   if a connection to the Voximplant Cloud is active.
+///   if a connection to the Voximplant cloud is active.
 class VIAudioDeviceManager {
   final MethodChannel _channel;
 
@@ -91,22 +91,22 @@ class VIAudioDeviceManager {
   /// Changes selection of the current active audio device.
   ///
   /// Before a call. This API does not activate [audioDevice], it just selects
-  /// the audio device that will be activated.
+  /// the audio device that is to be activated.
   ///
   /// During a call. If the [audioDevice] is available, the API activates
   /// [audioDevice].
   ///
   /// Active audio device can be later changed if a new device is connected.
   /// In this case [VIAudioDeviceManager.onAudioDeviceChanged]
-  /// will be triggered.
+  /// is triggered.
   ///
   /// For iOS.
   /// If the application uses CallKit, you should take into consideration:
   /// * In case if Bluetooth headset is connected, audio routing depends on
   ///   where a call is answered (from the Bluetooth headset or from the phone
-  ///   screen). Bluetooth hedset will be activated only in case if a call
-  ///   is answered via Bluetooth hedset controls. In other cases the audio will
-  ///   be played via Earpiece.
+  ///   screen). Bluetooth hedset is activated only in case if a call
+  ///   is answered via Bluetooth hedset controls. In other cases the audio is
+  ///   played via Earpiece.
   /// * Audio is always routed to Bluetooth headset only if the user selects
   ///   "Bluetooth headset" as Call Audio Routing in the phone preferences.
   /// * If audio device is selected before CallKit activates the audio session,
@@ -122,12 +122,12 @@ class VIAudioDeviceManager {
     });
   }
 
-  /// Returns active audio device during the call or audio device that will be
+  /// Returns active audio device during the call or audio device that is
   /// used for a call if there is no call at this moment.
   ///
   /// Active audio device can be later changed if a new device is connected.
   /// In this case [VIAudioDeviceManager.onAudioDeviceChanged]
-  /// will be triggered.
+  /// is triggered.
   Future<VIAudioDevice> getActiveDevice() async {
     int? device =
         await _channel.invokeMethod<int>('AudioDevice.getActiveDevice');
@@ -163,10 +163,10 @@ class VIAudioDeviceManager {
 
   //#region CallKit
 
-  /// iOS only. Initializes AVAudioSession for use with CallKit integration.
+  /// Initializes AVAudioSession for use with CallKit integration. iOS only.
   ///
   /// Required for the correct CallKIt integration only.
-  /// Otherwise don't use this method.
+  /// Otherwise do not use this method.
   ///
   /// Should be called in CXProviderDelegate.performStartCallAction and
   /// CXProviderDelegate.performAnswerCallAction.
@@ -178,12 +178,12 @@ class VIAudioDeviceManager {
     }
   }
 
-  /// iOS only. Restores default AVAudioSession initialization routines.
+  /// Restores default AVAudioSession initialization routines. iOS only.
   ///
   /// Required for the correct CallKIt integration only.
-  /// Otherwise don't use this method.
+  /// Otherwise do not use this method.
   ///
-  /// Must be called if CallKit becomes disabled.
+  /// Should be called if CallKit becomes disabled.
   Future<void> callKitReleaseAudioSession() async {
     if (Platform.isIOS) {
       await _channel.invokeMethod('AudioDevice.callKitReleaseAudioSession');
@@ -192,10 +192,10 @@ class VIAudioDeviceManager {
     }
   }
 
-  /// iOS only. Starts AVAudioSession.
+  /// Starts AVAudioSession. iOS only.
   ///
   /// Required for the correct CallKIt integration only.
-  /// Otherwise don't use this method.
+  /// Otherwise do not use this method.
   ///
   /// Should be called in CXProviderDelegate.didActivateAudioSession.
   Future<void> callKitStartAudio() async {
@@ -206,10 +206,10 @@ class VIAudioDeviceManager {
     }
   }
 
-  /// iOS only. Stops AVAudioSession.
+  /// Stops AVAudioSession. iOS only.
   ///
   /// Required for the correct CallKIt integration only.
-  /// Otherwise don't use this method.
+  /// Otherwise do not use this method.
   ///
   /// Should be called in CXProviderDelegate.didDeactivateAudioSession.
   Future<void> callKitStopAudio() async {

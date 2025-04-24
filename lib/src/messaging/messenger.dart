@@ -2,7 +2,7 @@
 
 part of '../../flutter_voximplant.dart';
 
-/// Signature for callbacks reporting that an user was edited
+/// Signature for callbacks reporting that an user has been edited
 /// as the result of [VIMessenger.editUser], [VIMessenger.managePushNotifications]
 /// or analogous methods from other Voximplant SDKs and Messaging API.
 ///
@@ -35,7 +35,7 @@ typedef void VISubscribe(VISubscriptionEvent subscriptionEvent);
 /// `subscriptionEvent` - VISubscriptionEvent object with subscription data and service information
 typedef void VIUnsubscribe(VISubscriptionEvent subscriptionEvent);
 
-/// Signature for callbacks reporting that a conversation was created via [VIMessenger.createConversation]
+/// Signature for callbacks reporting that a conversation has been created via [VIMessenger.createConversation]
 /// or analogous methods from other Voximplant SDKs and Messaging API.
 ///
 /// Used in [VIMessenger].
@@ -45,7 +45,7 @@ typedef void VIUnsubscribe(VISubscriptionEvent subscriptionEvent);
 /// `conversationEvent` - VIConversationEvent object with conversation data and service information
 typedef void VICreateConversation(VIConversationEvent conversationEvent);
 
-/// Signature for callbacks reporting that a conversation was removed.
+/// Signature for callbacks reporting that a conversation has been removed.
 ///
 /// Used in [VIMessenger].
 ///
@@ -54,7 +54,7 @@ typedef void VICreateConversation(VIConversationEvent conversationEvent);
 /// `conversationEvent` - VIConversationEvent object with conversation data and service information
 typedef void VIRemoveConversation(VIConversationEvent conversationEvent);
 
-/// Signature for callbacks reporting that the conversation properties were modified as the result of:
+/// Signature for callbacks reporting that the conversation properties have been modified as the result of:
 /// - [VIMessenger.joinConversation]
 /// - [VIMessenger.leaveConversation]
 /// - [VIConversation.update]
@@ -82,7 +82,7 @@ typedef void VIEditConversation(VIConversationEvent conversationEvent);
 /// `statusEvent` - VIStatusEvent object with user status data and service information
 typedef void VISetStatus(VIStatusEvent statusEvent);
 
-/// Signature for callbacks reporting that a message was edited via [VIMessage.update]
+/// Signature for callbacks reporting that a message has been edited via [VIMessage.update]
 /// or analogous methods from other Voximplant SDKs and Messaging API.
 ///
 /// Used in [VIMessenger].
@@ -93,7 +93,7 @@ typedef void VISetStatus(VIStatusEvent statusEvent);
 /// `messageEvent` - VIMessageEvent object with message data and service information
 typedef void VIEditMessage(VIMessageEvent messageEvent);
 
-/// Signature for callbacks reporting that a message was sent via [VIConversation.sendMessage]
+/// Signature for callbacks reporting that a message has been sent via [VIConversation.sendMessage]
 /// or analogous methods from other Voximplant SDKs and Messaging API.
 ///
 /// Used in [VIMessenger].
@@ -103,7 +103,7 @@ typedef void VIEditMessage(VIMessageEvent messageEvent);
 /// `messageEvent` - VIMessageEvent object with message data and service information
 typedef void VISendMessage(VIMessageEvent messageEvent);
 
-/// Signature for callbacks reporting that a message was removed via [VIMessage.remove]
+/// Signature for callbacks reporting that a message has been removed via [VIMessage.remove]
 /// or analogous methods from other Voximplant SDKs and Messaging API.
 ///
 /// Used in [VIMessenger].
@@ -124,7 +124,7 @@ typedef void VIRemoveMessage(VIMessageEvent messageEvent);
 /// `conversationServiceEvent` - VIConversationServiceEvent object with conversation UUID and service information
 typedef void VITyping(VIConversationServiceEvent conversationServiceEvent);
 
-/// Signature for callbacks reporting that the event within a conversatio was
+/// Signature for callbacks reporting that the event within a conversatio has been
 /// marked as read as the result of [VIConversation.markAsRead]
 /// or analogous methods from other Voximplant SDKs and Messaging API.
 ///
@@ -141,7 +141,7 @@ class VIMessenger {
   final EventChannel _eventChannel =
       EventChannel('plugins.voximplant.com/messaging');
 
-  /// Callback for getting notified when an user changes
+  /// Triggered when an user changes.
   VIEditUser? onEditUser;
 
   /// Callback for getting notified about new subscriptions.
@@ -150,46 +150,46 @@ class VIMessenger {
   /// Callback for getting notified about changes in current subscriptions.
   VIUnsubscribe? onUnsubscribe;
 
-  /// Callback for getting notified when a new conversation is created
+  /// Triggered when a new conversation is created
   /// with the current user.
   VICreateConversation? onCreateConversation;
 
-  /// Callback for getting notified when a conversation
-  /// the current user belongs to is removed
+  /// Triggered when a conversation
+  /// the current user belongs to is removed.
   VIRemoveConversation? onRemoveConversation;
 
-  /// Callback for getting notified when the properties of a conversation
-  /// the current user belongs to were modified
+  /// Triggered when the properties of a conversation
+  /// the current user belongs to are modified.
   VIEditConversation? onEditConversation;
 
-  /// Callback for getting notified when an user status was changed
+  /// Triggered when an user status has been changed.
   VISetStatus? onSetStatus;
 
-  /// Callback for getting notified when a message was edited
+  /// Triggered when a message has been edited.
   VIEditMessage? onEditMessage;
 
-  /// Callback for getting notified when a new message was sent to a conversation
-  /// the current user belongs to
+  /// Triggered when a new message has been sent to a conversation
+  /// the current user belongs to.
   VISendMessage? onSendMessage;
 
-  /// Callback for getting notified when a message was removed from a conversation
-  /// the current user belongs to
+  /// Triggered when a message has been removed from a conversation
+  /// the current user belongs to.
   VIRemoveMessage? onRemoveMessage;
 
-  /// Callback for getting notified when some user is typing text in a conversation.
+  /// Triggered when some user is typing text in a conversation.
   VITyping? onTyping;
 
-  /// Callback for getting notified when a participant in a conversation mark the event as read
+  /// Triggered when a participant in a conversation mark the event as read.
   VIIsRead? onRead;
 
-  /// Get the Voximplant user identifier for the current user, e.g., 'username@appname.accname'
+  /// Gets the Voximplant user identifier for the current user, e.g., 'username@appname.accname'
   String? get me => _MessengerShared._me;
 
-  /// Recreate a message.
+  /// Recreates a message.
   ///
   /// Note that this method does not create a message, but restore a previously created message from a local storage (database).
   ///
-  /// Returns [VIMessage] instance or null if uuid or conversationUuid were null.
+  /// Returns [VIMessage] instance or null if uuid or conversationUuid is null.
   ///
   /// `uuid` - Universally unique identifier of message
   ///
@@ -209,11 +209,11 @@ class VIMessenger {
   }) =>
       VIMessage._recreate(uuid, conversationUuid, text, payload, sequence);
 
-  /// Recreate a conversation.
+  /// Recreates a conversation.
   ///
   /// Note that this method does not create a conversation, but restore a previously created conversation from a local storage (database).
   ///
-  /// Returns [VIConversation] instance or null if uuid was null.
+  /// Returns [VIConversation] instance or null if uuid is null.
   ///
   /// `uuid` - Conversation UUID
   ///
@@ -239,9 +239,9 @@ class VIMessenger {
         createdTime,
       );
 
-  /// Get information for the user specified by the Voximplant user name, e.g., 'username@appname.accname'.
+  /// Gets the information for a user specified by the Voximplant user name, e.g., 'username@appname.accname'.
   ///
-  /// It's possible to get any user of the main Voximplant developer account or its child accounts.
+  /// It is possible to get any user of the main Voximplant developer account or its child accounts.
   ///
   /// `username` - Voximplant user identifier
   ///
@@ -264,9 +264,9 @@ class VIMessenger {
     }
   }
 
-  /// Get information for the users specified by the list of the Voximplant user names. Maximum 50 users.
+  /// Gets the information for users specified by the list of the Voximplant user names. Maximum 50 users.
   ///
-  /// It's possible to get any users of the main Voximplant developer account or its child accounts.
+  /// It is possible to get any users of the main Voximplant developer account or its child accounts.
   ///
   /// `users` - List of Voximplant user identifiers, e.g., 'username@appname.accname'
   ///
@@ -289,9 +289,9 @@ class VIMessenger {
     }
   }
 
-  /// Get information for the user specified by the IM user id.
+  /// Gets the information for a user specified by the IM user id.
   ///
-  /// It's possible to get any user of the main Voximplant developer account or its child accounts.
+  /// It is possible to get any user of the main Voximplant developer account or its child accounts.
   ///
   /// `userId` - IM User id
   ///
@@ -314,9 +314,9 @@ class VIMessenger {
     }
   }
 
-  /// Get information for the users specified by the list of the IM user ids. Maximum 50 users.
+  /// Gets the information for users specified by the list of the IM user ids. Maximum 50 users.
   ///
-  /// It's possible to get any users of the main Voximplant developer account or its child accounts.
+  /// It is possible to get any users of the main Voximplant developer account or its child accounts.
   ///
   /// `users` - List of IM user ids
   ///
@@ -339,11 +339,11 @@ class VIMessenger {
     }
   }
 
-  /// Edit current user information.
+  /// Edits the current user information.
   ///
-  /// `customData` - New custom data. If null, previously set custom data will not be changed. If empty map, previously set custom data will be removed.
+  /// `customData` - New custom data. If null, previously set custom data is not changed. If empty map, previously set custom data is removed.
   ///
-  /// `privateCustomData` - New private custom data. If null, previously set private custom data will not be changed. If empty map, previously set private custom data will be removed.
+  /// `privateCustomData` - New private custom data. If null, previously set private custom data is not changed. If empty map, previously set private custom data is removed.
   ///
   /// Throws [VIException], if operation failed, otherwise returns [VIUserEvent] instance.
   /// For all possible errors see [VIMessagingError]
@@ -370,7 +370,7 @@ class VIMessenger {
     }
   }
 
-  /// Manage messenger push notification subscriptions for the current user.
+  /// Manages messenger push notification subscriptions for the current user.
   ///
   /// `notifications` - List of [VIMessengerNotification]
   ///
@@ -397,12 +397,12 @@ class VIMessenger {
     }
   }
 
-  /// Set the current user status.
+  /// Sets the current user status.
   ///
   /// Other users (that are subscribed to the user) and other clients (of the current user)
   /// can be informed about the status changing via the [VIMessenger.onSetStatus]
   ///
-  /// `online` - True if user is available for messaging, false otherwise
+  /// `online` - Whether the user is available for messaging
   ///
   /// Throws [VIException], if operation failed, otherwise returns [VIStatusEvent] instance.
   /// For all possible errors see [VIMessagingError]
@@ -423,7 +423,7 @@ class VIMessenger {
     }
   }
 
-  /// Get all current subscriptions, i.e., the list of users the current user is subscribed to.
+  /// Gets all current subscriptions, i.e., the list of users the current user is subscribed to.
   ///
   /// Throws [VIException], if operation failed, otherwise returns [VISubscriptionEvent] instance.
   /// For all possible errors see [VIMessagingError]
@@ -444,13 +444,13 @@ class VIMessenger {
     }
   }
 
-  /// Subscribe for other user(s) information and status changes.
+  /// Subscribes for other user(s) information and status changes.
   ///
-  /// It's possible to subscribe for any user of the main Voximplant developer account or its child accounts.
+  /// It is possible to subscribe for any user of the main Voximplant developer account or its child accounts.
   ///
   /// Other logged in clients (of the current user) can be informed about the subscription
   /// via the [VIMessenger.onSubscribe] callback.
-  /// User(s) specified in the 'users' parameter aren't informed about the subscription.
+  /// User(s) specified in the 'users' parameter are not informed about the subscription.
   ///
   /// `users` - List of IM user ids
   ///
@@ -473,13 +473,13 @@ class VIMessenger {
     }
   }
 
-  /// Unsubscribe from other user(s) information and status changes.
+  /// Unsubscribes from other user(s) information and status changes.
   ///
-  /// It's possible to subscribe for any user of the main Voximplant developer account or its child accounts.
+  /// It is possible to subscribe for any user of the main Voximplant developer account or its child accounts.
   ///
   /// Other logged in clients (of the current user) can be informed about the unsubscription
   /// via the [VIMessenger.onSubscribe] callback.
-  /// User(s) specified in the 'users' parameter aren't informed about the unsubscription.
+  /// User(s) specified in the 'users' parameter are not informed about the unsubscription.
   ///
   /// `users` - List of IM user ids
   ///
@@ -502,11 +502,11 @@ class VIMessenger {
     }
   }
 
-  /// Unsubscribe from all subscriptions.
+  /// Unsubscribes from all subscriptions.
   ///
   /// Other logged in clients (of the current user) can be informed about the unsubscription
   /// via the [VIMessenger.onSubscribe] callback.
-  /// User(s) specified in the 'users' parameter aren't informed about the unsubscription.
+  /// User(s) specified in the 'users' parameter are not informed about the unsubscription.
   ///
   /// Throws [VIException], if operation failed, otherwise returns [VISubscriptionEvent] instance.
   /// For all possible errors see [VIMessagingError]
@@ -527,7 +527,7 @@ class VIMessenger {
     }
   }
 
-  /// Create a new conversation with the extended configuration.
+  /// Creates a new conversation with the extended configuration.
   ///
   /// Other parties of the conversation (online participants and logged in clients)
   /// can be informed about the conversation creation
@@ -556,10 +556,10 @@ class VIMessenger {
     }
   }
 
-  /// Get a conversation by its UUID.
+  /// Gets a conversation by its UUID.
   ///
-  /// It's possible if:
-  /// - the user that calls the method is/was a participant of this conversation
+  /// It is possible if:
+  /// - the user that calls the method is/has been a participant of this conversation
   /// - the conversation is an available public conversation (see [VIMessenger.getPublicConversations])
   ///
   /// `uuid` - Conversation UUID
@@ -583,9 +583,9 @@ class VIMessenger {
     }
   }
 
-  /// Get the multiple conversations by the list of UUIDs. Maximum 30 conversations.
+  /// Gets multiple conversations by the list of UUIDs. Maximum 30 conversations.
   ///
-  /// It's possible if:
+  /// It is possible if:
   /// - the user that calls the method is/was a participant of these conversations
   /// - the conversations are the available public conversations (see [VIMessenger.getPublicConversations])
   ///
@@ -610,9 +610,9 @@ class VIMessenger {
     }
   }
 
-  /// Get all public conversations ([VIConversation.publicJoin] is true).
+  /// Gets all public conversations ([VIConversation.publicJoin] is true).
   ///
-  /// It's possible to get all public conversations (UUIDs) that were created by:
+  /// It is possible to get all public conversations (UUIDs) that are created by:
   ///
   /// - the current user
   /// - other users of the same child account
@@ -638,9 +638,9 @@ class VIMessenger {
     }
   }
 
-  /// Join the current user to any conversation specified by the UUID.
+  /// Joins the current user to any conversation specified by the UUID.
   ///
-  /// It's possible only on the following conditions:
+  /// It is possible only on the following conditions:
   ///
   /// - a conversation is created by a user of the main Voximplant developer account or its child accounts
   /// - public join is enabled ([VIConversation.publicJoin] is true)
@@ -671,10 +671,10 @@ class VIMessenger {
     }
   }
 
-  /// Make the current user to leave a conversation specified by the UUID.
+  /// Makes the current user to leave a conversation specified by the UUID.
   ///
-  /// It's possible only if the conversation is not a direct one ([VIConversation.direct] is false)
-  /// After a successful method call the conversation's UUID will be added to [VIUser.leaveConversationList].
+  /// It is possible only if the conversation is not a direct one ([VIConversation.direct] is false)
+  /// After a successful method call the conversation's UUID is added to [VIUser.leaveConversationList].
   ///
   /// Other parties of the conversation (online participants and logged in clients)
   /// can be informed about leaving the conversation

@@ -10,7 +10,7 @@ enum VIVideoCodec {
   /// H264 video codec
   H264,
 
-  /// Video codec for call will be chosen automatically
+  /// Video codec for call is chosen automatically
   AUTO,
 }
 
@@ -32,14 +32,14 @@ class VICallSettings {
 
   /// Preferred video codec for a call.
   ///
-  /// [VIVideoCodec.AUTO] by default.
+  /// The default value is [VIVideoCodec.AUTO].
   VIVideoCodec preferredVideoCodec = VIVideoCodec.AUTO;
 
   /// Custom string associated with the call session.
   ///
-  /// It can be passed to the Voximplant Cloud to be obtained from
+  /// It can be passed to the Voximplant cloud to be obtained from
   /// the [CallAlerting](https://voximplant.com/docs/references/voxengine/appevents#callalerting)
-  /// event or Call History using HTTP API.
+  /// event or Call History via Management API.
   ///
   /// Maximum size is 200 bytes.
   ///
@@ -51,10 +51,10 @@ class VICallSettings {
 
   /// Optional set of headers to be sent to the Voximplant cloud.
   ///
-  /// Names must begin with "X-" to be processed by SDK.
+  /// Names should begin with "X-" to be processed by SDK.
   Map<String, String>? extraHeaders;
 
-  /// Specify if simulcast feature should be enabled in the conference call.
+  /// Whether simulcast feature should be enabled in a conference call.
   bool? enableSimulcast;
 }
 
@@ -75,7 +75,7 @@ typedef void VICallConnected(VICall call, Map<String, String>? headers);
 ///
 /// `headers` - Optional SIP headers
 ///
-/// `answeredElsewhere` - Check if the call was answered on another device
+/// `answeredElsewhere` - Whether the call has been answered on another device
 typedef void VICallDisconnected(
   VICall call,
   Map<String, String>? headers,
@@ -92,7 +92,7 @@ typedef void VICallDisconnected(
 /// `headers` - Optional SIP headers
 typedef void VICallRinging(VICall call, Map<String, String>? headers);
 
-/// Signature for callbacks reporting that the call was failed.
+/// Signature for callbacks reporting that the call has been failed.
 ///
 /// Used in [VICall].
 ///
@@ -137,7 +137,7 @@ typedef void VISIPInfoReceived(
 
 /// Signature for callbacks reporting that the call is currently reconnecting.
 ///
-/// Until [VICallReconnected] callback is invoked, the following API calls will throw [VIException] with [VICallError.ERROR_RECONNECTING] error:
+/// Until [VICallReconnected] callback is invoked, the following API calls throw [VIException] with [VICallError.ERROR_RECONNECTING] error:
 ///
 /// * [VICall.sendVideo]
 /// * [VICall.receiveVideo]
@@ -158,7 +158,7 @@ typedef void VICallReconnected(VICall call);
 /// Signature for callbacks reporting that [message] is received within the call.
 ///
 /// Implemented atop SIP INFO for communication between call endpoint and the
-/// Voximplant Cloud, and is separated from Voximplant messaging API.
+/// Voximplant cloud, and is separated from Voximplant messaging API.
 ///
 /// Used in [VICall].
 ///
@@ -167,7 +167,7 @@ typedef void VICallReconnected(VICall call);
 /// `message` - Content of the message
 typedef void VIMessageReceived(VICall call, String message);
 
-/// Signature for callbacks reporting that the connection was not established
+/// Signature for callbacks reporting that the connection has not been established
 /// due to a network connection problem between 2 peers.
 ///
 /// Used in [VICall].
@@ -211,47 +211,47 @@ typedef void VILocalVideoStreamRemoved(VICall call, VIVideoStream videoStream);
 
 /// Represents a call.
 class VICall {
-  /// Callback for getting notified when the call is connected.
+  /// Triggered when the call is connected.
   VICallConnected? onCallConnected;
 
-  /// Callback for getting notified when the call is disconnected.
+  /// Triggered when the call is disconnected.
   VICallDisconnected? onCallDisconnected;
 
-  /// Callback for getting notified when progress signal is received
+  /// Triggered when a progress tone is received
   /// from the endpoint.
   VICallRinging? onCallRinging;
 
-  /// Callback for getting notified when the call is failed.
+  /// Triggered when the call is failed.
   VICallFailed? onCallFailed;
 
-  /// Callback for getting notified when the endpoint answered the call.
+  /// Triggered when the endpoint answered the call.
   VICallAudioStarted? onCallAudioStarted;
 
-  /// Callback for getting notified when the call is currently reconnecting.
+  /// Triggered when the call is currently reconnecting.
   VICallReconnecting? onCallReconnecting;
 
-  /// Callback for getting notified when the call is reconnected.
+  /// Triggered when the call is reconnected.
   VICallReconnected? onCallReconnected;
 
-  /// Callback for getting notified when INFO message in received.
+  /// Triggered when an INFO message in received.
   VISIPInfoReceived? onSIPInfoReceived;
 
-  /// Callback for getting notified when message is received.
+  /// Triggered when a message is received.
   VIMessageReceived? onMessageReceived;
 
   /// Callback for getting notified about failure to connect peers.
   VIICETimeout? onICETimeout;
 
-  /// Callback for getting notified when ICE connection is completed.
+  /// Triggered when the ICE connection is completed.
   VIICECompleted? onICECompleted;
 
-  /// Callback for getting notified when new endpoint is added to the call.
+  /// Triggered when a new endpoint is added to the call.
   VIEndpointAdded? onEndpointAdded;
 
-  /// Callback for getting notified when local video is added to the call.
+  /// Triggered when the local video is added to the call.
   VILocalVideoStreamAdded? onLocalVideoStreamAdded;
 
-  /// Callback for getting notified when local video is removed from the call.
+  /// Triggered when the local video is removed from the call.
   VILocalVideoStreamRemoved? onLocalVideoStreamRemoved;
 
   final String _callId;
@@ -288,10 +288,10 @@ class VICall {
         .listen(_eventListener);
   }
 
-  /// The call id.
+  /// Call ID.
   String get callId => _callId;
 
-  /// The CallKit UUID that may be used to match an incoming call with a push
+  /// CallKit UUID that may be used to match an incoming call with a push
   /// notification received before.
   ///
   /// Implemented for iOS only.
@@ -310,10 +310,10 @@ class VICall {
     }
   }
 
-  /// The endpoints associated with the call.
+  /// Endpoints associated with the call.
   List<VIEndpoint> get endpoints => _endpoints;
 
-  /// The active local video stream.
+  /// Active local video stream.
   VIVideoStream? get localVideoStream => _localVideoStream;
 
   /// Answers the incoming call.
@@ -353,8 +353,8 @@ class VICall {
   ///
   /// Should be used only for incoming calls.
   ///
-  /// Indicates that the user can't answer the call right now, and VoxEngine
-  /// will terminate the call and any pending calls to other devices of
+  /// Indicates that the user cannot answer the call right now, and VoxEngine
+  /// terminates the call and any pending calls to other devices of
   /// the current user.
   ///
   /// Optional `headers` - Optional SIP headers
@@ -411,7 +411,7 @@ class VICall {
 
   /// Puts the call on/off hold.
   ///
-  /// `enable` - True if the call should be put on hold, false for unhold
+  /// `enable` - Whether the call should be hold/unhold.
   ///
   /// Throws [VIException], if an error occurred.
   ///
@@ -434,7 +434,7 @@ class VICall {
 
   /// Enables or disables audio transfer from microphone into the call.
   ///
-  /// `enable` - True if audio should be sent, false otherwise
+  /// `enable` - Whether the audio should be sent
   Future<void> sendAudio(bool enable) async {
     try {
       await _channel.invokeMethod<void>('Call.sendAudioForCall',
@@ -444,9 +444,9 @@ class VICall {
     }
   }
 
-  /// Send INFO message within the call.
+  /// Sends an INFO message within the call.
   ///
-  /// INFO message will be sent, if the call is establishing or established.
+  /// INFO message is sent, if the call is establishing or established.
   ///
   /// `mimeType` - MIME type of info
   ///
@@ -471,10 +471,10 @@ class VICall {
     }
   }
 
-  /// Sends [message] within the call.
+  /// Sends a [message] within the call.
   ///
   /// Implemented atop SIP INFO for communication between call endpoint and the
-  /// Voximplant Cloud, and is separated from Voximplant messaging API.
+  /// Voximplant cloud, and is separated from Voximplant messaging API.
   ///
   /// `message` - Message text
   Future<void> sendMessage(String message) async {
@@ -506,9 +506,9 @@ class VICall {
   /// stream is removed or added).
   ///
   /// For the conference call it mutes or un-mutes video send (video stream in
-  /// the 'muted' state will still consume a small bandwidth).
+  /// the 'muted' state still consumes a small bandwidth).
   ///
-  /// `enable` - True if video should be sent, false otherwise
+  /// `enable` - Whether the video should be sent
   ///
   /// Throws [VIException], if an error occurred.
   ///
@@ -535,9 +535,9 @@ class VICall {
     }
   }
 
-  /// Starts to receive video if video receive was disabled before.
+  /// Starts receiving video if video receive has been disabled before.
   ///
-  /// Stop receiving video during the call is not supported.
+  /// Stops receiving video during the call is not supported.
   ///
   /// Throws [VIException], if an error occurred.
   ///

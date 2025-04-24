@@ -15,31 +15,31 @@ typedef void VILogListener(
   String logMessage,
 );
 
-/// The entry point of the Voximplant Flutter SDK.
+/// Entry point of the Voximplant Flutter SDK.
 class Voximplant {
   factory Voximplant() => _instance;
   static final Voximplant _instance = Voximplant.private();
 
   VILogListener? logListener;
 
-  /// Get [VIClient] instance to connect and login to the Voximplant Cloud,
-  /// make and receive calls
+  /// Gets a [VIClient] instance to connect and login to the Voximplant cloud,
+  /// make and receive calls.
   ///
   /// Optional `clientConfig` - Configuration for VIClient instance
   VIClient getClient([VIClientConfig? clientConfig]) =>
       _client ??= VIClient._(_channel, clientConfig ?? VIClientConfig());
   VIClient? _client;
 
-  /// Get [VIMessenger] instance of messaging subsystem
+  /// Gets a [VIMessenger] instance of messaging subsystem.
   VIMessenger get messenger => _messenger ??= VIMessenger._(_channel);
   VIMessenger? _messenger;
 
-  /// Get [VIAudioDeviceManager] instance to control audio hardware settings
+  /// Gets a [VIAudioDeviceManager] instance to control audio hardware settings.
   VIAudioDeviceManager get audioDeviceManager =>
       _audioDeviceManager ??= VIAudioDeviceManager._(_channel);
   VIAudioDeviceManager? _audioDeviceManager;
 
-  /// Get [VICameraManager] instance to control camera hardware settings
+  /// Gets a [VICameraManager] instance to control camera hardware settings.
   VICameraManager get cameraManager =>
       _cameraManager ??= VICameraManager._(_channel);
   VICameraManager? _cameraManager;
