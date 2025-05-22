@@ -33,24 +33,24 @@ enum VILogLevel {
   verbose
 }
 
-/// Configuration information for [VIClient] instance.
+/// Configuration information for a [VIClient] instance.
 class VIClientConfig {
   /// Application bundle id.
   ///
-  /// You need to set this only if you are going to send push notification across
-  /// several Android or several iOS apps using a single Voximplant application.
+  /// Set this only if you are going to send push notification across
+  /// several Android or several iOS apps within a single Voximplant application.
   String? bundleId;
 
-  /// Enables debug logging on Android. False by default.
+  /// Whether to enable debug logging on Android. The default value is false.
   bool enableDebugLogging;
 
-  /// Enables log output to logcat on Android. True by default.
+  /// Whether to enables log output to logcat on Android. The default value is true.
   bool enableLogcatLogging;
 
   /// Specifies when the audio focus request is performed: when a call is started
   /// or established.
   ///
-  /// [VIRequestAudioFocusMode.onCallStart] by default.
+  /// The default value is [VIRequestAudioFocusMode.onCallStart].
   ///
   /// If the application plays some audio, it may result in audio interruptions.
   /// To avoid this behavior, this option should be set to
@@ -58,10 +58,10 @@ class VIClientConfig {
   /// be stopped/paused on [VICallAudioStarted] callback.
   VIRequestAudioFocusMode audioFocusMode;
 
-  /// Specifies log level on iOS.
+  /// Specifies the log level on iOS.
   VILogLevel logLevel;
 
-  /// Force traffic to go through TURN servers. False by default.
+  /// Whether to force traffic to go through TURN servers. The default value is false.
   bool forceRelayTraffic;
 
   VIClientConfig({
@@ -109,26 +109,26 @@ class VIAuthResult {
 
 /// Represents client states.
 enum VIClientState {
-  /// The client is currently disconnected.
+  /// Client is currently disconnected.
   Disconnected,
 
-  /// The client is currently connecting.
+  /// Client is currently connecting.
   Connecting,
 
-  /// The client is currently reconnecting.
+  /// Client is currently reconnecting.
   Reconnecting,
 
-  /// The client is currently connected.
+  /// Client is currently connected.
   Connected,
 
-  /// The client is currently logging in.
+  /// Client is currently logging in.
   LoggingIn,
 
-  /// The client is currently logged in.
+  /// Client is currently logged in.
   LoggedIn,
 }
 
-/// Describes the nodes the Voximplant account may belong to.
+/// Nodes the Voximplant account may belong to.
 enum VINode {
   Node1,
   Node2,

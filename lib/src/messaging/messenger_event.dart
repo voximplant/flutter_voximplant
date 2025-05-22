@@ -5,13 +5,13 @@ part of '../../flutter_voximplant.dart';
 /// Base interface that represents all messenger events provided
 /// via [VIMessenger] callbacks or as a result of method calls.
 abstract class VIMessengerEvent {
-  /// The IM id for the user that initiated the event.
+  /// IM id for the user that initiated the event.
   final int? imUserId;
 
-  /// The action that triggered this event.
+  /// Action that triggered this event.
   final VIMessengerAction action;
 
-  /// The messenger event type.
+  /// Messenger event type.
   final VIMessengerEventType type;
 
   VIMessengerEvent._fromMap(Map<dynamic, dynamic> map)
@@ -24,7 +24,7 @@ abstract class VIMessengerEvent {
 ///
 /// For example, when the [VIMessenger.onEditConversation] event is invoked,
 /// users can inspect the exact reason of it via [VIMessengerEvent.action].
-/// In case of editing a conversation, it will be one of the following:
+/// In case of editing a conversation, it is one of the following:
 ///
 /// - [VIMessengerAction.addParticipants]
 /// - [VIMessengerAction.editParticipants]

@@ -21,7 +21,7 @@ class VICameraManager {
 
   /// Selects camera resolution.
   ///
-  /// Camera will capture frames in a format that is as close as possible
+  /// Camera captures frames in a format that is as close as possible
   /// to [width] x [height].
   ///
   /// `width` - Camera resolution width

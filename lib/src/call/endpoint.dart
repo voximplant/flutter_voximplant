@@ -3,12 +3,12 @@
 part of '../../flutter_voximplant.dart';
 
 /// Enum that represents the reason why video receive on the remote
-/// video stream was stopped.
+/// video stream has stopped.
 ///
 /// /// Used in [VICall].
 enum VIVideoStreamReceiveStopReason {
   /// Indicates that video receive on a remote video stream is stopped by
-  /// the Voximplant Cloud due to a network issue on the device.
+  /// the Voximplant cloud due to a network issue on the device.
   AUTOMATIC,
 
   /// Indicates that video receive on a remote video stream is stopped
@@ -63,13 +63,13 @@ typedef void VIRemoteVideoStreamRemoved(
 /// Available only for the conference calls.
 ///
 /// The event is triggered if:
-/// 1.[VIEndpoint.startReceiving] was called and the request has been processed
+/// 1.[VIEndpoint.startReceiving] is called and the request has been processed
 /// successfully.
-/// 2. A network issue that caused the Voximplant Cloud to stop video receive
+/// 2. A network issue that caused the Voximplant cloud to stop video receive
 /// of the remote video stream is gone.
 ///
 /// The event is not triggered if the endpoint client has started sending video
-/// using [VICall.sendVideo] API.
+/// via [VICall.sendVideo] API.
 ///
 /// Used in [VIEndpoint].
 ///
@@ -83,20 +83,20 @@ typedef void VIStartReceivingVideoStream(
 /// stream is stopped. Available only for the conference calls.
 ///
 /// Video receive on a remote video stream can be stopped due to:
-/// 1. [VIEndpoint.stopReceiving] was called and the request has been processed
+/// 1. [VIEndpoint.stopReceiving] has called and the request has been processed
 /// successfully. In this case the value of the [reason] parameter is
 /// [VIVideoStreamReceiveStopReason.MANUAL].
-/// 2.Voximplant Cloud has detected a network issue on the client and
+/// 2.Voximplant cloud has detected a network issue on the client and
 /// automatically stopped the video. In this case the value of the [reason]
 /// parameter is [VIVideoStreamReceiveStopReason.AUTOMATIC].
 ///
 /// If the video receive is disabled automatically, it may be automatically
 /// enabled as soon as the network condition on the device is good and there is
 /// enough bandwidth to receive the video on this remote video stream.
-/// In this case event will be invoked.
+/// In this case event is triggered.
 ///
 /// The event is not triggered if the endpoint client has started sending video
-/// using [VICall.sendVideo] API.
+/// via [VICall.sendVideo] API.
 ///
 /// Used in [VIEndpoint].
 ///
@@ -125,35 +125,35 @@ typedef void VIVoiceActivityStopped(VIEndpoint endpoint);
 
 /// Represents a remote call participant.
 class VIEndpoint {
-  /// Callback for getting notified when the endpoint information is updated.
+  /// Triggered when the endpoint information is updated.
   VIEndpointUpdated? onEndpointUpdated;
 
-  /// Callback for getting notified when the endpoint is removed from the call.
-  /// It is not triggered on call end.
+  /// Triggered when the endpoint is removed from the call.
+  /// The event is not triggered on the call end.
   VIEndpointRemoved? onEndpointRemoved;
 
-  /// Callback for getting notified when the endpoint added the video stream to
+  /// Triggered when the endpoint added the video stream to
   /// the call.
   VIRemoteVideoStreamAdded? onRemoteVideoStreamAdded;
 
-  /// Callback for getting notified when the endpoint removed the video stream
+  /// Triggered when the endpoint removed the video stream
   /// from the call.
   VIRemoteVideoStreamRemoved? onRemoteVideoStreamRemoved;
 
-  /// Callback for getting notified when a voice activity is detected
+  /// Triggered when a voice activity is detected
   /// in a conference call.
   VIVoiceActivityStarted? onVoiceActivityStarted;
 
-  /// Callback for getting notified when a voice activity is stopped
+  /// Triggered when a voice activity is stopped
   /// in a conference call.
   VIVoiceActivityStopped? onVoiceActivityStopped;
 
-  /// Callback for getting notified when video receive on a remote video
+  /// Triggered when video receive on a remote video
   /// stream is started after previously being stopped.
   /// Available only for the conference calls.
   VIStartReceivingVideoStream? onStartReceivingVideoStream;
 
-  /// Callback for getting notified when video receive on a remote video
+  /// Triggered when video receive on a remote video
   /// stream is stopped. Available only for the conference calls.
   VIStopReceivingVideoStream? onStopReceivingVideoStream;
 
@@ -165,16 +165,16 @@ class VIEndpoint {
   final List<VIVideoStream> _remoteVideoStreams = [];
   final MethodChannel _channel = Voximplant._channel;
 
-  /// This endpoint's user name.
+  /// Endpoint's user name.
   String? get userName => _userName;
 
-  /// This endpoint's display name.
+  /// Endpoint's display name.
   String? get displayName => _displayName;
 
-  /// This endpoint's SIP URI.
+  /// Endpoint's SIP URI.
   String? get sipUri => _sipUri;
 
-  /// The endpoint id.
+  /// Endpoint's ID.
   String get endpointId => _endpointId;
 
   /// All active video streams of the endpoint.
@@ -195,12 +195,12 @@ class VIEndpoint {
 
   /// Starts receiving video on the remote video stream.
   ///
-  /// Available only for the conference calls.
+  /// Available only for conference calls.
   ///
   /// If the video is already receiving, this method call is ignored.
   ///
   /// If the request is processed successfully, [VIStartReceivingVideoStream]
-  /// event will be invoked.
+  /// event is triggered.
   ///
   /// `streamId` - Remote video stream id
   ///
@@ -220,10 +220,10 @@ class VIEndpoint {
 
   /// Stops receiving video on the remote video stream.
   ///
-  /// Available only for the conference calls.
+  /// Available only for conference calls.
   ///
   /// If the request is processed successfully,
-  /// [VIStopReceivingVideoStream] event will be invoked with
+  /// [VIStopReceivingVideoStream] event is triggered with
   /// the reason [VIVideoStreamReceiveStopReason.MANUAL].
   ///
   /// `streamId` - Remote video stream id

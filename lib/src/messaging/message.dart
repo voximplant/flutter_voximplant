@@ -4,26 +4,26 @@ part of '../../flutter_voximplant.dart';
 
 /// Interface that represents message within a conversation.
 class VIMessage {
-  /// The universally unique identifier (UUID) of the message.
+  /// Universally unique identifier (UUID) of the message.
   final String uuid;
 
-  /// The UUID of the conversation this message belongs to.
+  /// UUID of the conversation this message belongs to.
   ///
-  /// The message can belong to the one conversation only.
+  /// Message can belong to the one conversation only.
   final String conversation;
 
-  /// The message sequence number in the conversation.
+  /// Message sequence number in the conversation.
   final int sequence;
 
-  /// The text of this message.
+  /// Text of this message.
   final String text;
 
-  /// The list of payload objects associated with the message.
+  /// List of payload objects associated with the message.
   final List<Map<String, dynamic>> payload;
 
   final MethodChannel _methodChannel;
 
-  /// Send text and payload changes to the cloud.
+  /// Sends text and payload changes to the cloud.
   ///
   /// The participant that calls this method should have:
   ///
@@ -33,9 +33,9 @@ class VIMessage {
   /// To be informed about the message updating while being offline,
   /// participants can subscribe to the [VIMessengerNotification.onEditMessage] messenger push notification.
   ///
-  /// Optional `text` - New text of this message, maximum 5000 characters. If null, message text will not be updated.
+  /// Optional `text` - New text of this message, maximum 5000 characters. If null, message text is not updated.
   ///
-  /// Optional `payload` - New payload of this message. If null, message payload will not be updated.
+  /// Optional `payload` - New payload of this message. If null, message payload is not updated.
   Future<VIMessageEvent> update({
     String? text,
     List<Map<String, Object>>? payload,
@@ -63,7 +63,7 @@ class VIMessage {
     }
   }
 
-  /// Remove the message from the conversation.
+  /// Removes the message from the conversation.
   ///
   /// The participant that calls this method should have:
   ///

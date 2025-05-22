@@ -41,19 +41,19 @@ class VICallError {
 }
 
 class VIAudioFileError {
-  /// Audio file playing was stopped due to <VIAudioFile> instance is deallocated.
+  /// Audio file playing has been stopped due to <VIAudioFile> instance is deallocated.
   static const String ERROR_DESTROYED = 'ERROR_DESTROYED';
 
-  /// Audio file playing was interrupted by a third party application.
+  /// Audio file playing has been interrupted by a third party application.
   static const String ERROR_INTERRUPTED = 'ERROR_INTERRUPTED';
 
   /// The audio file is already playing.
   static const String ERROR_ALREADY_PLAYING = 'ERROR_ALREADY_PLAYING';
 
-  /// Audio file playing was interrupted by CallKit activation.
+  /// Audio file playing has been interrupted by CallKit activation.
   static const String ERROR_CALLKIT_ACTIVATED = 'ERROR_CALLKIT_ACTIVATED';
 
-  /// Audio file playing was interrupted by CallKit deactivation.
+  /// Audio file playing has been interrupted by CallKit deactivation.
   static const String ERROR_CALLKIT_DEACTIVATED = 'ERROR_CALLKIT_DEACTIVATED';
 
   /// Audio file failed to start playing due to audio session configuration issues.

@@ -4,11 +4,11 @@ part of '../../flutter_voximplant.dart';
 
 /// Represents quality issue levels.
 enum VIQualityIssueLevel {
-  /// The quality issue level to indicate that an issue is not detected or
+  /// Quality issue level to indicate that an issue is not detected or
   /// is resolved.
   None,
 
-  /// The quality issue level to indicate that an issue may have minor
+  /// Quality issue level to indicate that an issue may have minor
   /// impact on the call quality.
   ///
   /// For audio calls it may result in temporary audio artifacts.
@@ -17,7 +17,7 @@ enum VIQualityIssueLevel {
   /// dynamically changing video stream.
   Minor,
 
-  /// The quality issue level to indicate that a detected issue may have a major
+  /// Quality issue level to indicate that a detected issue may have a major
   /// impact on the call quality.
   ///
   /// For audio calls it may result in a corrupted stream (discord or
@@ -28,7 +28,7 @@ enum VIQualityIssueLevel {
   /// between the call participants
   Major,
 
-  /// The quality issue level to indicate that a detected issue has a critical
+  /// Quality issue level to indicate that a detected issue has a critical
   /// impact on the call quality.
   ///
   /// In most cases it results in lost media stream between call participants
@@ -115,7 +115,7 @@ abstract class VIQualityIssue {
 /// is not detected.
 ///
 /// Possible reasons:
-/// * The video is not sent for some reasons. In this case codec will be null
+/// * The video is not sent for some reasons. In this case codec is null
 /// * Different codecs are specified in the call endpoints
 ///
 /// A subclass of [VIQualityIssue]
@@ -247,10 +247,10 @@ class VIPacketLoss extends VIQualityIssue {
 /// if the issue is not detected or resolved.
 ///
 /// If no audio receive is detected on several remote audio streams,the
-/// event will be invoked for each of the remote audio streams with the issue.
+/// event is triggered for each of the remote audio streams with the issue.
 ///
 /// If the issue level is [VIQualityIssueLevel.Critical]
-/// the event will not be invoked with the level [VIQualityIssueLevel.None] in cases:
+/// the event is not triggered with the level [VIQualityIssueLevel.None] in cases:
 ///
 /// * The (conference) call ended
 /// * The endpoint left the conference call -
@@ -288,13 +288,13 @@ class VINoAudioReceive extends VIQualityIssue {
 /// if the issue is not detected or resolved.
 ///
 /// If no video receive is detected on several remote video streams,the
-/// event will be invoked for each of the remote video streams with the issue.
+/// event is triggered for each of the remote video streams with the issue.
 ///
 /// If the issue level is [VIQualityIssueLevel.Critical]
-/// the event will not be invoked with the level [VIQualityIssueLevel.None] in cases:
+/// the event is not triggered with the level [VIQualityIssueLevel.None] in cases:
 ///
 /// * The (conference) call ended
-/// * The remote video stream was removed -
+/// * The remote video stream has been removed -
 /// [VIEndpoint.onRemoteVideoStreamRemoved] is invoked
 /// * The endpoint left the conference call -
 /// [VIEndpoint.onEndpointRemoved] is invoked
@@ -303,7 +303,7 @@ class VINoAudioReceive extends VIQualityIssue {
 ///
 /// * The endpoint put the call on hold via [VICall.hold]
 /// * The endpoint stopped sending audio during a call via [VICall.sendVideo]
-/// * Video receiving was stopped on the remote video stream via
+/// * Video receiving has stopped on the remote video stream via
 /// [VIEndpoint.stopReceiving]
 ///
 /// Possible reasons:

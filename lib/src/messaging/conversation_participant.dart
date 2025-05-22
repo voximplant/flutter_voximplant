@@ -17,82 +17,82 @@ part of '../../flutter_voximplant.dart';
 /// - can edit / remove other participant's messages
 /// - can manage other participants
 class VIConversationParticipant {
-  /// The IM user id.
+  /// IM user id.
   final int imUserId;
 
-  /// Sequence of the event that was last marked as read or 0 if the participant didn't mark events as read.
+  /// Sequence of the event that is last marked as read or 0 if the participant have not marked events as read.
   final int lastReadSequence;
 
-  /// A bool value that determines whether the conversation participant is an owner.
+  /// Whether the conversation participant is an owner.
   /// There could be more than one owner in the conversation.
   /// If true, the participant can edit the conversation.
   /// If true and canManageParticipants is true, the participant can manage other owners.
-  /// Note that a value change doesn't apply changes by itself; there are appropriate methods for applying:
+  /// Note that a value change does not apply changes by itself; there are appropriate methods for applying:
   ///
   /// - [VIConversation.editParticipants] for an existing conversation
   /// - [VIMessenger.createConversation] for a new conversation
   bool isOwner;
 
-  /// A bool value that determines whether the conversation participant can send messages to the conversation.
+  /// Whether the conversation participant can send messages to the conversation.
   /// Default is true
   ///
-  /// Note that a value change doesn't apply changes by itself; there are appropriate methods for applying:
+  /// Note that a value change does not apply changes by itself; there are appropriate methods for applying:
   ///
   /// - [VIConversation.editParticipants] for an existing conversation
   /// - [VIMessenger.createConversation] for a new conversation
   bool canWrite;
 
-  /// A bool value that determines whether the conversation participant can edit its own messages.
+  /// Whether the conversation participant can edit its own messages.
   /// Default is true
   ///
-  /// Note that a value change doesn't apply changes by itself; there are appropriate methods for applying:
+  /// Note that a value change does not apply changes by itself; there are appropriate methods for applying:
   ///
   /// - [VIConversation.editParticipants] for an existing conversation
   /// - [VIMessenger.createConversation] for a new conversation
   bool canEditMessages;
 
-  /// A bool value that determines whether the conversation participant can edit messages other than its own.
+  /// Whether the conversation participant can edit messages other than its own.
   ///
-  /// Note that a value change doesn't apply changes by itself; there are appropriate methods for applying:
+  /// Note that a value change does not apply changes by itself; there are appropriate methods for applying:
   ///
   /// - [VIConversation.editParticipants] for an existing conversation
   /// - [VIMessenger.createConversation] for a new conversation
   bool canEditAllMessages;
 
-  /// A bool value that determines whether the conversation participant can remove its own messages.
+  /// Whether the conversation participant can remove its own messages.
   /// Default is true
   ///
-  /// Note that a value change doesn't apply changes by itself; there are appropriate methods for applying:
+  /// Note that a value change does not apply changes by itself; there are appropriate methods for applying:
   ///
   /// - [VIConversation.editParticipants] for an existing conversation
   /// - [VIMessenger.createConversation] for a new conversation
   bool canRemoveMessages;
 
-  /// A bool value that determines whether the conversation participant can remove messages other than its own.
+  /// Whether the conversation participant can remove messages other than its own.
   ///
-  /// Note that a value change doesn't apply changes by itself; there are appropriate methods for applying:
+  /// Note that a value change does not apply changes by itself; there are appropriate methods for applying:
   ///
   /// - [VIConversation.editParticipants] for an existing conversation
   /// - [VIMessenger.createConversation] for a new conversation
   bool canRemoveAllMessages;
 
-  /// A bool value that determines whether the conversation participant can manage other participants in the conversation:
+  /// Whether the conversation participant can manage other participants in the conversation:
   ///
   /// - add / remove / edit permissions
   /// - add / remove participants
   /// If true and isOwner is true, the participant can manage other owners.
   ///
-  /// Note that a value change doesn't apply changes by itself; there are appropriate methods for applying:
+  /// Note that a value change does not apply changes by itself; there are appropriate methods for applying:
   ///
   /// - [VIConversation.editParticipants] for an existing conversation
   /// - [VIMessenger.createConversation] for a new conversation
   bool canManageParticipants;
 
-  /// Create a new participants.
+  /// Creates a new participant.
   ///
   /// Use [VIConversationConfig.participants] or [VIConversation.addParticipants] to add participants to the conversation.
   ///
-  /// `imUserId` - IM User id. Can be retrieved from [VIUser.imId]
+  /// `imUserId` - IM user id. Can be retrieved from [VIUser.imId]
   /// Optional `isOwner` - determines if the conversation participant is an owner
   /// Optional `canWrite` - determines if the conversation participant can send messages to the conversation
   /// Optional `canEditMessages` - determines if the conversation participant can edit its own messages

@@ -14,7 +14,7 @@ part of '../../flutter_voximplant.dart';
 ///
 /// `call` - Incoming call represented by VICall instance
 ///
-/// `video` - Indicates if the caller initiated a video call
+/// `video` - Whether the caller initiated a video call
 ///
 /// `headers` - Optional SIP headers
 typedef void VIIncomingCall(
@@ -38,13 +38,13 @@ typedef void VIIncomingCall(
 /// `uuid` - CallKit UUID associated with the VoIP push
 typedef void VIPushDidExpire(VIClient client, String uuid);
 
-/// Interface that may be used to connect, login to the Voximplant CLoud, make
+/// Interface that may be used to connect, login to the Voximplant cloud, make
 /// and receive audio and video calls.
 class VIClient {
   /// Callback for getting notified about new incoming call.
   VIIncomingCall? onIncomingCall;
 
-  /// Callback for getting notified when push notification is expired.
+  /// Triggered when push notification is expired.
   VIPushDidExpire? onPushDidExpire;
 
   final MethodChannel _channel;
@@ -111,20 +111,20 @@ class VIClient {
     }
   }
 
-  /// Connects to the Voximplant Cloud.
+  /// Connects to the Voximplant cloud.
   ///
-  /// Checks whether UDP traffic will flow correctly between device and
-  /// the Voximplant Cloud if [connectivityCheck] is enabled (disabled by
+  /// Whether UDP traffic flows correctly between device and
+  /// the Voximplant cloud if [connectivityCheck] is enabled (disabled by
   /// default).
   ///
   /// `node` - Specifies the node the Voximplant account belongs to.
   ///
-  /// Optional `connectivityCheck` - Checks whether UDP traffic will flow correctly
+  /// Optional `connectivityCheck` - Whether UDP traffic flows correctly
   /// between device and Voximplant cloud. This check reduces connection speed.
   ///
   /// Optional `servers` - List of server names of particular media gateways for connection.
   ///
-  /// Throws [VIException] if the connection to the Voximplant Cloud could not
+  /// Throws [VIException] if the connection to the Voximplant cloud could not
   /// be established.
   ///
   /// Errors:
@@ -156,7 +156,7 @@ class VIClient {
     }
   }
 
-  /// Closes the connection with the Voximplant Cloud.
+  /// Closes the connection with the Voximplant cloud.
   Future<void> disconnect() async {
     await _channel.invokeMethod('Client.disconnect');
     VIClientState state = await getClientState();
@@ -212,12 +212,12 @@ class VIClient {
   }
 
   /// Logs in a user with the given Voximplant username and one time key
-  /// that was generated before.
+  /// that has been generated before.
   ///
   /// `username` - Full user name, including Voximplant user, application, and
   ///  account name in the format `user@application.account.voximplant.com`.
   ///
-  /// `hash` - Hash that was generated using following formula:
+  /// `hash` - Hash that has been generated using following formula:
   /// MD5(oneTimeKey+"|"+MD5(user+":voximplant.com:"+password)).
   ///
   /// Throws [VIException], if login process failed, otherwise returns [VIAuthResult].
@@ -266,7 +266,7 @@ class VIClient {
   /// `username` - Full user name, including Voximplant user, application, and
   ///  account name in the format `user@application.account.voximplant.com`.
   ///
-  /// `token` - Access token that was obtained from [VIAuthResult.loginTokens] after
+  /// `token` - Access token that has been obtained from [VIAuthResult.loginTokens] after
   ///  previous successful login.
   ///
   /// Throws [VIException], if login process failed, otherwise returns [VIAuthResult].
@@ -326,7 +326,7 @@ class VIClient {
   ///   already logged in, or currently logging in.
   /// * [VIClientError.ERROR_INVALID_USERNAME] - If the given username is invalid.
   /// * [VIClientError.ERROR_NETWORK_ISSUES] - If the connection to
-  ///   the Voximplant Cloud is closed while the client is logging in.
+  ///   the Voximplant cloud is closed while the client is logging in.
   /// * [VIClientError.ERROR_TIMEOUT] - If timeout occurred.
   Future<String> requestOneTimeLoginKey(String username) async {
     try {
@@ -336,7 +336,7 @@ class VIClient {
     }
   }
 
-  /// Performs refresh of access token for the given Voximplant username using
+  /// Performs refresh of access token for the given Voximplant username via a
   /// refresh token.
   ///
   /// `username` - Full user name, including Voximplant user, application, and
@@ -481,7 +481,7 @@ class VIClient {
 
   /// Registers for VoIP push notification with the given token.
   ///
-  /// Application will receive push notifications from Voximplant Server after
+  /// Application can receive push notifications from Voximplant Server after
   /// first login.
   ///
   /// `pushToken` - Push notification token.
@@ -501,12 +501,12 @@ class VIClient {
     }
   }
 
-  /// Register Apple Push Notifications token.
+  /// Registers an Apple Push Notifications token.
   ///
-  /// After calling this function application will receive push notifications from Voximplant Server.
-  /// If the provided token is not nil, but the client is not logged in, the token will be registered just after login.
+  /// After calling this function application can receive push notifications from Voximplant Server.
+  /// If the provided token is not nil, but the client is not logged in, the token is registered just after login.
   ///
-  /// IOS ONLY.
+  /// iOS ONLY.
   ///
   /// `imToken` - The APNS token for IM push notification.
   Future<void> registerIMPushNotificationsTokenIOS(String imToken) async {
@@ -520,12 +520,12 @@ class VIClient {
     }
   }
 
-  /// Unregister Apple Push Notifications token.
+  /// Unregisters an Apple Push Notifications token.
   ///
-  /// After calling this function application stops receive push notifications from Voximplant Server.
-  /// If the provided token is not nil, but the client is not logged in, the token will be unregistered just after login.
+  /// After calling this function application stops receiving push notifications from Voximplant Server.
+  /// If the provided token is not nil, but the client is not logged in, the token is unregistered just after login.
   ///
-  /// IOS ONLY.
+  /// iOS ONLY.
   ///
   /// `imToken` - The APNS token for IM push notification.
   Future<void> unregisterIMPushNotificationsTokenIOS(String imToken) async {
@@ -541,7 +541,7 @@ class VIClient {
 
   /// Unregisters from VoIP push notifications.
   ///
-  /// Application will no longer receive push notifications from Voximplant
+  /// Application can no longer receive push notifications from Voximplant
   /// Server.
   ///
   /// `pushToken` - Push notification token.
