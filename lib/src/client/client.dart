@@ -573,6 +573,18 @@ class VIClient {
     await _channel.invokeMethod('Client.handlePushNotification', message);
   }
 
+  Future<void> configureFileLogger({
+    required String path,
+    required String fileName,
+    int fileSizeLimit = 2097152,
+  }) {
+    return _channel.invokeMethod('Client.configureFileLogger', {
+      'path': path,
+      'fileName': fileName,
+      'fileSizeLimit': fileSizeLimit,
+    });
+  }
+
   Future<VIAuthResult> _processLoginSuccess(Map<String, dynamic> data) async {
     _incomingCallEventSubscription = _incomingCallEventChannel
         .receiveBroadcastStream('incoming_calls')

@@ -54,6 +54,18 @@ class Voximplant {
     _logsEventChannel.receiveBroadcastStream('logs').listen(_logsEventListener);
   }
 
+  void configureFileLogger(
+    String path, 
+    String fileName, 
+    int fileSizeLimit,
+  ) {
+    _channel.invokeMethod('Logger.configureFileLogger', {
+      'path': path,
+      'fileName': fileName,
+      'fileSizeLimit': fileSizeLimit,
+    });
+  }
+
   void _logsEventListener(dynamic event) {
     final Map<dynamic, dynamic> map = event;
     if (map['event'] == 'onLogMessage') {
