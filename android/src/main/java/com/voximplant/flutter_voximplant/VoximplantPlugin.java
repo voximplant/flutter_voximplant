@@ -5,7 +5,6 @@
 package com.voximplant.flutter_voximplant;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -76,8 +75,6 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
         String CAMERA = "Camera";
         String AUDIO_FILE = "AudioFile";
         String LOGGER = "Logger";
-
-        Log.d("Oleg", "onMethodCall: " + call.method);
 
         if (isMethodCallOfType(MESSAGING, call)) {
             mMessagingModule.handleMethodCall(excludeMethodType(call), result);

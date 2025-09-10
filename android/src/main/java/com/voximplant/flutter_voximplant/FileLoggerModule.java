@@ -1,7 +1,5 @@
 package com.voximplant.flutter_voximplant;
 
-import android.util.Log;
-
 import com.voximplant.sdk.client.LogLevel;
 
 import java.io.IOException;
@@ -11,19 +9,11 @@ import java.util.logging.LogRecord;
 import java.util.logging.SimpleFormatter;
 
 public class FileLoggerModule {
-    private final static String TAG_NAME = "VOXFLUTTER";
-
     private FileHandler fileHandler;
 
-    public FileLoggerModule(String path, String fileName, int fileSizeLimit)  {
-        try {
-            fileHandler = new FileHandler(path + "/" + fileName, fileSizeLimit, 1, true);
-            fileHandler.setFormatter(new SimpleFormatter());
-        } catch (IOException e){
-            Log.e(TAG_NAME, "FileLogManager:: failed to open file");
-        } catch(SecurityException e){
-            Log.e(TAG_NAME, "FileLogManager:: does not have LoggingPermission(\"control\")");
-        }
+    public FileLoggerModule(String path, String fileName, int fileSizeLimit) throws IOException {
+        fileHandler = new FileHandler(path + "/" + fileName, fileSizeLimit, 1, true);
+        fileHandler.setFormatter(new SimpleFormatter());
     }
 
     public void writeLog(LogLevel logLevel, String log) {

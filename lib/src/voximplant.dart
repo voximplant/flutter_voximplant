@@ -54,12 +54,12 @@ class Voximplant {
     _logsEventChannel.receiveBroadcastStream('logs').listen(_logsEventListener);
   }
 
-  void configureFileLogger(
-    String path, 
-    String fileName, 
-    int fileSizeLimit,
-  ) {
-    _channel.invokeMethod('Logger.configureFileLogger', {
+  Future<void> configureFileLogger({
+    required String path,
+    required String fileName,
+    int fileSizeLimit = 2097152,
+  }) {
+    return _channel.invokeMethod('Logger.configureFileLogger', {
       'path': path,
       'fileName': fileName,
       'fileSizeLimit': fileSizeLimit,
