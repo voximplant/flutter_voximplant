@@ -28,7 +28,7 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
     private CameraModule mCameraModule;
     private MessagingModule mMessagingModule;
     private AudioFileManager mAudioFileManager;
-    private LoggerModule mLoggerModule;
+    private final LoggerModule mLoggerModule = LoggerModule.getInstance();
 
     public VoximplantPlugin() {
         Voximplant.subVersion = "flutter-3.14.0";
@@ -43,7 +43,6 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
         mChannel.setMethodCallHandler(this);
         mMessagingModule = new MessagingModule(messenger);
         mAudioFileManager = new AudioFileManager(messenger, context);
-        mLoggerModule = new LoggerModule();
     }
 
     @Override

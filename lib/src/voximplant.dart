@@ -10,6 +10,7 @@ part of '../flutter_voximplant.dart';
 /// `level` - Level of log message
 ///
 /// `logMessage` - Log message
+@Deprecated("Use Voximplant.configureFileLogger on Android platform")
 typedef void VILogListener(
   VILogLevel level,
   String logMessage,
@@ -51,19 +52,30 @@ class Voximplant {
       EventChannel('plugins.voximplant.com/logs');
 
   Voximplant.private() {
-    _logsEventChannel.receiveBroadcastStream('logs').listen(_logsEventListener);
+    if (Platform.isIOS) {
+      _logsEventChannel.receiveBroadcastStream('logs')
+          .listen(_logsEventListener);
+    }
   }
 
   Future<void> configureFileLogger({
     required String path,
     required String fileName,
     int fileSizeLimit = 2097152,
-  }) {
-    return _channel.invokeMethod('Logger.configureFileLogger', {
-      'path': path,
-      'fileName': fileName,
-      'fileSizeLimit': fileSizeLimit,
-    });
+  }) async {
+    if (Platform.isAndroid) {
+      try {
+        await _channel.invokeMethod('Logger.configureFileLogger', {
+          'path': path,
+          'fileName': fileName,
+          'fileSizeLimit': fileSizeLimit,
+        });
+      } on PlatformException catch (e) {
+        throw VIException(e.code, e.message);
+      }
+    } else {
+      throw UnimplementedError('File logging is not supported on iOS');
+    }
   }
 
   void _logsEventListener(dynamic event) {

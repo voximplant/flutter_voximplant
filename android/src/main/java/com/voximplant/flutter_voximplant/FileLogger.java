@@ -1,5 +1,7 @@
 package com.voximplant.flutter_voximplant;
 
+import android.util.Log;
+
 import com.voximplant.sdk.client.LogLevel;
 
 import java.io.IOException;
@@ -8,15 +10,17 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.SimpleFormatter;
 
-public class FileLoggerModule {
+class FileLogger {
+    private final static String TAG_NAME = "VOXFLUTTER";
+
     private FileHandler fileHandler;
 
-    public FileLoggerModule(String path, String fileName, int fileSizeLimit) throws IOException {
+    FileLogger(String path, String fileName, int fileSizeLimit) throws IOException, SecurityException, IllegalArgumentException {
         fileHandler = new FileHandler(path + "/" + fileName, fileSizeLimit, 1, true);
         fileHandler.setFormatter(new SimpleFormatter());
     }
 
-    public void writeLog(LogLevel logLevel, String log) {
+    void writeLog(LogLevel logLevel, String msg) {
         Level level;
         switch (logLevel) {
             case ERROR:
@@ -37,10 +41,19 @@ public class FileLoggerModule {
                 break;
         }
 
-        fileHandler.publish(new LogRecord(level, log));
+        if (fileHandler != null) {
+            fileHandler.publish(new LogRecord(level, msg));
+        }
     }
 
-    public void close() {
-        fileHandler.close();
+    void close() {
+        if (fileHandler != null) {
+            try {
+                fileHandler.close();
+            } catch (SecurityException e) {
+                Log.e(TAG_NAME, "FileLogger:: failed to close a file. " + e.getMessage());
+            }
+        }
+        fileHandler = null;
     }
 }

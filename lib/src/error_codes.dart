@@ -12,6 +12,12 @@ class VIException implements Exception {
   String toString() => '$runtimeType($code, $message)';
 }
 
+class VILoggerError {
+  static const String ERROR_FILE_OPEN = 'ERROR_FILE_OPEN';
+  static const String ERROR_SYSTEM_SECURITY = 'ERROR_SYSTEM_SECURITY';
+  static const String ERROR_INVALID_ARGUMENTS = 'ERROR_INVALID_ARGUMENTS';
+}
+
 class VIClientError {
   static const String ERROR_ACCOUNT_FROZEN = 'ERROR_ACCOUNT_FROZEN';
   static const String ERROR_INTERNAL = 'ERROR_INTERNAL';
