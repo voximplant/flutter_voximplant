@@ -58,6 +58,20 @@ class Voximplant {
     }
   }
 
+  /// Configures the logger to write log messages to a file.
+  ///
+  /// `path` - File path.
+  /// `fileName` - File name.
+  /// `fileSizeLimit` - File size limit in bytes. When the limit is reached, the file is overwritten.
+  ///
+  /// Throws [VIException], if an error occurred on the Android platform,
+  /// or [UnimplementedError] on the iOS platform.
+  ///
+  /// Errors:
+  /// * [VILoggerError.ERROR_FILE_OPEN] - If the file cannot be created or opened in the specified path.
+  /// * [VILoggerError.ERROR_SYSTEM_SECURITY] - If SecurityException is thrown on Android platform.
+  /// * [VILoggerError.ERROR_INVALID_ARGUMENTS] - If [path] or [fileName]
+  ///   is an empty string or [fileSizeLimit] is less than 0.
   Future<void> configureFileLogger({
     required String path,
     required String fileName,
