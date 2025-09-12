@@ -100,6 +100,12 @@ class LoggerModule implements ILogListener {
         }
     }
 
+    void logInfo(@NonNull String message) {
+        if (fileLogger != null) {
+            fileLogger.writeLog(LogLevel.INFO, message);
+        }
+    }
+
     @Override
     public void onLogMessage(LogLevel logLevel, String s) {
         if (fileLogger != null) {

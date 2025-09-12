@@ -47,6 +47,7 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
 
     @Override
     public void onAttachedToEngine(FlutterPluginBinding binding) {
+        mLoggerModule.logInfo("VoximplantPlugin attached to engine");
         configure(binding.getApplicationContext(),
                   binding.getTextureRegistry(),
                   binding.getBinaryMessenger()
@@ -55,6 +56,7 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        mLoggerModule.logInfo("VoximplantPlugin detached from engine");
         if (mCallManager != null) {
             mCallManager.endAllCalls();
         }
@@ -66,6 +68,8 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
+        mLoggerModule.logInfo("VoximplantPlugin method called: " + call.method + ", with arguments: " + call.arguments);
+
         String MESSAGING = "Messaging";
         String CLIENT = "Client";
         String CALL = "Call";
