@@ -68,8 +68,8 @@ class LoggerModule implements ILogListener {
                 result.error(ERROR_INVALID_ARGUMENTS, "Invalid arguments", null);
                 return;
             }
-            if (fileSizeLimit < 0) {
-                result.error(ERROR_INVALID_ARGUMENTS, "File size limit should not be less than 0", null);
+            if (fileSizeLimit <= 0) {
+                result.error(ERROR_INVALID_ARGUMENTS, "File size limit must be greater than 0", null);
                 return;
             }
 

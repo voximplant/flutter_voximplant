@@ -71,7 +71,7 @@ class Voximplant {
   /// * [VILoggerError.ERROR_FILE_OPEN] - If the file cannot be created or opened in the specified path.
   /// * [VILoggerError.ERROR_SYSTEM_SECURITY] - If SecurityException is thrown on Android platform.
   /// * [VILoggerError.ERROR_INVALID_ARGUMENTS] - If [path] or [fileName]
-  ///   is an empty string or [fileSizeLimit] is less than 0.
+  ///   is an empty string or [fileSizeLimit] is less than or equal to 0.
   Future<void> configureFileLogger({
     required String path,
     required String fileName,
