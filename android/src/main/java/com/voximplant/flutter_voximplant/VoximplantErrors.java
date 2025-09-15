@@ -26,6 +26,9 @@ class VoximplantErrors {
 
     static final String ERROR_CONNECTION_FAILED = "ERROR_CONNECTION_FAILED";
 
+    static final String ERROR_FILE_OPEN = "ERROR_FILE_OPEN";
+    static final String ERROR_SYSTEM_SECURITY = "ERROR_SYSTEM_SECURITY";
+
     static class Messaging {
         static final String ERROR_SOMETHING_WENT_WRONG = "ERROR_SOMETHING_WENT_WRONG";
         static final String ERROR_TRANSPORT_MESSAGE_STRUCTURE_IS_WRONG = "ERROR_TRANSPORT_MESSAGE_STRUCTURE_IS_WRONG";

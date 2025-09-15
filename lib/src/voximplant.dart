@@ -10,6 +10,7 @@ part of '../flutter_voximplant.dart';
 /// `level` - Level of log message
 ///
 /// `logMessage` - Log message
+@Deprecated("Use Voximplant.configureFileLogger on Android platform")
 typedef void VILogListener(
   VILogLevel level,
   String logMessage,
@@ -51,7 +52,44 @@ class Voximplant {
       EventChannel('plugins.voximplant.com/logs');
 
   Voximplant.private() {
-    _logsEventChannel.receiveBroadcastStream('logs').listen(_logsEventListener);
+    if (Platform.isIOS) {
+      _logsEventChannel.receiveBroadcastStream('logs')
+          .listen(_logsEventListener);
+    }
+  }
+
+  /// Configures the logger to write log messages to a file.
+  ///
+  /// `path` - File path.
+  /// `fileName` - File name.
+  /// `fileSizeLimit` - File size limit in bytes. When the limit is reached, the file is overwritten.
+  ///
+  /// Throws [VIException], if an error occurred on the Android platform,
+  /// or [UnimplementedError] on the iOS platform.
+  ///
+  /// Errors:
+  /// * [VILoggerError.ERROR_FILE_OPEN] - If the file cannot be created or opened in the specified path.
+  /// * [VILoggerError.ERROR_SYSTEM_SECURITY] - If SecurityException is thrown on Android platform.
+  /// * [VILoggerError.ERROR_INVALID_ARGUMENTS] - If [path] or [fileName]
+  ///   is an empty string or [fileSizeLimit] is less than or equal to 0.
+  Future<void> configureFileLogger({
+    required String path,
+    required String fileName,
+    int fileSizeLimit = 2097152,
+  }) async {
+    if (Platform.isAndroid) {
+      try {
+        await _channel.invokeMethod('Logger.configureFileLogger', {
+          'path': path,
+          'fileName': fileName,
+          'fileSizeLimit': fileSizeLimit,
+        });
+      } on PlatformException catch (e) {
+        throw VIException(e.code, e.message);
+      }
+    } else {
+      throw UnimplementedError('File logging is not supported on iOS');
+    }
   }
 
   void _logsEventListener(dynamic event) {

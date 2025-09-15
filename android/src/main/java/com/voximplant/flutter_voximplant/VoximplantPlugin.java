@@ -5,40 +5,30 @@
 package com.voximplant.flutter_voximplant;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 
 import androidx.annotation.NonNull;
 
 import com.voximplant.sdk.Voximplant;
-import com.voximplant.sdk.client.ILogListener;
-import com.voximplant.sdk.client.LogLevel;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.view.TextureRegistry;
 
-public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin, EventChannel.StreamHandler, ILogListener {
+public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
     private MethodChannel mChannel;
-    private EventChannel mLogsEventChannel;
-    private EventChannel.EventSink mLogsEventSink;
-    private final Handler mHandler = new Handler(Looper.getMainLooper());
-
     private AudioDeviceModule mAudioDeviceModule;
     private ClientModule mClientModule;
     private CallManager mCallManager;
     private CameraModule mCameraModule;
     private MessagingModule mMessagingModule;
     private AudioFileManager mAudioFileManager;
+    private final LoggerModule mLoggerModule = LoggerModule.getInstance();
 
     public VoximplantPlugin() {
         Voximplant.subVersion = "flutter-3.14.0";
@@ -46,9 +36,6 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin, Event
 
     private void configure(Context context, TextureRegistry textures, BinaryMessenger messenger) {
         mChannel = new MethodChannel(messenger, "plugins.voximplant.com/client");
-        mLogsEventChannel = new EventChannel(messenger, "plugins.voximplant.com/logs");
-        mLogsEventChannel.setStreamHandler(this);
-        Voximplant.setLogListener(this);
         mCallManager = new CallManager();
         mAudioDeviceModule = new AudioDeviceModule(messenger);
         mClientModule = new ClientModule(messenger, context, textures, mCallManager);
@@ -60,6 +47,7 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin, Event
 
     @Override
     public void onAttachedToEngine(FlutterPluginBinding binding) {
+        mLoggerModule.logInfo("VoximplantPlugin attached to engine");
         configure(binding.getApplicationContext(),
                   binding.getTextureRegistry(),
                   binding.getBinaryMessenger()
@@ -68,6 +56,7 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin, Event
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        mLoggerModule.logInfo("VoximplantPlugin detached from engine");
         if (mCallManager != null) {
             mCallManager.endAllCalls();
         }
@@ -75,14 +64,12 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin, Event
             mChannel.setMethodCallHandler(null);
             mChannel = null;
         }
-        if (mLogsEventChannel != null) {
-            mLogsEventChannel.setStreamHandler(null);
-            mLogsEventChannel = null;
-        }
     }
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
+        mLoggerModule.logInfo("VoximplantPlugin method called: " + call.method + ", with arguments: " + call.arguments);
+
         String MESSAGING = "Messaging";
         String CLIENT = "Client";
         String CALL = "Call";
@@ -90,6 +77,7 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin, Event
         String VIDEO_STREAM = "VideoStream";
         String CAMERA = "Camera";
         String AUDIO_FILE = "AudioFile";
+        String LOGGER = "Logger";
 
         if (isMethodCallOfType(MESSAGING, call)) {
             mMessagingModule.handleMethodCall(excludeMethodType(call), result);
@@ -120,39 +108,10 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin, Event
         } else if (isMethodCallOfType(AUDIO_FILE, call)) {
             mAudioFileManager.handleMethodCall(excludeMethodType(call), result);
 
+        } else if (isMethodCallOfType(LOGGER, call)) {
+            mLoggerModule.handleMethodCall(excludeMethodType(call), result);
         } else {
             result.notImplemented();
-        }
-    }
-
-    @Override
-    public void onListen(Object arguments, EventChannel.EventSink events) {
-        if (arguments instanceof String) {
-            String type = (String) arguments;
-            if (type.equals("logs")) {
-                mLogsEventSink = events;
-            }
-        }
-    }
-
-    @Override
-    public void onCancel(Object arguments) {
-        if (arguments instanceof String) {
-            String type = (String) arguments;
-            if (type.equals("logs")) {
-                mLogsEventSink = null;
-            }
-        }
-    }
-
-    @Override
-    public void onLogMessage(LogLevel logLevel, String s) {
-        if (mLogsEventSink != null) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("event", "onLogMessage");
-            params.put("level", logLevel.toString().toLowerCase());
-            params.put("logMessage", s);
-            mHandler.post(() -> mLogsEventSink.success(params));
         }
     }
 
