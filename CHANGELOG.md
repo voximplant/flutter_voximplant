@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.15.0
+* Introduce [Voximplant.configureFileLogger](/docs/references/fluttersdk/voximplant#configurefilelogger) API to write
+  logs to a file on Android
+* [Voximplant.logListener](/docs/references/fluttersdk/voximplant#loglistener) API is now available only on iOS
+
 ## 3.14.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.41.1 and Voximplant iOS SDK 2.54.0
 * Introduce [VINode.Node11](/docs/references/fluttersdk/client/vinode#node11)
