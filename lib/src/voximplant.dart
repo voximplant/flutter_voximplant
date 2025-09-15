@@ -53,7 +53,8 @@ class Voximplant {
 
   Voximplant.private() {
     if (Platform.isIOS) {
-      _logsEventChannel.receiveBroadcastStream('logs')
+      _logsEventChannel
+          .receiveBroadcastStream('logs')
           .listen(_logsEventListener);
     }
   }
@@ -61,8 +62,10 @@ class Voximplant {
   /// Configures the logger to write log messages to a file.
   ///
   /// `path` - File path.
+  ///
   /// `fileName` - File name.
-  /// `fileSizeLimit` - File size limit in bytes. When the limit is reached, the file is overwritten.
+  ///
+  /// Optional `fileSizeLimit` - File size limit in bytes. When the limit is reached, the file is overwritten.
   ///
   /// Throws [VIException], if an error occurred on the Android platform,
   /// or [UnimplementedError] on the iOS platform.
