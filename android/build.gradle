@@ -36,6 +36,6 @@ android {
     }
 
     dependencies {
-        api 'com.voximplant:voximplant-sdk:2.41.1'
+        api 'com.voximplant:voximplant-sdk:2.43.1'
     }
 }
