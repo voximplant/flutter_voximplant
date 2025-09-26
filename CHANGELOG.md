@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.16.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.43.1 and Voximplant iOS SDK 2.56.0
+
 ## 3.15.0
 * Introduce [Voximplant.configureFileLogger](/docs/references/fluttersdk/voximplant#configurefilelogger) API to write
   logs to a file on Android

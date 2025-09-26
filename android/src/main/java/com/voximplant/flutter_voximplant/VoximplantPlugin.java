@@ -31,7 +31,7 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
     private final LoggerModule mLoggerModule = LoggerModule.getInstance();
 
     public VoximplantPlugin() {
-        Voximplant.subVersion = "flutter-3.15.0";
+        Voximplant.subVersion = "flutter-3.16.0";
     }
 
     private void configure(Context context, TextureRegistry textures, BinaryMessenger messenger) {
