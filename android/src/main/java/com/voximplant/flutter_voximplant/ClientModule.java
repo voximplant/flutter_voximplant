@@ -446,11 +446,15 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
             return;
         }
         Map<String, Object> returnParams = new HashMap<>();
-        returnParams.put("displayName", displayName);
-        returnParams.put("accessToken", authParams.getAccessToken());
-        returnParams.put("accessExpire", authParams.getAccessTokenTimeExpired());
-        returnParams.put("refreshToken", authParams.getRefreshToken());
-        returnParams.put("refreshExpire", authParams.getRefreshTokenTimeExpired());
+        if (displayName != null) {
+            returnParams.put("displayName", displayName);
+        }
+        if (authParams != null && authParams.getAccessToken() != null && authParams.getAccessTokenTimeExpired() != 0 && authParams.getRefreshToken() != null && authParams.getRefreshTokenTimeExpired() != 0) {
+            returnParams.put("accessToken", authParams.getAccessToken());
+            returnParams.put("accessExpire", authParams.getAccessTokenTimeExpired());
+            returnParams.put("refreshToken", authParams.getRefreshToken());
+            returnParams.put("refreshExpire", authParams.getRefreshTokenTimeExpired());
+        }
         mHandler.post(() -> result.success(returnParams));
     }
 
@@ -496,10 +500,12 @@ class ClientModule implements IClientSessionListener, IClientLoginListener, ICli
             return;
         }
         Map<String, Object> returnParams = new HashMap<>();
-        returnParams.put("accessToken", authParams.getAccessToken());
-        returnParams.put("accessExpire", authParams.getAccessTokenTimeExpired());
-        returnParams.put("refreshToken", authParams.getRefreshToken());
-        returnParams.put("refreshExpire", authParams.getRefreshTokenTimeExpired());
+        if (authParams != null && authParams.getAccessToken() != null && authParams.getAccessTokenTimeExpired() != 0 && authParams.getRefreshToken() != null && authParams.getRefreshTokenTimeExpired() != 0) {
+            returnParams.put("accessToken", authParams.getAccessToken());
+            returnParams.put("accessExpire", authParams.getAccessTokenTimeExpired());
+            returnParams.put("refreshToken", authParams.getRefreshToken());
+            returnParams.put("refreshExpire", authParams.getRefreshTokenTimeExpired());
+        }
         mHandler.post(() -> result.success(returnParams));
     }
 

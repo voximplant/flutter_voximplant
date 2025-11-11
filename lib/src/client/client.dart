@@ -374,10 +374,10 @@ class VIClient {
         );
       }
       VILoginTokens loginTokens = VILoginTokens(
-        accessExpire: data['accessExpire'],
-        accessToken: data['accessToken'],
-        refreshExpire: data['refreshExpire'],
-        refreshToken: data['refreshToken'],
+        accessExpire: data['accessExpire'] ?? 0,
+        accessToken: data['accessToken'] ?? '',
+        refreshExpire: data['refreshExpire'] ?? 0,
+        refreshToken: data['refreshToken'] ?? '',
       );
       return loginTokens;
     } on PlatformException catch (e) {
@@ -584,10 +584,10 @@ class VIClient {
         data['refreshToken'] != null &&
         data['refreshExpire'] != null) {
       loginTokens = VILoginTokens(
-        accessExpire: data['accessExpire'] ?? '',
-        accessToken: data['accessToken'] ?? '',
-        refreshExpire: data['refreshExpire'] ?? '',
-        refreshToken: data['refreshToken'] ?? '',
+        accessExpire: data['accessExpire'],
+        accessToken: data['accessToken'],
+        refreshExpire: data['refreshExpire'],
+        refreshToken: data['refreshToken'],
       );
     }
     VIAuthResult authResult = VIAuthResult._(data["displayName"] ?? '', loginTokens);
