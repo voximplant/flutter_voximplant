@@ -374,10 +374,10 @@ class VIClient {
         );
       }
       VILoginTokens loginTokens = VILoginTokens(
-        accessExpire: data['accessExpire'],
-        accessToken: data['accessToken'],
-        refreshExpire: data['refreshExpire'],
-        refreshToken: data['refreshToken'],
+        accessExpire: data['accessExpire'] ?? 0,
+        accessToken: data['accessToken'] ?? '',
+        refreshExpire: data['refreshExpire'] ?? 0,
+        refreshToken: data['refreshToken'] ?? '',
       );
       return loginTokens;
     } on PlatformException catch (e) {
@@ -579,7 +579,10 @@ class VIClient {
         .listen(_incomingCallEventListener);
 
     VILoginTokens? loginTokens;
-    if (data['accessExpire'] != null && data['refreshExpire'] != null) {
+    if (data['accessToken'] != null &&
+        data['accessExpire'] != null &&
+        data['refreshToken'] != null &&
+        data['refreshExpire'] != null) {
       loginTokens = VILoginTokens(
         accessExpire: data['accessExpire'],
         accessToken: data['accessToken'],
@@ -587,7 +590,8 @@ class VIClient {
         refreshToken: data['refreshToken'],
       );
     }
-    VIAuthResult authResult = VIAuthResult._(data["displayName"], loginTokens);
+    VIAuthResult authResult =
+        VIAuthResult._(data["displayName"] ?? '', loginTokens);
 
     VIClientState state = await getClientState();
     _changeClientState(state);

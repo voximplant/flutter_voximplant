@@ -161,15 +161,18 @@
     [self.client loginWithUser:username
                       password:password
                        success:^(NSString * _Nonnull displayName, VIAuthParams * _Nonnull authParams) {
-                           NSMutableDictionary *resultParams = [NSMutableDictionary new];
-                           [resultParams setObject:displayName forKey:@"displayName"];
-                           [resultParams setValuesForKeysWithDictionary:[VoximplantUtils convertAuthParamsToDictionary:authParams]];
-                           result(resultParams);
+        NSMutableDictionary *resultParams = [NSMutableDictionary new];
+        [resultParams setObject:displayName forKey:@"displayName"];
+        if (authParams && authParams.accessToken && ![authParams.accessToken isEqualToString:@""] &&
+            authParams.refreshToken && ![authParams.refreshToken isEqualToString:@""]) {
+            [resultParams setValuesForKeysWithDictionary:[VoximplantUtils convertAuthParamsToDictionary:authParams]];
+        }
+        result(resultParams);
                        }
                        failure:^(NSError * _Nonnull error) {
-                           result([FlutterError errorWithCode:[VoximplantUtils convertLoginErrorToString:error.code]
-                                                      message:[VoximplantUtils getErrorDescriptionForLoginError:error.code]
-                                                      details:nil]);
+        result([FlutterError errorWithCode:[VoximplantUtils convertLoginErrorToString:error.code]
+                                  message:[VoximplantUtils getErrorDescriptionForLoginError:error.code]
+                                  details:nil]);
                        }];
 }
 
@@ -181,15 +184,18 @@
     [self.client loginWithUser:username
                          token:token
                        success:^(NSString * _Nonnull displayName, VIAuthParams * _Nonnull authParams) {
-                           NSMutableDictionary *resultParams = [NSMutableDictionary new];
-                           [resultParams setObject:displayName forKey:@"displayName"];
-                           [resultParams setValuesForKeysWithDictionary:[VoximplantUtils convertAuthParamsToDictionary:authParams]];
-                           result(resultParams);
+        NSMutableDictionary *resultParams = [NSMutableDictionary new];
+        [resultParams setObject:displayName forKey:@"displayName"];
+        if (authParams && authParams.accessToken && ![authParams.accessToken isEqualToString:@""] &&
+            authParams.refreshToken && ![authParams.refreshToken isEqualToString:@""]) {
+            [resultParams setValuesForKeysWithDictionary:[VoximplantUtils convertAuthParamsToDictionary:authParams]];
+        }
+        result(resultParams);
                        }
                        failure:^(NSError * _Nonnull error) {
-                           result([FlutterError errorWithCode:[VoximplantUtils convertLoginErrorToString:error.code]
-                                                      message:[VoximplantUtils getErrorDescriptionForLoginError:error.code]
-                                                      details:nil]);
+        result([FlutterError errorWithCode:[VoximplantUtils convertLoginErrorToString:error.code]
+                                  message:[VoximplantUtils getErrorDescriptionForLoginError:error.code]
+                                  details:nil]);
                        }];
 }
 
@@ -207,14 +213,17 @@
     [self.client loginWithUser:username
                     oneTimeKey:hash
                        success:^(NSString * _Nonnull displayName, VIAuthParams * _Nonnull authParams) {
-                           NSMutableDictionary *resultParams = [NSMutableDictionary new];
-                           [resultParams setObject:displayName forKey:@"displayName"];
-                           [resultParams setValuesForKeysWithDictionary:[VoximplantUtils convertAuthParamsToDictionary:authParams]];
-                           result(resultParams);
+        NSMutableDictionary *resultParams = [NSMutableDictionary new];
+        [resultParams setObject:displayName forKey:@"displayName"];
+        if (authParams && authParams.accessToken && ![authParams.accessToken isEqualToString:@""] &&
+            authParams.refreshToken && ![authParams.refreshToken isEqualToString:@""]) {
+            [resultParams setValuesForKeysWithDictionary:[VoximplantUtils convertAuthParamsToDictionary:authParams]];
+        }
+        result(resultParams);
                        } failure:^(NSError * _Nonnull error) {
-                           result([FlutterError errorWithCode:[VoximplantUtils convertLoginErrorToString:error.code]
-                                                      message:[VoximplantUtils getErrorDescriptionForLoginError:error.code]
-                                                      details:nil]);
+        result([FlutterError errorWithCode:[VoximplantUtils convertLoginErrorToString:error.code]
+                                  message:[VoximplantUtils getErrorDescriptionForLoginError:error.code]
+                                  details:nil]);
                        }];
 }
 
