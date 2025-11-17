@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.16.1
+* Fix: type error on processing [VIAuthResult](/docs/references/fluttersdk/client/viauthresult) in some cases
+
 ## 3.16.0
 * Update Android and iOS platform code to use Voximplant Android SDK 2.43.1 and Voximplant iOS SDK 2.56.0
 
