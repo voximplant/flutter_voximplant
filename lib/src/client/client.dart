@@ -590,7 +590,8 @@ class VIClient {
         refreshToken: data['refreshToken'],
       );
     }
-    VIAuthResult authResult = VIAuthResult._(data["displayName"] ?? '', loginTokens);
+    VIAuthResult authResult =
+        VIAuthResult._(data["displayName"] ?? '', loginTokens);
 
     VIClientState state = await getClientState();
     _changeClientState(state);
