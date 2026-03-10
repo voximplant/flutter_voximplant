@@ -314,6 +314,9 @@ class VIClient {
 
   /// Generates one time login key for the given Voximplant username.
   ///
+  /// Check [this article](https://voximplant.com/docs/guides/sdk/authorization-onetimekey)
+  /// for details.
+  ///
   /// `username` - Full user name, including Voximplant user, application, and
   ///  account name in the format `user@application.account.voximplant.com`.
   ///
