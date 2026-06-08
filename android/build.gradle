@@ -24,7 +24,7 @@ apply plugin: 'com.android.library'
 android {
     namespace "com.voximplant.flutter_voximplant"
 
-    compileSdk 35
+    compileSdk 34
 
     defaultConfig {
         minSdk  21

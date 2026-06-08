@@ -3,8 +3,8 @@
 */
 
 
-#import "VICameraModule.h"
-#import "VoximplantUtils.h"
+#import "./include/flutter_voximplant/VICameraModule.h"
+#import "./include/flutter_voximplant/VoximplantUtils.h"
 
 @interface VICameraModule()
 @property(nonatomic, strong) VICameraManager *cameraManager;

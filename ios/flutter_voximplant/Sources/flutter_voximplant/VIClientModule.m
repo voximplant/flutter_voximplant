@@ -2,8 +2,8 @@
 * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 */
 
-#import "VIClientModule.h"
-#import "VoximplantUtils.h"
+#import "./include/flutter_voximplant/VIClientModule.h"
+#import "./include/flutter_voximplant/VoximplantUtils.h"
 
 @interface VIClientModule()
 @property(nonatomic, strong) NSObject<FlutterPluginRegistrar> *registrar;
