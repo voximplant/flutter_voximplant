@@ -12,7 +12,7 @@ let package = Package(
         .library(name: "flutter-voximplant", targets: ["flutter_voximplant"])
     ],
     dependencies: [
-        .package(url: "https://github.com/voximplant/ios-sdk-releases.git", .upToNextMinor(from: "2.56.0"))
+        .package(url: "https://github.com/voximplant/ios-sdk-releases.git", exact: "2.56.0")
     ],
     targets: [
         .target(
