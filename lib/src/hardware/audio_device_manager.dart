@@ -36,7 +36,7 @@ enum VIAudioDevice {
 /// `audioManager` - VIAudioDeviceManager instance initiated the event
 ///
 /// `device` - Audio device to be used
-typedef void VIAudioDeviceChanged(
+typedef VIAudioDeviceChanged = void Function(
   VIAudioDeviceManager audioManager,
   VIAudioDevice device,
 );
@@ -51,7 +51,7 @@ typedef void VIAudioDeviceChanged(
 /// `audioManager` - VIAudioDeviceManager instance initiated the event
 ///
 /// `deviceList` - List of currently available audio devices.
-typedef void VIAudioDeviceListChanged(
+typedef VIAudioDeviceListChanged = void Function(
   VIAudioDeviceManager audioManager,
   List<VIAudioDevice> deviceList,
 );

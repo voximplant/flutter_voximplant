@@ -8,7 +8,7 @@ part of '../../flutter_voximplant.dart';
 /// For all possible errors see [VIAudioFileError]
 ///
 /// Used in [VIAudioFile].
-typedef void VIAudioFileStopped(String? error);
+typedef VIAudioFileStopped = void Function(String? error);
 
 /// Enum representing supported audio file usage modes
 ///

@@ -22,14 +22,14 @@ enum VIVideoStreamReceiveStopReason {
 /// Used in [VIEndpoint].
 ///
 /// `endpoint` - VIEndpoint instance initiated the event
-typedef void VIEndpointUpdated(VIEndpoint endpoint);
+typedef VIEndpointUpdated = void Function(VIEndpoint endpoint);
 
 /// Signature for callbacks reporting that the endpoint removed from a call.
 ///
 /// Used in [VIEndpoint].
 ///
 /// `endpoint` - VIEndpoint instance initiated the event
-typedef void VIEndpointRemoved(VIEndpoint endpoint);
+typedef VIEndpointRemoved = void Function(VIEndpoint endpoint);
 
 /// Signature for callbacks reporting that the endpoint added the video stream
 /// to the call.
@@ -38,7 +38,7 @@ typedef void VIEndpointRemoved(VIEndpoint endpoint);
 /// `endpoint` - VIEndpoint instance initiated the event
 ///
 /// `videoStream` - Remote video stream
-typedef void VIRemoteVideoStreamAdded(
+typedef VIRemoteVideoStreamAdded = void Function(
   VIEndpoint endpoint,
   VIVideoStream videoStream,
 );
@@ -53,7 +53,7 @@ typedef void VIRemoteVideoStreamAdded(
 /// `endpoint` - VIEndpoint instance initiated the event
 ///
 /// `videoStream` - Remote video stream
-typedef void VIRemoteVideoStreamRemoved(
+typedef VIRemoteVideoStreamRemoved = void Function(
   VIEndpoint endpoint,
   VIVideoStream videoStream,
 );
@@ -76,7 +76,7 @@ typedef void VIRemoteVideoStreamRemoved(
 /// `endpoint` - VIEndpoint instance initiated the event
 ///
 /// `videoStream` - The remote video stream where video receive is started
-typedef void VIStartReceivingVideoStream(
+typedef VIStartReceivingVideoStream = void Function(
     VIEndpoint endpoint, VIVideoStream videoStream);
 
 /// Signature for callbacks reporting that video receive on a remote video
@@ -106,7 +106,7 @@ typedef void VIStartReceivingVideoStream(
 ///
 /// `reason` - The reason for the event, such as video receive is disabled
 /// by client or automatically
-typedef void VIStopReceivingVideoStream(VIEndpoint endpoint,
+typedef VIStopReceivingVideoStream = void Function(VIEndpoint endpoint,
     VIVideoStream videoStream, VIVideoStreamReceiveStopReason reason);
 
 /// Signature for callbacks reporting when a voice activity of the endpoint is
@@ -114,14 +114,14 @@ typedef void VIStopReceivingVideoStream(VIEndpoint endpoint,
 ///
 /// Used in [VIEndpoint].
 /// `endpoint` - VIEndpoint instance initiated the event
-typedef void VIVoiceActivityStarted(VIEndpoint endpoint);
+typedef VIVoiceActivityStarted = void Function(VIEndpoint endpoint);
 
 /// Signature for callbacks reporting when a voice activity of the endpoint is
 /// stopped in a conference call.
 ///
 /// Used in [VIEndpoint].
 /// `endpoint` - VIEndpoint instance initiated the event
-typedef void VIVoiceActivityStopped(VIEndpoint endpoint);
+typedef VIVoiceActivityStopped = void Function(VIEndpoint endpoint);
 
 /// Represents a remote call participant.
 class VIEndpoint {

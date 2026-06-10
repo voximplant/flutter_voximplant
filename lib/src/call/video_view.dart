@@ -53,7 +53,7 @@ class _VIVideoViewState extends State<VIVideoView> {
   }
 }
 
-typedef void _TextureChanged(int? textureId);
+typedef _TextureChanged = void Function(int? textureId);
 
 /// A controller for a video view.
 class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
