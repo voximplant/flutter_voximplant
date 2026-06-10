@@ -43,7 +43,8 @@ typedef VIUnsubscribe = void Function(VISubscriptionEvent subscriptionEvent);
 /// Triggered only for participants that belong to the conversation.
 ///
 /// `conversationEvent` - VIConversationEvent object with conversation data and service information
-typedef VICreateConversation = void Function(VIConversationEvent conversationEvent);
+typedef VICreateConversation = void Function(
+    VIConversationEvent conversationEvent);
 
 /// Signature for callbacks reporting that a conversation has been removed.
 ///
@@ -52,7 +53,8 @@ typedef VICreateConversation = void Function(VIConversationEvent conversationEve
 /// It provides a [VIConversationEvent] instance
 ///
 /// `conversationEvent` - VIConversationEvent object with conversation data and service information
-typedef VIRemoveConversation = void Function(VIConversationEvent conversationEvent);
+typedef VIRemoveConversation = void Function(
+    VIConversationEvent conversationEvent);
 
 /// Signature for callbacks reporting that the conversation properties have been modified as the result of:
 /// - [VIMessenger.joinConversation]
@@ -68,7 +70,8 @@ typedef VIRemoveConversation = void Function(VIConversationEvent conversationEve
 /// It provides a [VIConversationEvent] instance
 ///
 /// `conversationEvent` - VIConversationEvent object with conversation data and service information
-typedef VIEditConversation = void Function(VIConversationEvent conversationEvent);
+typedef VIEditConversation = void Function(
+    VIConversationEvent conversationEvent);
 
 /// Signature for callbacks reporting that an user changed status via
 /// [VIMessenger.setStatus] or analogous methods from other Voximplant SDKs
@@ -122,7 +125,8 @@ typedef VIRemoveMessage = void Function(VIMessageEvent messageEvent);
 /// Triggered only for participants that belong to the conversation where typing is performing.
 ///
 /// `conversationServiceEvent` - VIConversationServiceEvent object with conversation UUID and service information
-typedef VITyping = void Function(VIConversationServiceEvent conversationServiceEvent);
+typedef VITyping = void Function(
+    VIConversationServiceEvent conversationServiceEvent);
 
 /// Signature for callbacks reporting that the event within a conversatio has been
 /// marked as read as the result of [VIConversation.markAsRead]
@@ -133,7 +137,8 @@ typedef VITyping = void Function(VIConversationServiceEvent conversationServiceE
 /// Invoked for all clients in the conversation
 ///
 /// `conversationServiceEvent` - VIConversationServiceEvent object with conversation UUID and service information
-typedef VIIsRead = void Function(VIConversationServiceEvent conversationServiceEvent);
+typedef VIIsRead = void Function(
+    VIConversationServiceEvent conversationServiceEvent);
 
 /// Interface that may be used to control messaging functions.
 class VIMessenger {

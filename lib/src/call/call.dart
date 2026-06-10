@@ -65,7 +65,8 @@ class VICallSettings {
 /// `call` - VICall instance initiated the event
 ///
 /// `headers` - Optional SIP headers
-typedef VICallConnected = void Function(VICall call, Map<String, String>? headers);
+typedef VICallConnected = void Function(
+    VICall call, Map<String, String>? headers);
 
 /// Signature for callbacks reporting that the call is disconnected.
 ///
@@ -90,7 +91,8 @@ typedef VICallDisconnected = void Function(
 /// `call` - VICall instance initiated the event
 ///
 /// `headers` - Optional SIP headers
-typedef VICallRinging = void Function(VICall call, Map<String, String>? headers);
+typedef VICallRinging = void Function(
+    VICall call, Map<String, String>? headers);
 
 /// Signature for callbacks reporting that the call has been failed.
 ///
@@ -198,7 +200,8 @@ typedef VIEndpointAdded = void Function(VICall call, VIEndpoint endpoint);
 /// `call` - VICall instance initiated the event
 ///
 /// `videoStream` - Local video stream
-typedef VILocalVideoStreamAdded = void Function(VICall call, VIVideoStream videoStream);
+typedef VILocalVideoStreamAdded = void Function(
+    VICall call, VIVideoStream videoStream);
 
 /// Signature for callbacks reporting that local video is removed from the call.
 ///
@@ -207,7 +210,8 @@ typedef VILocalVideoStreamAdded = void Function(VICall call, VIVideoStream video
 /// `call` - VICall instance initiated the event
 ///
 /// `videoStream` - Local video stream
-typedef VILocalVideoStreamRemoved = void Function(VICall call, VIVideoStream videoStream);
+typedef VILocalVideoStreamRemoved = void Function(
+    VICall call, VIVideoStream videoStream);
 
 /// Represents a call.
 class VICall {
