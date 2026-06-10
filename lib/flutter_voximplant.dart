@@ -1,6 +1,4 @@
-// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
-
-library voximplant;
+// Copyright (c) 2011 - 2026, Voximplant, Inc. All rights reserved.
 
 import 'dart:io';
 import 'dart:async';

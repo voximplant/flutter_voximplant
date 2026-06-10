@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011 - 2026, Voximplant, Inc. All rights reserved.
 
 part of '../../flutter_voximplant.dart';
 
@@ -8,7 +8,7 @@ part of '../../flutter_voximplant.dart';
 /// For all possible errors see [VIAudioFileError]
 ///
 /// Used in [VIAudioFile].
-typedef void VIAudioFileStopped(String? error);
+typedef VIAudioFileStopped = void Function(String? error);
 
 /// Enum representing supported audio file usage modes
 ///
@@ -189,8 +189,6 @@ class VIAudioFile {
       case VIAudioFileUsage.ringtone:
         return 'ringtone';
       case VIAudioFileUsage.unknown:
-        return 'unknown';
-      default:
         return 'unknown';
     }
   }
