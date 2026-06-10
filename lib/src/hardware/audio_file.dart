@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011 - 2026, Voximplant, Inc. All rights reserved.
 
 part of '../../flutter_voximplant.dart';
 
@@ -189,8 +189,6 @@ class VIAudioFile {
       case VIAudioFileUsage.ringtone:
         return 'ringtone';
       case VIAudioFileUsage.unknown:
-        return 'unknown';
-      default:
         return 'unknown';
     }
   }
