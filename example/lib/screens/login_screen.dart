@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011 - 2026, Voximplant, Inc. All rights reserved.
 
 import 'package:audio_call/screens/main_screen.dart';
 import 'package:audio_call/services/auth_service.dart';
@@ -127,6 +127,31 @@ class LoginScreenState extends State<LoginScreen> {
                       ),
                       autocorrect: false,
                       controller: _passwordController,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    child: DropdownButtonFormField<VINode>(
+                      decoration: InputDecoration(
+                        labelText: 'NODE',
+                      ),
+                      initialValue: _authService.node,
+                      items: VINode.values
+                          .map(
+                            (node) => DropdownMenuItem(
+                              value: node,
+                              child: Text(node.name),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (node) {
+                        if (node != null) {
+                          setState(() {
+                            _authService.node = node;
+                          });
+                        }
+                      },
                     ),
                   ),
                   Padding(

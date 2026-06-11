@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+* Copyright (c) 2011 - 2026, Voximplant, Inc. All rights reserved.
 */
 
 #import "./include/flutter_voximplant/VoximplantUtils.h"
@@ -312,6 +312,10 @@
         return VIConnectionNodeNode10;
     } else if ([node isEqualToString:@"Node11"]) {
         return VIConnectionNodeNode11;
+    } else if ([node isEqualToString:@"Node12"]) {
+        return VIConnectionNodeNode12;
+    } else if ([node isEqualToString:@"Node13"]) {
+        return VIConnectionNodeNode13;
     } else {
         return VIConnectionNodeNode1;
     }
@@ -328,7 +332,9 @@
     [node isEqualToString:@"Node8"] ||
     [node isEqualToString:@"Node9"] ||
     [node isEqualToString:@"Node10"] ||
-    [node isEqualToString:@"Node11"];
+    [node isEqualToString:@"Node11"] ||
+    [node isEqualToString:@"Node12"] ||
+    [node isEqualToString:@"Node13"];
 }
 
 @end
