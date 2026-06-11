@@ -2,9 +2,9 @@
  * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
  */
 
-#import "VIAudioFileModule.h"
-#import "VIAudioFileManager.h"
-#import "VoximplantUtils.h"
+#import "./include/flutter_voximplant/VIAudioFileModule.h"
+#import "./include/flutter_voximplant/VIAudioFileManager.h"
+#import "./include/flutter_voximplant/VoximplantUtils.h"
 
 @interface VIAudioFileModule ()
 

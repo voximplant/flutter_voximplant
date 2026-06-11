@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011 - 2026, Voximplant, Inc. All rights reserved.
 
 import 'package:flutter_voximplant/flutter_voximplant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,7 +9,7 @@ class AuthService {
   VIClient _client;
   // IMPORTANT!
   // Set the node the Voximplant account belongs to.
-  VINode _node = VINode.Node1;
+  final VINode _node = VINode.Node1;
   String? _displayName;
 
   String? get displayName => _displayName;

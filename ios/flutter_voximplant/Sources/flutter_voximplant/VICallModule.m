@@ -2,9 +2,9 @@
 * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 */
 
-#import "VICallModule.h"
-#import "VoximplantUtils.h"
-#import "VoximplantCallManager.h"
+#import "./include/flutter_voximplant/VICallModule.h"
+#import "./include/flutter_voximplant/VoximplantUtils.h"
+#import "./include/flutter_voximplant/VoximplantCallManager.h"
 
 @interface VICallModule()
 @property(nonatomic, strong) VICall *call;

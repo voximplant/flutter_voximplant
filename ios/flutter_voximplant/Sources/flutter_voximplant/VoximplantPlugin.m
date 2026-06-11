@@ -2,16 +2,16 @@
  * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
  */
 
-#import "VoximplantPlugin.h"
-#import "VoximplantUtils.h"
-#import "VICallModule.h"
-#import "VIAudioDeviceModule.h"
-#import "VIClientModule.h"
-#import "VoximplantCallManager.h"
-#import "VICameraModule.h"
-#import "VIMessagingModule.h"
-#import "VIAudioFileModule.h"
-#import "VIAudioFileManager.h"
+#import "./include/flutter_voximplant/VoximplantPlugin.h"
+#import "./include/flutter_voximplant/VoximplantUtils.h"
+#import "./include/flutter_voximplant/VICallModule.h"
+#import "./include/flutter_voximplant/VIAudioDeviceModule.h"
+#import "./include/flutter_voximplant/VIClientModule.h"
+#import "./include/flutter_voximplant/VoximplantCallManager.h"
+#import "./include/flutter_voximplant/VICameraModule.h"
+#import "./include/flutter_voximplant/VIMessagingModule.h"
+#import "./include/flutter_voximplant/VIAudioFileModule.h"
+#import "./include/flutter_voximplant/VIAudioFileManager.h"
 
 @interface VoximplantPlugin()
 @property(nonatomic, strong) FlutterEventChannel *logsEventChannel;

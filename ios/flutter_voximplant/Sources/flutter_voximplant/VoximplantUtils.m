@@ -2,7 +2,7 @@
 * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 */
 
-#import "VoximplantUtils.h"
+#import "./include/flutter_voximplant/VoximplantUtils.h"
 #import <VoximplantWebRTC/VoximplantWebRTC.h>
 
 @implementation VoximplantUtils

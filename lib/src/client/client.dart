@@ -17,7 +17,7 @@ part of '../../flutter_voximplant.dart';
 /// `video` - Whether the caller initiated a video call
 ///
 /// `headers` - Optional SIP headers
-typedef void VIIncomingCall(
+typedef VIIncomingCall = void Function(
   VIClient client,
   VICall call,
   bool video,
@@ -36,7 +36,7 @@ typedef void VIIncomingCall(
 /// `client` - VIClient instance initiated the event
 ///
 /// `uuid` - CallKit UUID associated with the VoIP push
-typedef void VIPushDidExpire(VIClient client, String uuid);
+typedef VIPushDidExpire = void Function(VIClient client, String uuid);
 
 /// Interface that may be used to connect, login to the Voximplant cloud, make
 /// and receive audio and video calls.

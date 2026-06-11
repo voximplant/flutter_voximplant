@@ -2,7 +2,7 @@
 * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 */
 
-#import "VoximplantCallManager.h"
+#import "./include/flutter_voximplant/VoximplantCallManager.h"
 
 @interface VoximplantCallManager()
 

@@ -2,8 +2,8 @@
 * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 */
 
-#import "VoximplantRenderer.h"
-#import "VoximplantUtils.h"
+#import "./include/flutter_voximplant/VoximplantRenderer.h"
+#import "./include/flutter_voximplant/VoximplantUtils.h"
 
 @interface VoximplantRenderer()
 @property(nonatomic, strong) id<FlutterTextureRegistry> textureRegistry;

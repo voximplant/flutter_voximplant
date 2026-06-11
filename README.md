@@ -2,31 +2,58 @@
 
 Voximplant Flutter SDK for embedding voice and video communication into Flutter applications.
 
-## Demo
-https://github.com/voximplant/flutter_demos
+## Supported platforms
 
-## Install
-Add `flutter_voximplant` as a dependency in your pubspec.yaml file.
+| Platform | Minimum version |
+| -------- | --------------- |
+| Android  | `5.0 (API 21)`  |
+| iOS      | `12.0`          |
 
-### iOS
+## Requirements
 
-Add the following entry to your `Info.plist` file, located in `<project root>/ios/Runner/Info.plist`:
+- Flutter `>= 3.24.0`
+- Dart SDK `^3.5.0`
+- Android: JDK 17, Android Gradle Plugin and Kotlin versions that support `compileSdk 35` (AGP 8.6+, Kotlin 2.x are recommended)
+- iOS: Xcode 15+, Swift 5.9+
+
+## Installation
+
+Add the dependency to your application's `pubspec.yaml`:
+
+```yaml
+dependencies:
+  flutter_voximplant: ^3.16.1
 ```
+
+Then run:
+
+```bash
+flutter pub get
+```
+
+### iOS setup
+
+#### Info.plist
+
+Add `NSMicrophoneUsageDescription` and `NSCameraUsageDescription` entries to your application's `Info.plist`:
+
+```xml
 <key>NSMicrophoneUsageDescription</key>
 <string>Microphone is required to make audio calls</string>
 <key>NSCameraUsageDescription</key>
 <string>Camera is required to make video calls</string>
 ```
-This entry allows your app to access the microphone and cameras.
 
-### Android
-It is required to add Java 8 support.
+### Android setup
 
-Open `<project root>android/app/build.gradle` file and add the following lines to ‘android’ section:
-```
-compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+It is required to add Java 11 support in `android/app/build.gradle`:
+
+```gradle
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
 }
 ```
 
@@ -144,4 +171,17 @@ To select an audio device:
   _onAudioDeviceChange(VIAudioDeviceManager audioDeviceManager, AudioDevice audioDevice) {
     // audio device is changed
   }
+```
+
+## Demo
+https://github.com/voximplant/flutter_demos
+
+## Example
+
+A sample application is available in [`example/`](example/). To run it:
+
+```bash
+cd example
+flutter pub get
+flutter run
 ```

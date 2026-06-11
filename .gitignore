@@ -1,18 +1,32 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
 .DS_Store
-.dart_tool/
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
 
-.packages
-.pub/
-
-build/
-
+# IntelliJ
+*.iml
+*.ipr
+*.iws
 .idea/
-.flutter-plugins
+
+# VS Code
+.vscode/
+
+# Mac
+.DS_Store
+
+/pubspec.lock
+**/doc/api/
+.dart_tool/
 .flutter-plugins-dependencies
-android/app/
-flutter_voximplant.iml
-
-pubspec.lock
-Podfile.lock
-
-example/ios/Flutter/Flutter.podspec
+/build/
+/coverage/

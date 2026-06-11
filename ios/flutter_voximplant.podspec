@@ -9,11 +9,11 @@ Pod::Spec.new do |s|
 Voximplant plugin for embedding voice and video communication into Flutter applications.
                        DESC
   s.homepage         = 'https://voximplant.com'
-  s.license          = { :file => '../LICENSE' }
+  s.license          = { :type => 'MIT', :file => '../LICENSE' }
   s.author           = { 'Zingaya Inc.' => 'mobiledev@zingaya.com'}
-  s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
-  s.public_header_files = 'Classes/**/*.h'
+  s.source           = { :http => 'https://github.com/voximplant/flutter_voximplant/' }
+  s.source_files = 'flutter_voximplant/Sources/flutter_voximplant/**/*.{h,m}'
+  s.public_header_files = 'flutter_voximplant/Sources/flutter_voximplant/include/**/*.h'
   s.dependency 'Flutter'
   s.dependency 'VoxImplantSDK', '2.56.0'
   s.ios.deployment_target = '12.0'

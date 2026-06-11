@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+// Copyright (c) 2011 - 2026, Voximplant, Inc. All rights reserved.
 
 part of '../flutter_voximplant.dart';
 
@@ -47,7 +47,7 @@ class VICallError {
 }
 
 class VIAudioFileError {
-  /// Audio file playing has been stopped due to <VIAudioFile> instance is deallocated.
+  /// Audio file playing has been stopped due to [VIAudioFile] instance is deallocated.
   static const String ERROR_DESTROYED = 'ERROR_DESTROYED';
 
   /// Audio file playing has been interrupted by a third party application.

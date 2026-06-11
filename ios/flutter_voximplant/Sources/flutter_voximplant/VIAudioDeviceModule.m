@@ -2,7 +2,7 @@
 * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
 */
 
-#import "VIAudioDeviceModule.h"
+#import "./include/flutter_voximplant/VIAudioDeviceModule.h"
 
 @interface VIAudioDeviceModule()
 @property(nonatomic, strong) FlutterEventChannel *eventChannel;

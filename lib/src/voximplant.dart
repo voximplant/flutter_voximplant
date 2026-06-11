@@ -11,7 +11,7 @@ part of '../flutter_voximplant.dart';
 ///
 /// `logMessage` - Log message
 @Deprecated("Use Voximplant.configureFileLogger on Android platform")
-typedef void VILogListener(
+typedef VILogListener = void Function(
   VILogLevel level,
   String logMessage,
 );
