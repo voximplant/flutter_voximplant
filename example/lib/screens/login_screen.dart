@@ -28,7 +28,7 @@ class LoginScreenState extends State<LoginScreen> {
         _loginController.text = value;
       }
     });
-    _loginWithToken();
+    _tryLoginWithToken();
   }
 
   @override
@@ -36,6 +36,13 @@ class LoginScreenState extends State<LoginScreen> {
     _loginController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _tryLoginWithToken() async {
+    if (!await _authService.hasStoredCredentials()) {
+      return;
+    }
+    await _loginWithToken();
   }
 
   Future<void> _loginWithToken() async {

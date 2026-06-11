@@ -66,12 +66,36 @@ class AuthService {
 
   Future<void> logout() async {
     _logoutRequested = true;
-    return await _client.disconnect();
+    _displayName = null;
+    onConnectionClosed = null;
+    await _clearAuthDetails();
+    final state = await _client.getClientState();
+    if (_shouldDisconnect(state)) {
+      await _client.disconnect();
+    }
+  }
+
+  Future<bool> hasStoredCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('username') != null &&
+        _getAuthDetails(prefs) != null;
   }
 
   Future<String?> getUsername() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('username')?.replaceAll('.voximplant.com', '');
+  }
+
+  bool _shouldDisconnect(VIClientState state) {
+    return state != VIClientState.Disconnected;
+  }
+
+  Future<void> _clearAuthDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('accessToken');
+    await prefs.remove('refreshToken');
+    await prefs.remove('accessExpire');
+    await prefs.remove('refreshExpire');
   }
 
   Future<void> _saveAuthDetails(
