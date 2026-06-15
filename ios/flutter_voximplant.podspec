@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'flutter_voximplant'
-  s.version          = '3.16.1'
+  s.version          = '3.17.0'
   s.summary          = 'Voximplant Flutter SDK'
   s.description      = <<-DESC
 Voximplant plugin for embedding voice and video communication into Flutter applications.
@@ -15,6 +15,6 @@ Voximplant plugin for embedding voice and video communication into Flutter appli
   s.source_files = 'flutter_voximplant/Sources/flutter_voximplant/**/*.{h,m}'
   s.public_header_files = 'flutter_voximplant/Sources/flutter_voximplant/include/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'VoxImplantSDK', '2.56.0'
+  s.dependency 'VoxImplantSDK', '2.58.0'
   s.ios.deployment_target = '12.0'
 end

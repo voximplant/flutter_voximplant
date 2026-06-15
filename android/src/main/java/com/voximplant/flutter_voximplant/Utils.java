@@ -341,6 +341,10 @@ class Utils {
                 return Node.NODE_10;
             case "Node11":
                 return Node.NODE_11;
+            case "Node12":
+                return Node.NODE_12;
+            case "Node13":
+                return Node.NODE_13;
             default:
                 return null;
 

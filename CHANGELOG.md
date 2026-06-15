@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.17.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.45.0 and Voximplant iOS SDK 2.58.0
+* Introduce [VINode.Node12](/docs/references/fluttersdk/client/vinode#node12) and [VINode.Node13](/docs/references/fluttersdk/client/vinode#node13)
+
 ## 3.16.1
 * Fix: type error on processing [VIAuthResult](/docs/references/fluttersdk/client/viauthresult) in some cases
 

@@ -7,9 +7,7 @@ typedef ConnectionClosed = void Function();
 
 class AuthService {
   VIClient _client;
-  // IMPORTANT!
-  // Set the node the Voximplant account belongs to.
-  final VINode _node = VINode.Node1;
+  VINode node = VINode.Node1;
   String? _displayName;
 
   String? get displayName => _displayName;
@@ -37,7 +35,7 @@ class AuthService {
     // synchronized.
     _logoutRequested = false;
     await _client.disconnect();
-    await _client.connect(node: _node);
+    await _client.connect(node: node);
     VIAuthResult authResult = await _client.login(username, password);
     await _saveAuthDetails(username, authResult.loginTokens);
     _displayName = authResult.displayName;
@@ -51,7 +49,7 @@ class AuthService {
     // synchronized.
     _logoutRequested = false;
     await _client.disconnect();
-    await _client.connect(node: _node);
+    await _client.connect(node: node);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     VILoginTokens? loginTokens = _getAuthDetails(prefs);
     String? user = prefs.getString('username');
@@ -68,12 +66,36 @@ class AuthService {
 
   Future<void> logout() async {
     _logoutRequested = true;
-    return await _client.disconnect();
+    _displayName = null;
+    onConnectionClosed = null;
+    await _clearAuthDetails();
+    final state = await _client.getClientState();
+    if (_shouldDisconnect(state)) {
+      await _client.disconnect();
+    }
+  }
+
+  Future<bool> hasStoredCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('username') != null &&
+        _getAuthDetails(prefs) != null;
   }
 
   Future<String?> getUsername() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('username')?.replaceAll('.voximplant.com', '');
+  }
+
+  bool _shouldDisconnect(VIClientState state) {
+    return state != VIClientState.Disconnected;
+  }
+
+  Future<void> _clearAuthDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('accessToken');
+    await prefs.remove('refreshToken');
+    await prefs.remove('accessExpire');
+    await prefs.remove('refreshExpire');
   }
 
   Future<void> _saveAuthDetails(

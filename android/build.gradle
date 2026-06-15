@@ -1,5 +1,5 @@
 group 'com.voximplant.flutter_voximplant'
-version '3.16.1'
+version '3.17.0'
 
 buildscript {
     repositories {
@@ -36,6 +36,6 @@ android {
     }
 
     dependencies {
-        api 'com.voximplant:voximplant-sdk:2.43.1'
+        api 'com.voximplant:voximplant-sdk:2.45.0'
     }
 }
