@@ -22,7 +22,7 @@ Add the dependency to your application's `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  flutter_voximplant: ^3.16.1
+  flutter_voximplant: ^3.17.0
 ```
 
 Then run:

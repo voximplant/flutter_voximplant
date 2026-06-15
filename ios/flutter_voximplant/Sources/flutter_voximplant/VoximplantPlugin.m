@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+ * Copyright (c) 2011 - 2026, Voximplant, Inc. All rights reserved.
  */
 
 #import "./include/flutter_voximplant/VoximplantPlugin.h"
@@ -59,7 +59,7 @@
         self.audioFileManager = [[VIAudioFileManager alloc] initWithPlugin:self];
         self.cameraModule = [[VICameraModule alloc] init];
         self.messagingModule = [[VIMessagingModule alloc] initWithRegistrar:self.registrar];
-        [VIClient setVersionExtension:@"flutter-3.16.1"];
+        [VIClient setVersionExtension:@"flutter-3.17.0"];
     }
     return self;
 }

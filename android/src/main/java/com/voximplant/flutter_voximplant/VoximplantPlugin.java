@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2020, Zingaya, Inc. All rights reserved.
+ * Copyright (c) 2011 - 2026, Voximplant, Inc. All rights reserved.
  */
 
 package com.voximplant.flutter_voximplant;
@@ -31,7 +31,7 @@ public class VoximplantPlugin implements MethodCallHandler, FlutterPlugin {
     private final LoggerModule mLoggerModule = LoggerModule.getInstance();
 
     public VoximplantPlugin() {
-        Voximplant.subVersion = "flutter-3.16.1";
+        Voximplant.subVersion = "flutter-3.17.0";
     }
 
     private void configure(Context context, TextureRegistry textures, BinaryMessenger messenger) {
