@@ -532,7 +532,7 @@ public class CallModule implements ICallListener, IEndpointListener, IQualityIss
 
     @Override
     public void onLocalVideoStreamRemoved(ICall call, ILocalVideoStream videoStream) {
-        if (mLocalVideoStream.getVideoStreamId().equals(videoStream.getVideoStreamId())) {
+        if (mLocalVideoStream != null && mLocalVideoStream.getVideoStreamId().equals(videoStream.getVideoStreamId())) {
             Map<String, Object> event = new HashMap<>();
             event.put("event", "localVideoStreamRemoved");
             event.put("videoStreamId", videoStream.getVideoStreamId());
