@@ -6,7 +6,7 @@
 * Updates minimum supported SDK version to Flutter 3.24/Dart 3.5
 * Update Android and iOS platform code to use Voximplant Android SDK 2.45.0 and Voximplant iOS SDK 2.58.0
 * Introduce [VINode.Node12](/docs/references/fluttersdk/client/vinode#node12) and [VINode.Node13](/docs/references/fluttersdk/client/vinode#node13)
-* Fix for [#57](https://github.com/voximplant/flutter_voximplant/issues/57)
+* Fix for [#48](https://github.com/voximplant/flutter_voximplant/issues/48)
 
 ## 3.16.1
 * Fix: type error on processing [VIAuthResult](/docs/references/fluttersdk/client/viauthresult) in some cases
