@@ -17,4 +17,5 @@ Voximplant plugin for embedding voice and video communication into Flutter appli
   s.dependency 'Flutter'
   s.dependency 'VoxImplantSDK', '2.58.0'
   s.ios.deployment_target = '12.0'
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
 end
