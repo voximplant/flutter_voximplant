@@ -62,7 +62,9 @@ class LoginScreenState extends State<LoginScreen> {
     print('LoginScreen: login with password: username: $user');
     try {
       String? displayName = await _authService.loginWithPassword(
-          '$user.voximplant.com', password);
+        '$user.voximplant.com',
+        password,
+      );
       print('LoginScreen: login with password: displayName: $displayName');
       Navigator.pushReplacementNamed(context, MainScreen.routeName);
     } on VIException catch (e) {
@@ -72,39 +74,35 @@ class LoginScreenState extends State<LoginScreen> {
 
   void _showAlertDialog(String? reason) {
     showDialog<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Login error'),
-            content: Text(reason ?? 'Internal error'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          );
-        });
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Login error'),
+          content: Text(reason ?? 'Internal error'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Voximplant'),
-      ),
+      appBar: AppBar(title: Text('Voximplant')),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(top: 30),
-              child: Text(
-                'Audio call demo',
-                style: TextStyle(fontSize: 30),
-              ),
+              child: Text('Audio call demo', style: TextStyle(fontSize: 30)),
             ),
             Form(
               key: _formKey,
@@ -112,7 +110,9 @@ class LoginScreenState extends State<LoginScreen> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 20),
+                      vertical: 10,
+                      horizontal: 20,
+                    ),
                     child: TextFormField(
                       decoration: InputDecoration(
                         suffixText: '.voximplant.com',
@@ -126,23 +126,23 @@ class LoginScreenState extends State<LoginScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 20),
+                      vertical: 10,
+                      horizontal: 20,
+                    ),
                     child: TextFormField(
                       obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'PASSWORD',
-                      ),
+                      decoration: InputDecoration(labelText: 'PASSWORD'),
                       autocorrect: false,
                       controller: _passwordController,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 20),
+                      vertical: 10,
+                      horizontal: 20,
+                    ),
                     child: DropdownButtonFormField<VINode>(
-                      decoration: InputDecoration(
-                        labelText: 'NODE',
-                      ),
+                      decoration: InputDecoration(labelText: 'NODE'),
                       initialValue: _authService.node,
                       items: VINode.values
                           .map(
@@ -166,12 +166,16 @@ class LoginScreenState extends State<LoginScreen> {
                     child: TextButton(
                       onPressed: () {
                         _loginWithPassword(
-                            _loginController.text, _passwordController.text);
+                          _loginController.text,
+                          _passwordController.text,
+                        );
                       },
                       child: Text(
                         'LOG IN',
                         style: TextStyle(
-                            fontSize: 20, color: VoximplantColors.button),
+                          fontSize: 20,
+                          color: VoximplantColors.button,
+                        ),
                       ),
                     ),
                   ),

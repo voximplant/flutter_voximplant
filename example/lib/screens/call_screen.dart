@@ -44,7 +44,9 @@ class CallScreenState extends State<CallScreen> {
   }
 
   _onAudioDeviceChange(
-      VIAudioDeviceManager audioManager, VIAudioDevice audioDevice) {
+    VIAudioDeviceManager audioManager,
+    VIAudioDevice audioDevice,
+  ) {
     setState(() {
       switch (audioDevice) {
         case VIAudioDevice.Bluetooth:
@@ -66,14 +68,21 @@ class CallScreenState extends State<CallScreen> {
   }
 
   _onCallDisconnected(
-      VICall call, Map<String, String>? headers, bool answeredElsewhere) {
+    VICall call,
+    Map<String, String>? headers,
+    bool answeredElsewhere,
+  ) {
     print('CallScreen: onCallDisconnected');
     CallService().notifyCallIsEnded(_call.callId);
     Navigator.pushReplacementNamed(context, MainScreen.routeName);
   }
 
   _onCallFailed(
-      VICall call, int code, String description, Map<String, String>? headers) {
+    VICall call,
+    int code,
+    String description,
+    Map<String, String>? headers,
+  ) {
     print('CallScreen: onCallFailed');
     CallService().notifyCallIsEnded(_call.callId);
     Navigator.pushReplacementNamed(context, MainScreen.routeName);
@@ -152,34 +161,37 @@ class CallScreenState extends State<CallScreen> {
   }
 
   _showAvailableAudioDevices() async {
-    List<VIAudioDevice> availableAudioDevices =
-        await _audioDeviceManager.getAudioDevices();
+    List<VIAudioDevice> availableAudioDevices = await _audioDeviceManager
+        .getAudioDevices();
     return showDialog<void>(
-        context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Select audio device'),
-            content: SingleChildScrollView(
-                child: Container(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select audio device'),
+          content: SingleChildScrollView(
+            child: Container(
               width: 100,
               height: 100,
               child: ListView.builder(
-                  itemCount: availableAudioDevices.length,
-                  itemBuilder: (BuildContext ctxt, int index) {
-                    return TextButton(
-                      child: Text(
-                        availableAudioDevices[index].toString(),
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      onPressed: () {
-                        _selectAudioDevice(availableAudioDevices[index]);
-                      },
-                    );
-                  }),
-            )),
-          );
-        });
+                itemCount: availableAudioDevices.length,
+                itemBuilder: (BuildContext ctxt, int index) {
+                  return TextButton(
+                    child: Text(
+                      availableAudioDevices[index].toString(),
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    onPressed: () {
+                      _selectAudioDevice(availableAudioDevices[index]);
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   _hangup() async {
@@ -189,9 +201,7 @@ class CallScreenState extends State<CallScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Call'),
-      ),
+      appBar: AppBar(title: Text('Call')),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -201,18 +211,8 @@ class CallScreenState extends State<CallScreen> {
               flex: 2,
               child: Column(
                 children: <Widget>[
-                  Text(
-                    '$_endpointName',
-                    style: TextStyle(
-                      fontSize: 26,
-                    ),
-                  ),
-                  Text(
-                    _callStatus,
-                    style: TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
+                  Text('$_endpointName', style: TextStyle(fontSize: 26)),
+                  Text(_callStatus, style: TextStyle(fontSize: 18)),
                 ],
               ),
             ),
@@ -230,39 +230,48 @@ class CallScreenState extends State<CallScreen> {
                           decoration: ShapeDecoration(
                             color: VoximplantColors.white,
                             shape: CircleBorder(
-                                side: BorderSide(
-                                    width: 2,
-                                    color: VoximplantColors.button,
-                                    style: BorderStyle.solid)),
+                              side: BorderSide(
+                                width: 2,
+                                color: VoximplantColors.button,
+                                style: BorderStyle.solid,
+                              ),
+                            ),
                           ),
                           child: IconButton(
                             onPressed: _muteAudio,
                             iconSize: 40,
                             icon: Icon(
-                                _isAudioMuted ? Icons.mic_off : Icons.mic,
-                                color: VoximplantColors.button),
+                              _isAudioMuted ? Icons.mic_off : Icons.mic,
+                              color: VoximplantColors.button,
+                            ),
                             tooltip: 'Mute',
                           ),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(
-                            bottom: 20, right: 20, left: 20),
+                          bottom: 20,
+                          right: 20,
+                          left: 20,
+                        ),
                         child: Ink(
                           decoration: ShapeDecoration(
                             color: VoximplantColors.white,
                             shape: CircleBorder(
-                                side: BorderSide(
-                                    width: 2,
-                                    color: VoximplantColors.button,
-                                    style: BorderStyle.solid)),
+                              side: BorderSide(
+                                width: 2,
+                                color: VoximplantColors.button,
+                                style: BorderStyle.solid,
+                              ),
+                            ),
                           ),
                           child: IconButton(
                             onPressed: _hold,
                             iconSize: 40,
                             icon: Icon(
-                                _isOnHold ? Icons.play_arrow : Icons.pause,
-                                color: VoximplantColors.button),
+                              _isOnHold ? Icons.play_arrow : Icons.pause,
+                              color: VoximplantColors.button,
+                            ),
                             tooltip: 'Hold',
                           ),
                         ),
@@ -273,16 +282,20 @@ class CallScreenState extends State<CallScreen> {
                           decoration: ShapeDecoration(
                             color: VoximplantColors.white,
                             shape: CircleBorder(
-                                side: BorderSide(
-                                    width: 2,
-                                    color: VoximplantColors.button,
-                                    style: BorderStyle.solid)),
+                              side: BorderSide(
+                                width: 2,
+                                color: VoximplantColors.button,
+                                style: BorderStyle.solid,
+                              ),
+                            ),
                           ),
                           child: IconButton(
                             onPressed: _showAvailableAudioDevices,
                             iconSize: 40,
-                            icon: Icon(_audioDeviceIcon,
-                                color: VoximplantColors.button),
+                            icon: Icon(
+                              _audioDeviceIcon,
+                              color: VoximplantColors.button,
+                            ),
                             tooltip: 'Select audio device',
                           ),
                         ),
@@ -300,18 +313,17 @@ class CallScreenState extends State<CallScreen> {
                   decoration: ShapeDecoration(
                     color: VoximplantColors.white,
                     shape: CircleBorder(
-                        side: BorderSide(
-                            width: 2,
-                            color: VoximplantColors.red,
-                            style: BorderStyle.solid)),
+                      side: BorderSide(
+                        width: 2,
+                        color: VoximplantColors.red,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
                   ),
                   child: IconButton(
                     onPressed: _hangup,
                     iconSize: 40,
-                    icon: Icon(
-                      Icons.call_end,
-                      color: VoximplantColors.red,
-                    ),
+                    icon: Icon(Icons.call_end, color: VoximplantColors.red),
                     tooltip: 'Hang up',
                   ),
                 ),

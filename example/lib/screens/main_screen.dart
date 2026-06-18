@@ -42,16 +42,20 @@ class MainScreen extends StatelessWidget {
     if (Platform.isAndroid) {
       PermissionStatus permission = await Permission.microphone.status;
       if (permission != PermissionStatus.granted) {
-        Map<Permission, PermissionStatus> result =
-            await ([Permission.microphone]).request();
+        Map<Permission, PermissionStatus> result = await ([
+          Permission.microphone,
+        ]).request();
         if (result[Permission.microphone] != PermissionStatus.granted) {
           return;
         }
       }
     }
     VICall call = await _callService.makeAudioCall(number);
-    Navigator.pushReplacementNamed(context, CallScreen.routeName,
-        arguments: CallArguments(call));
+    Navigator.pushReplacementNamed(
+      context,
+      CallScreen.routeName,
+      arguments: CallArguments(call),
+    );
   }
 
   @override
@@ -67,14 +71,9 @@ class MainScreen extends StatelessWidget {
               }
             },
             itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem(
-                  value: 1,
-                  child: Text('Log out'),
-                )
-              ];
+              return [PopupMenuItem(value: 1, child: Text('Log out'))];
             },
-          )
+          ),
         ],
       ),
       body: SafeArea(
@@ -91,9 +90,7 @@ class MainScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'CALL TO',
-                ),
+                decoration: InputDecoration(labelText: 'CALL TO'),
                 autocorrect: false,
                 controller: _callToController,
               ),
@@ -106,8 +103,10 @@ class MainScreen extends StatelessWidget {
                 },
                 child: Text(
                   'CALL',
-                  style:
-                      TextStyle(fontSize: 20, color: VoximplantColors.button),
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: VoximplantColors.button,
+                  ),
                 ),
               ),
             ),
