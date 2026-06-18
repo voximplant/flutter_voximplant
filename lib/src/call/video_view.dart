@@ -23,20 +23,19 @@ enum VIVideoRotation {
 class VIVideoView extends StatefulWidget {
   final VIVideoViewController controller;
 
-  const VIVideoView(this.controller);
+  const VIVideoView(this.controller, {super.key});
 
   @override
-  State<StatefulWidget> createState() {
-    return _VIVideoViewState(controller);
-  }
+  State<VIVideoView> createState() => _VIVideoViewState();
 }
 
 class _VIVideoViewState extends State<VIVideoView> {
-  final VIVideoViewController _controller;
   int? _textureId;
 
-  _VIVideoViewState(this._controller) {
-    _controller._textureChanged = _textureChanged;
+  @override
+  void initState() {
+    super.initState();
+    widget.controller._textureChanged = _textureChanged;
   }
 
   void _textureChanged(int? textureId) {

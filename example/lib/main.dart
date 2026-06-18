@@ -15,7 +15,7 @@ GetIt getIt = GetIt.instance;
 
 void main() {
   setupLocator();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 void setupLocator() {
@@ -23,6 +23,8 @@ void setupLocator() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -57,7 +59,7 @@ class MyApp extends StatelessWidget {
           });
         } else {
           return MaterialPageRoute(builder: (context) {
-            return LoginScreen();
+            return const LoginScreen();
           });
         }
       },

@@ -21,14 +21,14 @@ class IncomingCallScreen extends StatelessWidget {
     call.onCallDisconnected = _onCallDisconnected;
   }
 
-  _onCallDisconnected(
+  void _onCallDisconnected(
       VICall call, Map<String, String>? headers, bool answeredElsewhere) {
     CallService().notifyCallIsEnded(call.callId);
     GetIt locator = GetIt.instance;
     locator<NavigationService>().navigateTo(MainScreen.routeName);
   }
 
-  _answerCall(BuildContext context) async {
+  Future<void> _answerCall(BuildContext context) async {
     if (Platform.isAndroid) {
       PermissionStatus permission = await Permission.microphone.status;
       if (permission != PermissionStatus.granted) {
@@ -40,12 +40,18 @@ class IncomingCallScreen extends StatelessWidget {
       }
     }
     await call.answer();
+    if (!context.mounted) {
+      return;
+    }
     Navigator.pushReplacementNamed(context, CallScreen.routeName,
         arguments: CallArguments(call));
   }
 
-  _declineCall(BuildContext context) async {
+  Future<void> _declineCall(BuildContext context) async {
     await call.decline();
+    if (!context.mounted) {
+      return;
+    }
     Navigator.pushReplacementNamed(context, MainScreen.routeName);
   }
 

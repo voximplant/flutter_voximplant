@@ -1,5 +1,6 @@
 // Copyright (c) 2011 - 2026, Voximplant, Inc. All rights reserved.
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_voximplant/flutter_voximplant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,7 +22,9 @@ class AuthService {
 
   AuthService._() : _client = Voximplant().getClient() {
     _client.clientStateStream.listen((state) {
-      print('AuthService: client state is changed: $state');
+      if (kDebugMode) {
+        debugPrint('AuthService: client state is changed: $state');
+      }
       if (state == VIClientState.Disconnected && !_logoutRequested) {
         onConnectionClosed?.call();
       }
@@ -29,7 +32,9 @@ class AuthService {
   }
 
   Future<String?> loginWithPassword(String username, String password) async {
-    print('AuthService: loginWithPassword');
+    if (kDebugMode) {
+      debugPrint('AuthService: loginWithPassword');
+    }
     // Connection to the Voximplant Cloud is stayed alive on reloading of the app's
     // Dart code. Calling "disconnect" API here makes the SDK and app states
     // synchronized.
@@ -43,7 +48,9 @@ class AuthService {
   }
 
   Future<String?> loginWithAccessToken() async {
-    print('AuthService: loginWithAccessToken');
+    if (kDebugMode) {
+      debugPrint('AuthService: loginWithAccessToken');
+    }
     // Connection to the Voximplant Cloud is stayed alive on reloading of the app's
     // Dart code. Calling "disconnect" API here makes the SDK and app states
     // synchronized.

@@ -3,15 +3,17 @@
 import 'package:audio_call/screens/main_screen.dart';
 import 'package:audio_call/services/auth_service.dart';
 import 'package:audio_call/theme/voximplant_theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_voximplant/flutter_voximplant.dart';
 
 class LoginScreen extends StatefulWidget {
   static const routeName = '/';
+
+  const LoginScreen({super.key});
+
   @override
-  State<StatefulWidget> createState() {
-    return LoginScreenState();
-  }
+  State<LoginScreen> createState() => LoginScreenState();
 }
 
 class LoginScreenState extends State<LoginScreen> {
@@ -46,10 +48,18 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _loginWithToken() async {
-    print('LoginScreen: login with accessToken');
+    if (kDebugMode) {
+      debugPrint('LoginScreen: login with accessToken');
+    }
     try {
       String? displayName = await _authService.loginWithAccessToken();
-      print('LoginScreen: login with accessToken: displayName: $displayName');
+      if (kDebugMode) {
+        debugPrint(
+            'LoginScreen: login with accessToken: displayName: $displayName');
+      }
+      if (!mounted) {
+        return;
+      }
       Navigator.pushReplacementNamed(context, MainScreen.routeName);
     } on VIException catch (e) {
       _showAlertDialog(e.message);
@@ -59,11 +69,19 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _loginWithPassword(String user, String password) async {
-    print('LoginScreen: login with password: username: $user');
+    if (kDebugMode) {
+      debugPrint('LoginScreen: login with password: username: $user');
+    }
     try {
       String? displayName = await _authService.loginWithPassword(
           '$user.voximplant.com', password);
-      print('LoginScreen: login with password: displayName: $displayName');
+      if (kDebugMode) {
+        debugPrint(
+            'LoginScreen: login with password: displayName: $displayName');
+      }
+      if (!mounted) {
+        return;
+      }
       Navigator.pushReplacementNamed(context, MainScreen.routeName);
     } on VIException catch (e) {
       _showAlertDialog(e.message);
