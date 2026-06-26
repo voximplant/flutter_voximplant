@@ -58,9 +58,11 @@ class MyApp extends StatelessWidget {
             },
           );
         } else {
-          return MaterialPageRoute(builder: (context) {
-            return const LoginScreen();
-          });
+          return MaterialPageRoute(
+            builder: (context) {
+              return const LoginScreen();
+            },
+          );
         }
       },
       initialRoute: LoginScreen.routeName,

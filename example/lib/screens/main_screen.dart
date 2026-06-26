@@ -60,8 +60,11 @@ class MainScreen extends StatelessWidget {
     if (!context.mounted) {
       return;
     }
-    Navigator.pushReplacementNamed(context, CallScreen.routeName,
-        arguments: CallArguments(call));
+    Navigator.pushReplacementNamed(
+      context,
+      CallScreen.routeName,
+      arguments: CallArguments(call),
+    );
   }
 
   @override

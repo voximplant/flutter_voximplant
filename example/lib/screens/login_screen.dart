@@ -55,7 +55,8 @@ class LoginScreenState extends State<LoginScreen> {
       String? displayName = await _authService.loginWithAccessToken();
       if (kDebugMode) {
         debugPrint(
-            'LoginScreen: login with accessToken: displayName: $displayName');
+          'LoginScreen: login with accessToken: displayName: $displayName',
+        );
       }
       if (!mounted) {
         return;
@@ -74,10 +75,13 @@ class LoginScreenState extends State<LoginScreen> {
     }
     try {
       String? displayName = await _authService.loginWithPassword(
-          '$user.voximplant.com', password);
+        '$user.voximplant.com',
+        password,
+      );
       if (kDebugMode) {
         debugPrint(
-            'LoginScreen: login with password: displayName: $displayName');
+          'LoginScreen: login with password: displayName: $displayName',
+        );
       }
       if (!mounted) {
         return;

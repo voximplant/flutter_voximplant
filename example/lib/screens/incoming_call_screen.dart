@@ -22,7 +22,10 @@ class IncomingCallScreen extends StatelessWidget {
   }
 
   void _onCallDisconnected(
-      VICall call, Map<String, String>? headers, bool answeredElsewhere) {
+    VICall call,
+    Map<String, String>? headers,
+    bool answeredElsewhere,
+  ) {
     CallService().notifyCallIsEnded(call.callId);
     GetIt locator = GetIt.instance;
     locator<NavigationService>().navigateTo(MainScreen.routeName);
@@ -44,8 +47,11 @@ class IncomingCallScreen extends StatelessWidget {
     if (!context.mounted) {
       return;
     }
-    Navigator.pushReplacementNamed(context, CallScreen.routeName,
-        arguments: CallArguments(call));
+    Navigator.pushReplacementNamed(
+      context,
+      CallScreen.routeName,
+      arguments: CallArguments(call),
+    );
   }
 
   Future<void> _declineCall(BuildContext context) async {

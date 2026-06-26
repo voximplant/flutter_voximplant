@@ -48,7 +48,9 @@ class CallScreenState extends State<CallScreen> {
   }
 
   void _onAudioDeviceChange(
-      VIAudioDeviceManager audioManager, VIAudioDevice audioDevice) {
+    VIAudioDeviceManager audioManager,
+    VIAudioDevice audioDevice,
+  ) {
     setState(() {
       switch (audioDevice) {
         case VIAudioDevice.Bluetooth:
@@ -70,7 +72,10 @@ class CallScreenState extends State<CallScreen> {
   }
 
   void _onCallDisconnected(
-      VICall call, Map<String, String>? headers, bool answeredElsewhere) {
+    VICall call,
+    Map<String, String>? headers,
+    bool answeredElsewhere,
+  ) {
     if (kDebugMode) {
       debugPrint('CallScreen: onCallDisconnected');
     }
@@ -79,7 +84,11 @@ class CallScreenState extends State<CallScreen> {
   }
 
   void _onCallFailed(
-      VICall call, int code, String description, Map<String, String>? headers) {
+    VICall call,
+    int code,
+    String description,
+    Map<String, String>? headers,
+  ) {
     if (kDebugMode) {
       debugPrint('CallScreen: onCallFailed');
     }
@@ -172,19 +181,19 @@ class CallScreenState extends State<CallScreen> {
   }
 
   Future<void> _showAvailableAudioDevices() async {
-    List<VIAudioDevice> availableAudioDevices =
-        await _audioDeviceManager.getAudioDevices();
+    List<VIAudioDevice> availableAudioDevices = await _audioDeviceManager
+        .getAudioDevices();
     if (!mounted) {
       return;
     }
     return showDialog<void>(
-        context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Select audio device'),
-            content: SingleChildScrollView(
-                child: SizedBox(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select audio device'),
+          content: SingleChildScrollView(
+            child: SizedBox(
               width: 100,
               height: 100,
               child: ListView.builder(

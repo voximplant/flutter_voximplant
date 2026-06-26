@@ -35,8 +35,12 @@ class CallService {
     return call;
   }
 
-  Future<void> _onIncomingCall(VIClient client, VICall call, bool video,
-      Map<String, String>? headers) async {
+  Future<void> _onIncomingCall(
+    VIClient client,
+    VICall call,
+    bool video,
+    Map<String, String>? headers,
+  ) async {
     if (_call != null) {
       await call.decline();
       return;
