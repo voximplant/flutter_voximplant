@@ -32,15 +32,21 @@ class CallService {
     return call;
   }
 
-  _onIncomingCall(VIClient client, VICall call, bool video,
-      Map<String, String>? headers) async {
+  _onIncomingCall(
+    VIClient client,
+    VICall call,
+    bool video,
+    Map<String, String>? headers,
+  ) async {
     if (_call != null) {
       await call.decline();
       return;
     }
     _call = call;
     GetIt locator = GetIt.instance;
-    locator<NavigationService>().navigateTo(IncomingCallScreen.routeName,
-        arguments: CallArguments(call));
+    locator<NavigationService>().navigateTo(
+      IncomingCallScreen.routeName,
+      arguments: CallArguments(call),
+    );
   }
 }

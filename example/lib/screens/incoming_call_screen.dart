@@ -22,7 +22,10 @@ class IncomingCallScreen extends StatelessWidget {
   }
 
   _onCallDisconnected(
-      VICall call, Map<String, String>? headers, bool answeredElsewhere) {
+    VICall call,
+    Map<String, String>? headers,
+    bool answeredElsewhere,
+  ) {
     CallService().notifyCallIsEnded(call.callId);
     GetIt locator = GetIt.instance;
     locator<NavigationService>().navigateTo(MainScreen.routeName);
@@ -32,16 +35,20 @@ class IncomingCallScreen extends StatelessWidget {
     if (Platform.isAndroid) {
       PermissionStatus permission = await Permission.microphone.status;
       if (permission != PermissionStatus.granted) {
-        Map<Permission, PermissionStatus> result =
-            await ([Permission.microphone]).request();
+        Map<Permission, PermissionStatus> result = await ([
+          Permission.microphone,
+        ]).request();
         if (result[Permission.microphone] != PermissionStatus.granted) {
           return;
         }
       }
     }
     await call.answer();
-    Navigator.pushReplacementNamed(context, CallScreen.routeName,
-        arguments: CallArguments(call));
+    Navigator.pushReplacementNamed(
+      context,
+      CallScreen.routeName,
+      arguments: CallArguments(call),
+    );
   }
 
   _declineCall(BuildContext context) async {
@@ -57,19 +64,12 @@ class IncomingCallScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'Incoming call from ',
-              style: TextStyle(
-                fontSize: 24,
-              ),
-            ),
+            Text('Incoming call from ', style: TextStyle(fontSize: 24)),
             Padding(
               padding: EdgeInsets.only(top: 30),
               child: Text(
                 '${call.endpoints.first.displayName}',
-                style: TextStyle(
-                  fontSize: 20,
-                ),
+                style: TextStyle(fontSize: 20),
               ),
             ),
             Padding(
@@ -83,10 +83,12 @@ class IncomingCallScreen extends StatelessWidget {
                       decoration: ShapeDecoration(
                         color: VoximplantColors.white,
                         shape: CircleBorder(
-                            side: BorderSide(
-                                width: 2,
-                                color: VoximplantColors.button,
-                                style: BorderStyle.solid)),
+                          side: BorderSide(
+                            width: 2,
+                            color: VoximplantColors.button,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
                       ),
                       child: IconButton(
                         onPressed: () {
@@ -104,10 +106,12 @@ class IncomingCallScreen extends StatelessWidget {
                       decoration: ShapeDecoration(
                         color: VoximplantColors.white,
                         shape: CircleBorder(
-                            side: BorderSide(
-                                width: 2,
-                                color: VoximplantColors.red,
-                                style: BorderStyle.solid)),
+                          side: BorderSide(
+                            width: 2,
+                            color: VoximplantColors.red,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
                       ),
                       child: IconButton(
                         onPressed: () {

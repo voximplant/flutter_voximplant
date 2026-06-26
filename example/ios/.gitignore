@@ -33,4 +33,5 @@ Runner/GeneratedPluginRegistrant.*
 !default.pbxuser
 !default.perspectivev3
 Package.resolved
+Podfile
 Podfile.lock

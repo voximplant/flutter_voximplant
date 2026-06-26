@@ -39,9 +39,7 @@ class MyApp extends StatelessWidget {
           final args = settings.arguments as CallArguments;
           return MaterialPageRoute(
             builder: (context) {
-              return CallScreen(
-                call: args.call,
-              );
+              return CallScreen(call: args.call);
             },
           );
         } else if (settings.name == IncomingCallScreen.routeName) {
@@ -52,13 +50,17 @@ class MyApp extends StatelessWidget {
             },
           );
         } else if (settings.name == MainScreen.routeName) {
-          return MaterialPageRoute(builder: (context) {
-            return MainScreen();
-          });
+          return MaterialPageRoute(
+            builder: (context) {
+              return MainScreen();
+            },
+          );
         } else {
-          return MaterialPageRoute(builder: (context) {
-            return LoginScreen();
-          });
+          return MaterialPageRoute(
+            builder: (context) {
+              return LoginScreen();
+            },
+          );
         }
       },
       initialRoute: LoginScreen.routeName,
