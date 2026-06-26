@@ -273,7 +273,7 @@ class VIEndpoint {
     }
   }
 
-  _invokeEndpointUpdatedEvent(
+  void _invokeEndpointUpdatedEvent(
     String? username,
     String? displayName,
     String? sipUri,
@@ -286,16 +286,16 @@ class VIEndpoint {
     onEndpointUpdated?.call(this);
   }
 
-  _invokeEndpointRemovedEvent() {
+  void _invokeEndpointRemovedEvent() {
     onEndpointRemoved?.call(this);
   }
 
-  _remoteVideoStreamAdded(VIVideoStream videoStream) {
+  void _remoteVideoStreamAdded(VIVideoStream videoStream) {
     _remoteVideoStreams.add(videoStream);
     onRemoteVideoStreamAdded?.call(this, videoStream);
   }
 
-  _remoteVideoStreamRemoved(String? videoStreamId) {
+  void _remoteVideoStreamRemoved(String? videoStreamId) {
     VIVideoStream? remoteVideoStream;
     for (VIVideoStream videoStream in _remoteVideoStreams) {
       if (videoStream.streamId == videoStreamId) {
@@ -309,15 +309,15 @@ class VIEndpoint {
     }
   }
 
-  _voiceActivityStarted() {
+  void _voiceActivityStarted() {
     onVoiceActivityStarted?.call(this);
   }
 
-  _voiceActivityStopped() {
+  void _voiceActivityStopped() {
     onVoiceActivityStopped?.call(this);
   }
 
-  _startReceivingVideoStream(String videoStreamId) {
+  void _startReceivingVideoStream(String videoStreamId) {
     VIVideoStream? remoteVideoStream;
     for (VIVideoStream videoStream in _remoteVideoStreams) {
       if (videoStream.streamId == videoStreamId) {
@@ -330,7 +330,7 @@ class VIEndpoint {
     }
   }
 
-  _stopReceivingVideoStream(
+  void _stopReceivingVideoStream(
       String videoStreamId, VIVideoStreamReceiveStopReason reason) {
     VIVideoStream? remoteVideoStream;
     for (VIVideoStream videoStream in _remoteVideoStreams) {

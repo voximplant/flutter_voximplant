@@ -3,6 +3,7 @@
 import 'package:audio_call/screens/incoming_call_screen.dart';
 import 'package:audio_call/services/navigation_service.dart';
 import 'package:audio_call/utils/screen_arguments.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_voximplant/flutter_voximplant.dart';
 import 'package:get_it/get_it.dart';
 
@@ -28,11 +29,13 @@ class CallService {
   Future<VICall> makeAudioCall(String number) async {
     final call = await _client.call(number);
     _call = call;
-    print('CallService: created call: ${_call?.callId}');
+    if (kDebugMode) {
+      debugPrint('CallService: created call: ${_call?.callId}');
+    }
     return call;
   }
 
-  _onIncomingCall(
+  Future<void> _onIncomingCall(
     VIClient client,
     VICall call,
     bool video,

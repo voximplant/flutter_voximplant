@@ -8,6 +8,7 @@ import 'package:audio_call/services/auth_service.dart';
 import 'package:audio_call/services/call_service.dart';
 import 'package:audio_call/services/navigation_service.dart';
 import 'package:audio_call/utils/screen_arguments.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:audio_call/theme/voximplant_theme.dart';
@@ -28,13 +29,18 @@ class MainScreen extends StatelessWidget {
   }
 
   void _onConnectionClosed() {
-    print('MainScreen: onConnectionClosed');
+    if (kDebugMode) {
+      debugPrint('MainScreen: onConnectionClosed');
+    }
     GetIt locator = GetIt.instance;
     locator<NavigationService>().navigateTo(LoginScreen.routeName);
   }
 
   Future<void> _logout(BuildContext context) async {
     await _authService.logout();
+    if (!context.mounted) {
+      return;
+    }
     Navigator.pushReplacementNamed(context, LoginScreen.routeName);
   }
 
@@ -51,6 +57,9 @@ class MainScreen extends StatelessWidget {
       }
     }
     VICall call = await _callService.makeAudioCall(number);
+    if (!context.mounted) {
+      return;
+    }
     Navigator.pushReplacementNamed(
       context,
       CallScreen.routeName,

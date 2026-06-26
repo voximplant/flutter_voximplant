@@ -21,6 +21,6 @@ class _VILog {
   static const String _info = "Info";
 
   static void _log(String level, String message) {
-    print('$_prefix:$level > $message');
+    debugPrint('$_prefix:$level > $message');
   }
 }

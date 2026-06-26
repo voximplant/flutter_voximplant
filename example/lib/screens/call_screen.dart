@@ -3,6 +3,7 @@
 import 'package:audio_call/screens/main_screen.dart';
 import 'package:audio_call/services/call_service.dart';
 import 'package:audio_call/theme/voximplant_theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_voximplant/flutter_voximplant.dart';
 
@@ -10,12 +11,10 @@ class CallScreen extends StatefulWidget {
   static const routeName = '/callScreen';
   final VICall call;
 
-  CallScreen({super.key, required this.call});
+  const CallScreen({super.key, required this.call});
 
   @override
-  State<StatefulWidget> createState() {
-    return CallScreenState(call);
-  }
+  State<CallScreen> createState() => CallScreenState();
 }
 
 class CallScreenState extends State<CallScreen> {
@@ -23,12 +22,15 @@ class CallScreenState extends State<CallScreen> {
   String _callStatus = 'Connecting...';
   bool _isAudioMuted = false;
   bool _isOnHold = false;
-  final VICall _call;
+  late final VICall _call;
   IconData _audioDeviceIcon = Icons.hearing;
   final VIAudioDeviceManager _audioDeviceManager =
       Voximplant().audioDeviceManager;
 
-  CallScreenState(this._call) {
+  @override
+  void initState() {
+    super.initState();
+    _call = widget.call;
     _audioDeviceManager.onAudioDeviceChanged = _onAudioDeviceChange;
     _call.onCallDisconnected = _onCallDisconnected;
     _call.onCallFailed = _onCallFailed;
@@ -40,10 +42,12 @@ class CallScreenState extends State<CallScreen> {
     if (_call.endpoints.isNotEmpty) {
       _endpointName = _call.endpoints.first.userName ?? 'Unknown';
     }
-    print('CallScreen: received callId: ${_call.callId}');
+    if (kDebugMode) {
+      debugPrint('CallScreen: received callId: ${_call.callId}');
+    }
   }
 
-  _onAudioDeviceChange(
+  void _onAudioDeviceChange(
     VIAudioDeviceManager audioManager,
     VIAudioDevice audioDevice,
   ) {
@@ -67,29 +71,35 @@ class CallScreenState extends State<CallScreen> {
     });
   }
 
-  _onCallDisconnected(
+  void _onCallDisconnected(
     VICall call,
     Map<String, String>? headers,
     bool answeredElsewhere,
   ) {
-    print('CallScreen: onCallDisconnected');
+    if (kDebugMode) {
+      debugPrint('CallScreen: onCallDisconnected');
+    }
     CallService().notifyCallIsEnded(_call.callId);
     Navigator.pushReplacementNamed(context, MainScreen.routeName);
   }
 
-  _onCallFailed(
+  void _onCallFailed(
     VICall call,
     int code,
     String description,
     Map<String, String>? headers,
   ) {
-    print('CallScreen: onCallFailed');
+    if (kDebugMode) {
+      debugPrint('CallScreen: onCallFailed');
+    }
     CallService().notifyCallIsEnded(_call.callId);
     Navigator.pushReplacementNamed(context, MainScreen.routeName);
   }
 
-  _onCallConnected(VICall call, Map<String, String>? headers) {
-    print('CallScreen: onCallConnected');
+  void _onCallConnected(VICall call, Map<String, String>? headers) {
+    if (kDebugMode) {
+      debugPrint('CallScreen: onCallConnected');
+    }
     setState(() {
       _callStatus = 'Call in progress';
       if (_call.endpoints.isNotEmpty) {
@@ -98,43 +108,53 @@ class CallScreenState extends State<CallScreen> {
     });
   }
 
-  _onReconnecting(VICall call) {
-    print('CallScreen: onCallReconnecting');
+  void _onReconnecting(VICall call) {
+    if (kDebugMode) {
+      debugPrint('CallScreen: onCallReconnecting');
+    }
     setState(() {
       _callStatus = 'Reconnecting...';
     });
   }
 
-  _onReconnected(VICall call) {
-    print('CallScreen: onCallReconnected');
+  void _onReconnected(VICall call) {
+    if (kDebugMode) {
+      debugPrint('CallScreen: onCallReconnected');
+    }
     setState(() {
       _callStatus = 'Call in progress';
     });
   }
 
-  _onCallRinging(VICall call, Map<String, String>? headers) {
-    print('CallScreen: onCallRinging');
+  void _onCallRinging(VICall call, Map<String, String>? headers) {
+    if (kDebugMode) {
+      debugPrint('CallScreen: onCallRinging');
+    }
     setState(() {
       _callStatus = 'Ringing...';
     });
   }
 
-  _onEndpointAdded(VICall call, VIEndpoint endpoint) {
-    print('CallScreen: onEndpointAdded');
+  void _onEndpointAdded(VICall call, VIEndpoint endpoint) {
+    if (kDebugMode) {
+      debugPrint('CallScreen: onEndpointAdded');
+    }
     endpoint.onEndpointUpdated = _onEndpointUpdated;
     setState(() {
       _endpointName = endpoint.userName ?? 'Unknown';
     });
   }
 
-  _onEndpointUpdated(VIEndpoint endpoint) {
-    print('CallScreen: onEndpointUpdated');
+  void _onEndpointUpdated(VIEndpoint endpoint) {
+    if (kDebugMode) {
+      debugPrint('CallScreen: onEndpointUpdated');
+    }
     setState(() {
       _endpointName = endpoint.userName;
     });
   }
 
-  _muteAudio() async {
+  Future<void> _muteAudio() async {
     try {
       await _call.sendAudio(_isAudioMuted);
       setState(() {
@@ -145,7 +165,7 @@ class CallScreenState extends State<CallScreen> {
     }
   }
 
-  _hold() async {
+  Future<void> _hold() async {
     try {
       await _call.hold(!_isOnHold);
       setState(() {
@@ -156,13 +176,16 @@ class CallScreenState extends State<CallScreen> {
     }
   }
 
-  _selectAudioDevice(VIAudioDevice device) async {
+  Future<void> _selectAudioDevice(VIAudioDevice device) async {
     await _audioDeviceManager.selectAudioDevice(device);
   }
 
-  _showAvailableAudioDevices() async {
+  Future<void> _showAvailableAudioDevices() async {
     List<VIAudioDevice> availableAudioDevices = await _audioDeviceManager
         .getAudioDevices();
+    if (!mounted) {
+      return;
+    }
     return showDialog<void>(
       context: context,
       barrierDismissible: true,
@@ -170,7 +193,7 @@ class CallScreenState extends State<CallScreen> {
         return AlertDialog(
           title: Text('Select audio device'),
           content: SingleChildScrollView(
-            child: Container(
+            child: SizedBox(
               width: 100,
               height: 100,
               child: ListView.builder(
@@ -194,7 +217,7 @@ class CallScreenState extends State<CallScreen> {
     );
   }
 
-  _hangup() async {
+  Future<void> _hangup() async {
     await _call.hangup();
   }
 
