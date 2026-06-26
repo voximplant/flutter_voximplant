@@ -43,7 +43,9 @@ class CallService {
     }
     _call = call;
     GetIt locator = GetIt.instance;
-    locator<NavigationService>().navigateTo(IncomingCallScreen.routeName,
-        arguments: CallArguments(call));
+    locator<NavigationService>().navigateTo(
+      IncomingCallScreen.routeName,
+      arguments: CallArguments(call),
+    );
   }
 }

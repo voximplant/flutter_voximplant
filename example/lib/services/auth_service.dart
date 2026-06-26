@@ -61,8 +61,10 @@ class AuthService {
     VILoginTokens? loginTokens = _getAuthDetails(prefs);
     String? user = prefs.getString('username');
     if (user != null && loginTokens != null) {
-      VIAuthResult authResult =
-          await _client.loginWithAccessToken(user, loginTokens.accessToken);
+      VIAuthResult authResult = await _client.loginWithAccessToken(
+        user,
+        loginTokens.accessToken,
+      );
       await _saveAuthDetails(user, authResult.loginTokens);
       _displayName = authResult.displayName;
     } else {
@@ -106,7 +108,9 @@ class AuthService {
   }
 
   Future<void> _saveAuthDetails(
-      String username, VILoginTokens? loginTokens) async {
+    String username,
+    VILoginTokens? loginTokens,
+  ) async {
     if (loginTokens == null) {
       return;
     }
@@ -128,10 +132,11 @@ class AuthService {
         refreshExpire != null &&
         accessExpire != null) {
       VILoginTokens loginTokens = VILoginTokens(
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-          accessExpire: accessExpire,
-          refreshExpire: refreshExpire);
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        accessExpire: accessExpire,
+        refreshExpire: refreshExpire,
+      );
       return loginTokens;
     }
     return null;
