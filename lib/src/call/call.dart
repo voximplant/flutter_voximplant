@@ -160,7 +160,7 @@ typedef VICallReconnected = void Function(VICall call);
 /// Signature for callbacks reporting that [message] is received within the call.
 ///
 /// Implemented atop SIP INFO for communication between call endpoint and the
-/// Voximplant cloud, and is separated from Voximplant messaging API.
+/// Voximplant cloud.
 ///
 /// Used in [VICall].
 ///
@@ -478,7 +478,7 @@ class VICall {
   /// Sends a [message] within the call.
   ///
   /// Implemented atop SIP INFO for communication between call endpoint and the
-  /// Voximplant cloud, and is separated from Voximplant messaging API.
+  /// Voximplant cloud.
   ///
   /// `message` - Message text
   Future<void> sendMessage(String message) async {
