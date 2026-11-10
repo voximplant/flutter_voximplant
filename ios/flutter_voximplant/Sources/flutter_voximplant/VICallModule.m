@@ -501,6 +501,9 @@
 
 - (void)call:(VICall *)call didRemoveLocalVideoStream:(VILocalVideoStream *)videoStream {
     if ([self.localVideoStream.streamId isEqualToString:videoStream.streamId]) {
+        if ([self.renderers objectForKey:videoStream.streamId] == nil) {
+            self.localVideoStream = nil;
+        }
         [self sendEvent:@{
             @"event"         : @"localVideoStreamRemoved",
             @"videoStreamId" : videoStream.streamId,
