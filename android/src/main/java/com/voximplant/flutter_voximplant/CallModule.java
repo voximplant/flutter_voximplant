@@ -29,6 +29,7 @@ import com.voximplant.sdk.call.RejectMode;
 import com.voximplant.sdk.call.RenderScaleType;
 import com.voximplant.sdk.call.VideoFlags;
 import com.voximplant.sdk.call.VideoStreamReceiveStopReason;
+import com.voximplant.webrtc.VideoSink;
 
 import java.util.HashMap;
 import java.util.List;
@@ -533,7 +534,10 @@ public class CallModule implements ICallListener, IEndpointListener, IQualityIss
     @Override
     public void onLocalVideoStreamRemoved(ICall call, ILocalVideoStream videoStream) {
         if (mLocalVideoStream != null && mLocalVideoStream.getVideoStreamId().equals(videoStream.getVideoStreamId())) {
-            if (!mRenderers.containsKey(videoStream.getVideoStreamId())) {
+            List<VideoSink> videoRenderers = videoStream.getVideoRenderers();
+            boolean hasSdkRenderers = videoRenderers != null && !videoRenderers.isEmpty();
+            boolean hasPluginRenderer = mRenderers.containsKey(videoStream.getVideoStreamId());
+            if (!hasSdkRenderers && !hasPluginRenderer) {
                 mLocalVideoStream = null;
             }
             Map<String, Object> event = new HashMap<>();

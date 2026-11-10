@@ -501,7 +501,9 @@
 
 - (void)call:(VICall *)call didRemoveLocalVideoStream:(VILocalVideoStream *)videoStream {
     if ([self.localVideoStream.streamId isEqualToString:videoStream.streamId]) {
-        if ([self.renderers objectForKey:videoStream.streamId] == nil) {
+        BOOL hasSdkRenderers = videoStream.renderers.count > 0;
+        BOOL hasPluginRenderer = [self.renderers objectForKey:videoStream.streamId] != nil;
+        if (!hasSdkRenderers && !hasPluginRenderer) {
             self.localVideoStream = nil;
         }
         [self sendEvent:@{
