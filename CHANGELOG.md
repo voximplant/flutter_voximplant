@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+* Update iOS platform code to use Voximplant iOS SDK 2.60.0
+* Change minimum iOS deployment target to 13.0
+
 ## 3.17.0
 
 * Compatibility with Flutter 3.44/Dart 3.12 and SPM support

@@ -6,13 +6,13 @@ import PackageDescription
 let package = Package(
     name: "flutter_voximplant",
     platforms: [
-        .iOS("12.0"),
+        .iOS("13.0"),
     ],
     products: [
         .library(name: "flutter-voximplant", targets: ["flutter_voximplant"])
     ],
     dependencies: [
-        .package(url: "https://github.com/voximplant/ios-sdk-releases.git", exact: "2.58.0")
+        .package(url: "https://github.com/voximplant/ios-sdk-releases.git", exact: "2.60.0")
     ],
     targets: [
         .target(

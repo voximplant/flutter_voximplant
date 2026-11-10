@@ -7,7 +7,7 @@ Voximplant Flutter SDK for embedding voice and video communication into Flutter 
 | Platform | Minimum version |
 | -------- | --------------- |
 | Android  | `5.0 (API 21)`  |
-| iOS      | `12.0`          |
+| iOS      | `13.0`          |
 
 ## Requirements
 
