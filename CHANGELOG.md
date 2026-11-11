@@ -1,12 +1,11 @@
 # Changelog
 
 ## Unreleased
-
-* Update iOS platform code to use Voximplant iOS SDK 2.60.0
+* Update Android and iOS platform code to use Voximplant Android SDK 2.46.0 and Voximplant iOS SDK 2.60.0
 * Change minimum iOS deployment target to 13.0
+* Fix: local video stream removal when no `VIVideoView` is in use [#61](https://github.com/voximplant/flutter_voximplant/issues/61)
 
 ## 3.17.0
-
 * Compatibility with Flutter 3.44/Dart 3.12 and SPM support
 * Updates minimum supported SDK version to Flutter 3.24/Dart 3.5
 * Update Android and iOS platform code to use Voximplant Android SDK 2.45.0 and Voximplant iOS SDK 2.58.0
