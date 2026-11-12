@@ -94,7 +94,7 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
   Future<void> _setStreamId(String? streamId) async {
     if (streamId != null) {
       if (_streamId != null && _streamId == streamId) {
-        return Future<void>.value();
+        return;
       }
 
       Map<String, int>? data = await _channel.invokeMapMethod<String, int>(
@@ -119,7 +119,7 @@ class VIVideoViewController extends ValueNotifier<_VIVideoViewValue> {
       _streamId = streamId;
     } else {
       if (_streamId == null) {
-        return Future<void>.value();
+        return;
       }
       await _channel
           .invokeMethod('VideoStream.removeVideoRenderer', <String, String?>{
