@@ -7,7 +7,7 @@ import 'package:audio_call/screens/main_screen.dart';
 import 'package:audio_call/theme/voximplant_theme.dart';
 import 'package:audio_call/utils/screen_arguments.dart';
 import 'package:audio_call/services/navigation_service.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 

@@ -4,7 +4,7 @@ import 'package:audio_call/screens/main_screen.dart';
 import 'package:audio_call/services/auth_service.dart';
 import 'package:audio_call/theme/voximplant_theme.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_voximplant/flutter_voximplant.dart';
 
 class LoginScreen extends StatefulWidget {

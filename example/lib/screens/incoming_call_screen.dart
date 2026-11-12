@@ -8,7 +8,7 @@ import 'package:audio_call/services/call_service.dart';
 import 'package:audio_call/services/navigation_service.dart';
 import 'package:audio_call/theme/voximplant_theme.dart';
 import 'package:audio_call/utils/screen_arguments.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_voximplant/flutter_voximplant.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
