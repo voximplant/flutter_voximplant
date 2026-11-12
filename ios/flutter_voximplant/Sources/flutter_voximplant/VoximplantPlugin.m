@@ -59,7 +59,7 @@
         self.audioFileManager = [[VIAudioFileManager alloc] initWithPlugin:self];
         self.cameraModule = [[VICameraModule alloc] init];
         self.messagingModule = [[VIMessagingModule alloc] initWithRegistrar:self.registrar];
-        [VIClient setVersionExtension:@"flutter-3.17.0"];
+        [VIClient setVersionExtension:@"flutter-3.18.0"];
     }
     return self;
 }
