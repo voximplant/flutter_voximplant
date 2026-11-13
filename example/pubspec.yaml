@@ -3,7 +3,7 @@ description: "Demonstrates how to use the flutter_voximplant plugin."
 publish_to: none
 
 environment:
-  sdk: ^3.10.0
+  sdk: ^3.13.0
   flutter: '>=3.38.1'
 
 dependencies:
@@ -14,6 +14,7 @@ dependencies:
   shared_preferences: 2.5.3
   get_it: 9.2.1
   permission_handler: 11.4.0
+  material_ui: ^1.11.0
 
 dev_dependencies:
   flutter_lints: ^5.0.0

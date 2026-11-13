@@ -138,7 +138,6 @@ class VIAudioFile {
       await _methodChannel.invokeMethod('AudioFile.play',
           <String, dynamic>{'fileId': _fileId, 'looped': looped});
       _looped = looped;
-      return Future.value();
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     } catch (e) {
@@ -154,7 +153,6 @@ class VIAudioFile {
     try {
       await _methodChannel
           .invokeMethod('AudioFile.stop', <String, dynamic>{'fileId': _fileId});
-      return Future.value();
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     } catch (e) {
@@ -172,7 +170,6 @@ class VIAudioFile {
       await _methodChannel.invokeMethod(
           'AudioFile.releaseResources', <String, dynamic>{'fileId': _fileId});
       _eventSubscription.cancel();
-      return Future.value();
     } on PlatformException catch (e) {
       throw VIException(e.code, e.message);
     } catch (e) {
